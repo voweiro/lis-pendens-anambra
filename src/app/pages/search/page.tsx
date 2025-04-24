@@ -6,17 +6,17 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { toast, ToastContainer  } from "react-toastify";
 import { useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import Button from "@/components/utils/Button";
-import Link from "next/link"; 
+ import Button from "@/components/utils/Button"; // Unused
+ import Link from "next/link"; // Unused
 import NavBar from "@/components/home/Navbar";
 import {Modal} from "@/components/utils/Modal";
 import {AccessModal} from "@/components/utils/AccessModal";
 import {CaseResultModal} from "@/components/utils/CaseResultModal";
-import {CaseInformationModal} from "@/components/utils/CaseInformationModal";
-import {SearchPageLayout} from "@/components/search/SearchPageLayout";
-import{ BlurredSearchLayout} from "@/components/search/BlurredSearchLayout";
+// import {CaseInformationModal} from "@/components/utils/CaseInformationModal"; // Unused
+// import {SearchPageLayout} from "@/components/search/SearchPageLayout"; // Unused
+// import{ BlurredSearchLayout} from "@/components/search/BlurredSearchLayout"; // Unused
 import {PaymentDetails }from "@/components/search/PaymentDetails";
-import {PaymentSuccess} from "@/components/search/PaymentSuccess";
+import {PaymentSuccess}from "@/components/search/PaymentSuccess";
 import {SearchPageLayoutTwo} from "@/components/search/SearchPageLayoutTwo";
 import {CaseInformation} from "@/components/search/CaseInformation";
 import {BlurredSearchLayoutTwo} from "@/components/search/BlurredSearchLayoutTwo";
@@ -32,7 +32,12 @@ import {DownloadRecordThree} from "@/components/search/DownloadRecordThree";
 import {SearchSuccessThree} from "@/components/search/SearchSuccessThree";
 import SearchForm from "@/components/search/SearchForm";
 
-
+interface PropertyItem {
+  id: string; 
+  property_title: string;
+  name_of_owner: string;
+  property_location: string;
+}
 
 const schema = yup.object().shape({
   propertyTitle: yup.string(),
@@ -88,6 +93,7 @@ const SearchPage = () => {
     formState: { errors },
     watch,
     register,
+    reset,
   } = useForm({ resolver: yupResolver(schema) });
 
   // Submit handler for the form
@@ -112,7 +118,7 @@ const SearchPage = () => {
         toast.success("Property found!");
         localStorage.setItem("searchResultData", JSON.stringify(result));
         // Map backend data to UI format for sessionStorage
-        const mappedResults = result.data.map((item) => ({
+        const mappedResults = result.data.map((item: PropertyItem) => ({
           id: item.id,
           title: item.property_title,
           owner: item.name_of_owner,
@@ -165,9 +171,6 @@ const SearchPage = () => {
   // Reset search function
   const handleResetSearch = () => {
     setShowNoResults(false);
-    reset({
-      title_type: "survey" // Keep the default value when resetting
-    });
     setShowSearchResultData(undefined);
     setPaymentCompleted(false);
   };
@@ -181,7 +184,7 @@ const SearchPage = () => {
       <div className="max-w-[1100px] mx-auto h-full flex flex-col">
         {/* ====== Navbar component ======= */}
         <section>
-          <NavBar />
+          <NavBar bgColor="none" backdropBlur="blur(10px)" />
         </section>
 
         {/* ====== Main Content goes here ====== */}
@@ -202,6 +205,14 @@ const SearchPage = () => {
                 <Button>
                   <Link href="/pages/signin">Login</Link>
                 </Button>
+              </div>
+              <div>
+                {/* <Button>
+                  <Link href="/pages/signup">Sign Up</Link>
+                </Button>
+                <Button>
+                  <Link href="/pages/signin">Login</Link>
+                </Button> */}
               </div>
             </div>
 
@@ -242,91 +253,18 @@ const SearchPage = () => {
             </div>
           </Modal>
           
-          {/* ===Show Blurred screen=== */}
-          <AccessModal
-            show={showBlurredScreen}
-            onClose={() => setShowBlurredScreen(false)}
-          >
-            <section className="bg-[#ebeef5] flex flex-col items-center mx-[10px] md:p-[8px] overflow-hidden">
-              <BlurredSearchLayout
-                setShowBlurredScreen={setShowBlurredScreen}
-                setShowPaymentDetails={handleShowPaymentDetails}
-                setShowPaymentDetailsThree={handleShowPaymentDetailsThree}
-              />
-            </section>
-          </AccessModal>
-
-          {/* ===Payment details screen=== */}
-          <AccessModal
-            show={showPaymentDetails}
-            onClose={() => setShowPaymentDetails(false)}
-          >
-            <PaymentDetails
-              setShowPaymentDetails={setShowPaymentDetails}
-              setShowPaymentSuccess={handlePaymentSuccess}
-              selectedCaseData={selectedCaseData}
-              setPaymentResponse={setPaymentResponse}
-            />
-          </AccessModal>
-
-          {/* ===Success Payment screen=== */}
-          <AccessModal
-            show={showPaymentSuccess}
-            onClose={() => setShowPaymentSuccess(false)}
-          >
-            <PaymentSuccess
-              showSearchResultData={showSearchResultData}
-              setShowPaymentSuccess={setShowPaymentSuccess}
-              setShowCaseInformation={setShowCaseInformation}
-              setShowSearchResultTwo={setShowSearchResultTwo}
-            />
-          </AccessModal>
+          
+          
 
           {/* Only show detailed search results after payment */}
-          <CaseResultModal
-            show={showSearchResultTwo && paymentCompleted}
-            onClose={() => setShowSearchResultTwo(false)}
-          >
-            <SearchPageLayoutTwo
-              setShowSearchResultTwo={setShowSearchResultTwo}
-              showSearchResultData={showSearchResultData}
-              setSelectedCaseData={setSelectedCaseData}
-              selectedCaseData={selectedCaseData}
-              setShowCaseInformation={setShowCaseInformation}
-            />
-          </CaseResultModal>
+          
 
           {/* ===Show case information=== */}
-          <CaseInformationModal
-            show={showCaseInformation && paymentCompleted}
-            onClose={() => {
-              setShowCaseInformation(false);
-              setShowSearchResultTwo(true);
-            }}
-          >
+          
             <section className="bg-[#ebeef5] pb-6">
-              <CaseInformation
-                selectedCaseData={selectedCaseData}
-                setShowDownloadAndEmail={setShowDownloadAndEmail}
-                setShowBlurredScreenTwo={setShowBlurredScreenTwo}
-                setShowCaseInformation={setShowCaseInformation}
-                setShowSearchResultTwo={setShowSearchResultTwo}
-              />
-            </section>
-          </CaseInformationModal>
-
+              
           {/* ===Show Blurred screen=== */}
-          <AccessModal
-            show={showBlurredScreenTwo}
-            onClose={() => setShowBlurredScreenTwo(false)}
-          >
-            <section className="bg-[#ebeef5] flex flex-col items-center mx-[10px] md:p-[8px] overflow-hidden">
-              <BlurredSearchLayoutTwo
-                setShowBlurredScreenTwo={setShowBlurredScreenTwo}
-                setShowPaymentDetailsTwo={handleShowPaymentDetailsTwo}
-              />
-            </section>
-          </AccessModal>
+         
 
           {/* ===Payment details screen=== */}
           <AccessModal
@@ -340,30 +278,13 @@ const SearchPage = () => {
               setPaymentResponseTwo={setPaymentResponseTwo}
             />
           </AccessModal>
+          </section>
 
           {/* ===Success Payment screen=== */}
-          <AccessModal
-            show={showPaymentSuccessTwo}
-            onClose={() => setShowPaymentSuccessTwo(false)}
-          >
-            <PaymentSuccessTwo
-              setShowPaymentSuccessTwo={setShowPaymentSuccessTwo}
-              setShowDownloadAndEmail={setShowDownloadAndEmail}
-            />
-          </AccessModal>
+          
 
           {/* ===Download and Send Email modal ==== */}
-          <Modal
-            show={showDownloadAndEmail && paymentCompleted}
-            onClose={() => setShowDownloadAndEmail(false)}
-          >
-            <DownloadRecordTwo
-              setShowDownloadAndEmail={setShowDownloadAndEmail}
-              userId={paymentResponseTwo?.data?.userId}
-              referenceId={paymentResponseTwo?.data?.reference}
-              setShowSearchSuccessTwo={setShowSearchSuccessTwo}
-            />
-          </Modal>
+          
 
           {/* ===Success Search screen=== */}
           <AccessModal
@@ -401,57 +322,12 @@ const SearchPage = () => {
           </AccessModal>
 
           {/* search and report - only show after payment */}
-          <CaseResultModal
-            show={showSearchResultThree && paymentCompleted}
-            onClose={() => setShowSearchResultThree(false)}
-          >
-            <SearchPageLayoutThree
-              setShowSearchResultThree={setShowSearchResultThree}
-              showSearchResultData={showSearchResultData}
-              setSelectedCaseData={setSelectedCaseData}
-              selectedCaseData={selectedCaseData}
-              setShowCaseInformationThree={setShowCaseInformationThree}
-            />
-          </CaseResultModal>
-
-          {/* ===Show case information=== */}
-          <CaseInformationModal
-            show={showCaseInformationThree && paymentCompleted}
-            onClose={() => {
-              setShowCaseInformationThree(false);
-              setShowDownloadAndEmail(true);
-            }}
-          >
-            <section className="bg-[#ebeef5] pb-6">
-              <CaseInformationThree
-                selectedCaseData={selectedCaseData}
-                setShowDownloadAndEmail={setShowDownloadAndEmail}
-                setShowCaseInformationThree={setShowCaseInformationThree}
-                setShowSearchResultTwo={setShowSearchResultTwo}
-              />
-            </section>
-          </CaseInformationModal>
-
-          {/* ===Download and Send Email modal for search and report ==== */}
-          <Modal
-            show={showDownloadAndEmail && paymentCompleted}
-            onClose={() => setShowDownloadAndEmail(false)}
-          >
-            <DownloadRecordThree
-              setShowDownloadAndEmail={setShowDownloadAndEmail}
-              userId={paymentResponseTwo?.data?.userId}
-              referenceId={paymentResponseTwo?.data?.reference}
-              setShowSearchSuccessThree={setShowSearchSuccessThree}
-            />
-          </Modal>
           
-          {/* ===Success Search screen=== */}
-          <AccessModal
-            show={showSearchSuccessThree}
-            onClose={() => setShowSearchSuccessThree(false)}
-          >
-            <SearchSuccessThree setShowSearchSuccessThree={setShowSearchSuccessThree} />
-          </AccessModal>
+          
+           
+         
+          
+         
         </section>  
       </div>
     </div>
@@ -460,8 +336,6 @@ const SearchPage = () => {
 
   );
 
-  };
-
-
+};
 
 export default SearchPage;
