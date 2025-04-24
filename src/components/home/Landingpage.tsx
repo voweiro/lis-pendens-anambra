@@ -10,33 +10,56 @@ import SearchButton from "@/components/utils/SearchButton";
 import { Footer } from "@/components/home/Footer";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import Joyride from "react-joyride";
+import Tour from 'reactour';
 import home3 from "@/asserts/home-img-3.png"
 import Image from "next/image";
 import home12 from "@/asserts/home-img-12.jpg"
 
 const LandingPage = () => {
-  const [runTour] = useState(true);
+  const [isTourOpen, setIsTourOpen] = useState(true);
+  const steps = [
+    {
+      selector: '.tour-0',
+      content: 'This is the first tour step!'
+    },
+    {
+      selector: '.tour-1',
+      content: 'This is the second tour step!'
+    },
+    {
+      selector: '.tour-2',
+      content: 'This is the third tour step!'
+    },
+    {
+      selector: '.tour-3',
+      content: 'This is the fourth tour step!'
+    },
+    {
+      selector: '.tour-4',
+      content: 'This is the fifth tour step!'
+    },
+    {
+      selector: '.tour-5',
+      content: 'This is the sixth tour step!'
+    },
+    {
+      selector: '.tour-6',
+      content: 'This is the seventh tour step!'
+    },
+    {
+      selector: '.tour-7',
+      content: 'This is the eighth tour step!'
+    },
+  ];
+
   const MotionImage = motion(Image);
 
   return (
     <div>
-      <Joyride
-        steps={[
-          { target: ".tour-0", content: "This is the first tour step!", disableBeacon: false },
-          { target: ".tour-1", content: "This is the second tour step!", disableBeacon: false },
-          { target: ".tour-2", content: "This is the third tour step!", disableBeacon: false },
-          { target: ".tour-3", content: "This is the fourth tour step!", disableBeacon: false },
-          { target: ".tour-4", content: "This is the fifth tour step!", disableBeacon: false },
-          { target: ".tour-5", content: "This is the sixth tour step!", disableBeacon: false },
-          { target: ".tour-6", content: "This is the seventh tour step!", disableBeacon: false },
-          { target: ".tour-7", content: "This is the eighth tour step!", disableBeacon: false },
-        ]}
-        continuous={true}
-        run={runTour}
-        showProgress={true}
-        showSkipButton={true}
-        styles={{ options: { zIndex: 10000 } }}
+      <Tour
+        steps={steps}
+        isOpen={isTourOpen}
+        onRequestClose={() => setIsTourOpen(false)}
       />
 
       <div id="home-page-container">
