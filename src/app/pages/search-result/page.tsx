@@ -24,7 +24,7 @@ const SearchResultPage = () => {
 
   return (
     <div className="flex flex-col items-center justify-center">
-        <NavBar/>
+        <NavBar bgColor="none" backdropBlur="blur(10px)"  />
       <div className="bg-[#f5f6fa] rounded-[24px] border border-gray-200 w-full max-w-[1084px] h-[690px] mt-[104px] mx-auto shadow-md p-0">
         {/* Summary bar */}
         <div className="flex items-center justify-between rounded-xl bg-[#e9eaee] px-6 py-4 m-6 mb-0">
