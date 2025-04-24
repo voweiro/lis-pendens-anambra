@@ -1,3 +1,5 @@
+"use client";
+
 import { useRef, useState, useEffect, MouseEvent } from "react";
 import Link from "next/link";  // Use Next.js Link instead of react-router-dom's Link
 import Image from "next/image"; // Import Next.js Image component

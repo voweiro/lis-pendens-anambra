@@ -111,6 +111,15 @@ const SearchPage = () => {
       if (Array.isArray(result.data) && result.data.length > 0) {
         toast.success("Property found!");
         localStorage.setItem("searchResultData", JSON.stringify(result));
+        // Map backend data to UI format for sessionStorage
+        const mappedResults = result.data.map((item) => ({
+          id: item.id,
+          title: item.property_title,
+          owner: item.name_of_owner,
+          summary: item.property_location,
+          details: item,
+        }));
+        sessionStorage.setItem("searchResults", JSON.stringify(mappedResults));
         window.location.href = "/pages/search-result";
       } else {
         toast.info("No properties found matching your search criteria.");
