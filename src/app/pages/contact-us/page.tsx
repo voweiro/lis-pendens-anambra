@@ -9,15 +9,18 @@ import emailjs from "@emailjs/browser";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// ✅ Import image at the top
+// Import image at the top
 import authBg from "@/asserts/auth-bg.png";
 
 const ContactUs = () => {
-  const form = useRef();
+  const form = useRef<HTMLFormElement>(null);
 
-  function sendEmail(e) {
+  function sendEmail(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-
+    if (!form.current) {
+      toast.error("Form is not available.");
+      return;
+    }
     emailjs
       .sendForm("service_j9ymt04", "template_9b7t84i", form.current, "b85Jl3R5SfRDirFR-")
       .then(
@@ -99,7 +102,7 @@ const ContactUs = () => {
                       <textarea
                         name="message"
                         className="bg-[#ebeef5] block w-full px-2 py-1 border border-solid border-[#BFBFBF] rounded-[0.3rem]"
-                        rows="6"
+                        rows={6}
                       ></textarea>
                     </div>
                   </div>
