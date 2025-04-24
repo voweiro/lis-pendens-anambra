@@ -150,7 +150,12 @@ export const historyData = [
   },
 ];
 
-export const getSerialNumber = (id, data, currentPage, pageSize) => {
+export const getSerialNumber = (
+  id: string,
+  data: { _id: string }[],
+  currentPage: number,
+  pageSize: number
+): number | string => {
   const index = data.findIndex((object) => object._id === id);
   const startIndex = (currentPage - 1) * pageSize;
   return index !== -1 ? startIndex + index + 1 : "";
