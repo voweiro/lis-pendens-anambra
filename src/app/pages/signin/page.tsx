@@ -53,7 +53,12 @@ const SignIn = () => {
       const email = response?.data?.user?.email;
       const firstName = response?.data?.user?.firstName;
 
-      setAuth({ role, accessToken, email, firstName });
+      setAuth({ 
+        role: role ?? null, 
+        accessToken: accessToken ?? null, 
+        email: email ?? undefined, 
+        firstName: firstName ?? undefined 
+      });
 
       toast.success("Login Successful");
 
@@ -62,7 +67,7 @@ const SignIn = () => {
       } else if (role === "registrar") {
         router.push("/court-registrar");
       } else {
-        router.push("/user");
+        router.push("/pages/users");
       }
     } catch (error: any) {
       toast.error(error?.message);

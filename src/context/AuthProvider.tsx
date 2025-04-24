@@ -23,12 +23,17 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [auth, setAuth] = useState<AuthType>(() => {
-    const storedAuth = sessionStorage.getItem("auth");
-    return storedAuth ? JSON.parse(storedAuth) : { role: null, accessToken: null };
+    if (typeof window !== 'undefined') {
+      const storedAuth = sessionStorage.getItem("auth");
+      return storedAuth ? JSON.parse(storedAuth) : { role: null, accessToken: null };
+    }
+    return { role: null, accessToken: null };
   });
 
   useEffect(() => {
-    sessionStorage.setItem("auth", JSON.stringify(auth));
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem("auth", JSON.stringify(auth));
+    }
   }, [auth]);
 
   return (

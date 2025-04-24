@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, MouseEvent } from "react";
 import Link from "next/link";  // Use Next.js Link instead of react-router-dom's Link
 import Image from "next/image"; // Import Next.js Image component
 import { HiMenu, HiX } from "react-icons/hi";
@@ -57,23 +57,23 @@ const NavBar = ({ bgColor, backdropBlur }: NavBarProps) => {
   const [showActions, setShowActions] = useState(false);
 
   // Refs
-  const viewRef = useRef();
-  const dropdownRef = useRef();
+  const viewRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Handle click outside of dropdown to close it
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target) &&
-        !viewRef.current.contains(event.target)
+        !dropdownRef.current.contains(event.target as Node) &&
+        !viewRef.current?.contains(event.target as Node)
       ) {
         setShowActions(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside as unknown as EventListener);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside as unknown as EventListener);
     };
   }, []);
 
@@ -86,7 +86,7 @@ const NavBar = ({ bgColor, backdropBlur }: NavBarProps) => {
         {/* LOGO */}
         <Link href="/" className="flex items-center space-x-4">
   <Image src={logo} alt="LisPendens brand logo" priority />
-  <span className="text-green-600 font-semibold text-[30px]">Ënugu</span>
+  <span className="text-green-600 font-semibold text-[30px]">Enugu</span>
 </Link>
         
 

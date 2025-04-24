@@ -2,7 +2,7 @@
 import Image from "next/image"
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // Change to this
+import { useRouter } from "next/navigation"; 
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
@@ -17,11 +17,12 @@ import logoImage from "@/asserts/lis-pendens-logo-white.png";
 
 // Schema validation with Yup
 const schema = yup.object().shape({
-  firstName: yup
+  user_type: yup.string().required("User type is required"),
+  first_name: yup
     .string()
     .required("First Name is required")
     .min(3, "First Name must be greater than 3 letters"),
-  lastName: yup
+  last_name: yup
     .string()
     .required("Last Name is required")
     .min(3, "Last Name must be greater than 3 letters"),
@@ -29,40 +30,69 @@ const schema = yup.object().shape({
     .string()
     .required("Email is required")
     .email("Invalid Email format"),
-  phoneNumber: yup.string(),
+  phone: yup.string(),
+  date_of_birth: yup.string(),
   password: yup
     .string()
     .required("Password is required")
-    .min(6, "Password must be at least 6 characters")
+    .min(8, "Password must be at least 6 characters")
+    .max(20, "Password must not exceed 20 characters"),
+
+    password_confirmation: yup
+    .string()
+    .required("Password is required")
+    .min(8, "Password must be at least 6 characters")
     .max(20, "Password must not exceed 20 characters"),
 });
 
+interface ApiError {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+}
+
 const SignUpIndividual = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter(); // useRouter from next/navigation
+  const router = useRouter(); 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
-  const onSubmitHandler = async (data) => {
+  const onSubmitHandler = async (data: { 
+    first_name: string; 
+    last_name: string; 
+    email: string; 
+    password: string; 
+    phone?: string; 
+    date_of_birth?: string; 
+    user_type: string; 
+    password_confirmation: string 
+  }) => {
     const body = {
-      firstName: data.firstName,
-      lastName: data.lastName,
+      first_name: data.first_name,
+      last_name: data.last_name,
       email: data.email,
       password: data.password,
-      phoneNumber: data?.phoneNumber || undefined,
+      phone: data?.phone || undefined,
+      date_of_birth: data?.date_of_birth || undefined,
+      user_type: data.user_type,
+      password_confirmation: data.password_confirmation,
     };
+    
     try {
       await SignUpRequestForIndividual(body);
       toast.success("SignUp Successful");
       setTimeout(() => {
         router.push("/pages/signin");
       }, 2000);
-    } catch (error) {
-      console.log(error?.response?.data?.message);
-      toast.error(error?.response?.data?.message);
+    } catch (error: unknown) {
+      const apiError = error as ApiError;
+      console.log(apiError?.response?.data?.message);
+      toast.error(apiError?.response?.data?.message);
     }
   };
 
@@ -101,17 +131,28 @@ const SignUpIndividual = () => {
             <form onSubmit={handleSubmit(onSubmitHandler)} className="w-full">
               <h3 className="mb-2 text-[24px] font-bold text-black">Sign up</h3>
 
+              <div className="max-w-[400px] mb-2">
+                <input
+                  type="text"
+                  placeholder="user_type"
+                  className="w-full mt-2 outline-none focus:out-none border-[1.2px] border-slate-300 rounded-lg p-2"
+                  {...register("user_type")}
+                />
+                <p className="text-red-500 text-[0.75rem] text-right">
+                  {errors.user_type?.message}
+                </p>
+              </div>
+
               {/* FIRST NAME */}
               <div className="max-w-[400px] mb-2">
                 <input
                   type="text"
                   placeholder="First name"
-                  name="firstName"
                   className="w-full mt-2 outline-none focus:out-none border-[1.2px] border-slate-300 rounded-lg p-2"
-                  {...register("firstName")}
+                  {...register("first_name")}
                 />
                 <p className="text-red-500 text-[0.75rem] text-right">
-                  {errors.firstName?.message}
+                  {errors.first_name?.message}
                 </p>
               </div>
 
@@ -120,12 +161,11 @@ const SignUpIndividual = () => {
                 <input
                   type="text"
                   placeholder="Last name"
-                  name="lastName"
                   className="w-full mt-2 outline-none focus:out-none border-[1.2px] border-slate-300 rounded-lg p-2"
-                  {...register("lastName")}
+                  {...register("last_name")}
                 />
                 <p className="text-red-500 text-[0.75rem] text-right">
-                  {errors.lastName?.message}
+                  {errors.last_name?.message}
                 </p>
               </div>
 
@@ -133,7 +173,6 @@ const SignUpIndividual = () => {
               <div className="max-w-[400px] mb-2">
                 <input
                   type="email"
-                  name="email"
                   placeholder="Email address"
                   className="w-full mt-2 outline-none focus:out-none border-[1.2px] border-slate-300 rounded-lg p-2"
                   {...register("email")}
@@ -147,10 +186,19 @@ const SignUpIndividual = () => {
               <div className="max-w-[400px] mb-2">
                 <input
                   type="tel"
-                  name="phoneNumber"
                   placeholder="Phone number (optional)"
                   className="w-full mt-2 outline-none focus:out-none border-[1.2px] border-slate-300 rounded-lg p-2"
-                  {...register("phoneNumber")}
+                  {...register("phone")}
+                />
+              </div>
+
+
+              <div className="max-w-[400px] mb-2">
+                <input
+                  type="date"
+                  placeholder="date of birth"
+                  className="w-full mt-2 outline-none focus:out-none border-[1.2px] border-slate-300 rounded-lg p-2"
+                  {...register("date_of_birth")}
                 />
               </div>
 
@@ -159,7 +207,6 @@ const SignUpIndividual = () => {
                 <div className="max-w-[400px] mb-2 relative">
                   <input
                     type={showPassword ? "text" : "password"}
-                    name="password"
                     placeholder="Password"
                     className="w-full mt-2 outline-none focus:out-none border-[1.2px] border-slate-300 rounded-lg p-2"
                     {...register("password")}
@@ -182,6 +229,38 @@ const SignUpIndividual = () => {
                 </div>
                 <p className="text-red-500 text-[0.75rem] text-right">
                   {errors.password?.message}
+                </p>
+              </div>
+
+
+              
+              {/* PASSWORD */}
+              <div className="mb-4">
+                <div className="max-w-[400px] mb-2 relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Confirm Password"
+                    className="w-full mt-2 outline-none focus:out-none border-[1.2px] border-slate-300 rounded-lg p-2"
+                    {...register("password_confirmation")}
+                  />
+                  {showPassword ? (
+                    <BsEyeSlashFill
+                      className="absolute right-2 top-8 cursor-pointer"
+                      size={20}
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      color="#8A8A8A"
+                    />
+                  ) : (
+                    <BsEyeFill
+                      className="absolute right-2 top-6 cursor-pointer"
+                      size={20}
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      color="#8A8A8A"
+                    />
+                  )}
+                </div>
+                <p className="text-red-500 text-[0.75rem] text-right">
+                  {errors.password_confirmation?.message}
                 </p>
               </div>
 

@@ -2,9 +2,14 @@ import axios from "axios";
 
 // Define types for the body of the requests
 interface SignUpIndividualBody {
-  name: string;
+  user_type: string; // "individual" or "business"
+  first_name: string;
+  last_name: string;
   email: string;
+  phone?: string;
+  date_of_birth?: string;
   password: string;
+  password_confirmation: string;
   // Add other fields as needed
 }
 
@@ -33,6 +38,16 @@ interface SignUpResponse {
 interface LoginResponse {
   accessToken: string;
   refreshToken: string;
+  data: {
+    user: {
+      role: string;
+      email: string;
+      firstName: string;
+    };
+    token: {
+      access_token: string;
+    };
+  };
 }
 
 interface LogoutResponse {
@@ -49,7 +64,7 @@ const baseURL = process.env.NEXT_PUBLIC_BASEURL;
 // SIGNUP REQUEST FOR INDIVIDUAL
 export const SignUpRequestForIndividual = async (body: SignUpIndividualBody): Promise<SignUpResponse | undefined> => {
   try {
-    const response = await axios.post(`${baseURL}/auth/register`, body, {
+    const response = await axios.post(`${baseURL}/create-account`, body, {
       headers: {
         Accept: "application/vnd.connect.v1+json",
         "Content-Type": "application/json",
@@ -87,7 +102,7 @@ export const SignUpRequestForBusiness = async (body: SignUpBusinessBody): Promis
 // LOGIN REQUEST
 export const LoginRequest = async (body: LoginBody): Promise<LoginResponse | undefined> => {
   try {
-    const response = await axios.post(`${baseURL}/auth/login`, body, {
+    const response = await axios.post(`${baseURL}/login`, body, {
       headers: {
         Accept: "application/vnd.connect.v1+json",
         "Content-Type": "application/json",
