@@ -4,48 +4,71 @@ import React, { useEffect, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 
 const PageLoadingAnimation = () => {
-  const [isNavigating, setIsNavigating] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Show loading animation on initial page load
+  // Show loading on initial page load
   useEffect(() => {
-    setIsNavigating(true);
+    setIsLoading(true);
+    
+    // Hide after a minimum time to ensure visibility
     const timer = setTimeout(() => {
-      setIsNavigating(false);
-    }, 1000);
+      setIsLoading(false);
+    }, 800);
+    
     return () => clearTimeout(timer);
   }, []);
 
-  // Show loading animation when pathname or search params change
+  // Show loading when route changes
   useEffect(() => {
-    setIsNavigating(true);
+    setIsLoading(true);
+    
     const timer = setTimeout(() => {
-      setIsNavigating(false);
-    }, 1000);
+      setIsLoading(false);
+    }, 800);
+    
     return () => clearTimeout(timer);
   }, [pathname, searchParams]);
 
-  // Add event listeners for navigation start and end
+  // Capture navigation events
   useEffect(() => {
-    const handleStart = () => {
-      setIsNavigating(true);
+    // Function to handle navigation start
+    const handleNavigationStart = () => {
+      setIsLoading(true);
     };
 
-    const handleComplete = () => {
-      setIsNavigating(false);
+    // Function to handle navigation complete
+    const handleNavigationComplete = () => {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 500); // Minimum display time
     };
 
-    window.addEventListener('beforeunload', handleStart);
-    window.addEventListener('load', handleComplete);
+    // Capture link clicks
+    const handleLinkClick = (e) => {
+      // Only handle internal links with href attributes
+      const target = e.target.closest('a');
+      if (target && target.href && target.href.startsWith(window.location.origin)) {
+        setIsLoading(true);
+      }
+    };
+
+    // Add event listeners
+    document.addEventListener('click', handleLinkClick);
+    window.addEventListener('beforeunload', handleNavigationStart);
+    window.addEventListener('load', handleNavigationComplete);
+    
+    // For Next.js router events, we're already using usePathname and useSearchParams
 
     return () => {
-      window.removeEventListener('beforeunload', handleStart);
-      window.removeEventListener('load', handleComplete);
+      document.removeEventListener('click', handleLinkClick);
+      window.removeEventListener('beforeunload', handleNavigationStart);
+      window.removeEventListener('load', handleNavigationComplete);
     };
   }, []);
 
-  if (!isNavigating) return null;
+  if (!isLoading) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-80">
