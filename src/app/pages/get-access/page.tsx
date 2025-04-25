@@ -33,42 +33,69 @@ const GetAccessPage = () => {
         try {
           const params = JSON.parse(sessionStorage.getItem("pendingSearchParams") || '{}');
           // Make sure we're using HTTPS for the API endpoint
-          const baseUrl = process.env.NEXT_PUBLIC_BASEURL || 'https://147.182.229.165/api';
+          const baseUrl = process.env.NEXT_PUBLIC_BASEURL || 'http://147.182.229.165/api';
           const form = new FormData();
           form.append('title_type', params.propertyTitle || '');
           form.append('lga', params.lga || '');
           form.append('state', params.state || '');
-          const response = await fetch(`${baseUrl}/search-property`, {
-            method: 'POST',
-            body: form,
-          });
-          if (!response.ok) throw new Error('Search failed');
-          const result = await response.json();
-          if (Array.isArray(result.data) && result.data.length > 0) {
-            // Map results to ensure each has a normalized SearchResult shape
-            const mappedResults = result.data.map((item: any) => ({
-              id: item.id,
-              title: item.property_title || '',
-              owner: item.name_of_owner || '',
-              summary: item.property_location || '',
-              details: item,
-            }));
-            toast.success("Property found!");
-            sessionStorage.setItem("searchResults", JSON.stringify(mappedResults));
-            const firstId = mappedResults[0]?.id;
-            console.log("Stored mappedResults:", mappedResults, "Redirecting to id:", firstId);
-            setTimeout(() => {
-              if (firstId) {
-                window.location.href = `/search-details/${firstId}`;
-              } else {
-                window.location.href = "/pages/search-results";
-              }
-            }, 1200);
-          } else {
-            window.location.href = "/pages/no-search-result";
+          
+          try {
+            const response = await fetch(`${baseUrl}/search-property`, {
+              method: 'POST',
+              body: form,
+            });
+            
+            if (!response.ok) throw new Error(`Search failed with status: ${response.status}`);
+            const result = await response.json();
+            
+            // Process the result as before
+            if (result && result.data && Array.isArray(result.data) && result.data.length > 0) {
+              toast.success("Property found!");
+              
+              // Map the results to a consistent format
+              const mappedResults = result.data.map((item: any) => ({
+                id: item.id,
+                property_title: item.property_title,
+                name_of_owner: item.name_of_owner,
+                property_location: item.property_location,
+                date_of_registration: item.date_of_registration
+              }));
+              
+              // Store the results in localStorage
+              localStorage.setItem("searchResultData", JSON.stringify({ data: mappedResults }));
+              
+              const firstId = mappedResults[0]?.id;
+              console.log("Stored mappedResults:", mappedResults, "Redirecting to id:", firstId);
+              setTimeout(() => {
+                if (firstId) {
+                  window.location.href = `/search-details/${firstId}`;
+                } else {
+                  window.location.href = "/pages/search-results";
+                }
+              }, 1200);
+            } else {
+              window.location.href = "/pages/no-search-result";
+            }
+          } catch (error: any) {
+            console.error('API Error:', error);
+            // If there's a connection error, show a more specific message
+            if (error.message && (
+                error.message.includes('Failed to fetch') || 
+                error.message.includes('NetworkError') ||
+                error.message.includes('ERR_CONNECTION_REFUSED'))) {
+              toast.error('Unable to connect to the search server. Please try again later or contact support.');
+              
+              // Redirect to a fallback page after a delay
+              setTimeout(() => {
+                window.location.href = "/pages/server-error";
+              }, 2000);
+            } else {
+              toast.error('Search failed. Please try again.');
+            }
           }
         } catch (error) {
-          toast.error('Search failed. Please try again.');
+          console.error('General Error:', error);
+          toast.error('An unexpected error occurred. Please try again.');
         }
       },
       onclose: function () {

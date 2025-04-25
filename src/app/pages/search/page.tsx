@@ -86,32 +86,32 @@ const SearchPage = () => {
         state: data.state || ''
       }));
 
-      // Redirect user to get-access page before making the API call
-      window.location.href = "/pages/get-access";
-      return;
-
-      // The code below will not run because of the redirect above
-      // If you want to trigger the search after payment, move this logic to the get-access/payment success handler
-      /*
-      const response = await fetch(`${baseUrl}/search-property`, {
-        method: 'POST',
-        body: form,
-      });
-      if (!response.ok) throw new Error('Search failed');
-      const result = await response.json();
-      // Don't toast or store results yet
-      // setShowSearchResultData(result);
-      // if (Array.isArray(result.data) && result.data.length > 0) {
-      //   toast.success("Property found!");
-      //   localStorage.setItem("searchResultData", JSON.stringify(result));
-      //   // ...
-      // } else {
-      //   toast.info("No properties found matching your search criteria.");
-      //   setShowNoResults(true);
-      // }
-      */
-    } catch (error) {
-      toast.error('Search failed. Please try again.');
+      // Check if the API is reachable before redirecting
+      try {
+        // Simple ping to check if the API is available
+        const pingResponse = await fetch(`${baseUrl}/ping`, { 
+          method: 'GET',
+          mode: 'no-cors',
+          // Short timeout to avoid long waits
+          signal: AbortSignal.timeout(3000)
+        });
+        
+        // If we get here, the API is likely reachable
+        // Redirect user to get-access page before making the API call
+        window.location.href = "/pages/get-access";
+        return;
+      } catch (pingError) {
+        console.error('API ping error:', pingError);
+        // API is not reachable, show error message
+        toast.error('Unable to connect to the search server. Please try again later.');
+        setTimeout(() => {
+          window.location.href = "/pages/server-error";
+        }, 2000);
+        return;
+      }
+    } catch (error: any) {
+      console.error('Search error:', error);
+      toast.error(error.message || 'Search failed. Please try again.');
     } finally {
       setIsSearching(false);
     }
