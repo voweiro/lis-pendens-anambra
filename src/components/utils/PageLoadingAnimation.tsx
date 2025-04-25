@@ -46,11 +46,13 @@ const PageLoadingAnimation = () => {
     };
 
     // Capture link clicks
-    const handleLinkClick = (e: React.MouseEvent<HTMLElement> | MouseEvent) => {
+    const handleLinkClick = (e: MouseEvent) => {
       // Only handle internal links with href attributes
-      const target = (e.target as HTMLElement).closest('a');
-      if (target && target.href && target.href.startsWith(window.location.origin)) {
-        setIsLoading(true);
+      if (e.target instanceof Element) {
+        const target = e.target.closest('a');
+        if (target && target.href && target.href.startsWith(window.location.origin)) {
+          setIsLoading(true);
+        }
       }
     };
 
