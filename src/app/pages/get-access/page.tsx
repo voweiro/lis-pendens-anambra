@@ -32,7 +32,8 @@ const GetAccessPage = () => {
         // After payment, perform the search
         try {
           const params = JSON.parse(sessionStorage.getItem("pendingSearchParams") || '{}');
-          const baseUrl = process.env.NEXT_PUBLIC_BASEURL;
+          // Make sure we're using HTTPS for the API endpoint
+          const baseUrl = process.env.NEXT_PUBLIC_BASEURL || 'https://147.182.229.165/api';
           const form = new FormData();
           form.append('title_type', params.propertyTitle || '');
           form.append('lga', params.lga || '');

@@ -72,7 +72,8 @@ const SearchPage = () => {
   const onSubmitHandler = async (data: any) => {
     setIsSearching(true);
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_BASEURL;
+      // Make sure we're using HTTPS for the API endpoint
+      const baseUrl = process.env.NEXT_PUBLIC_BASEURL || 'https://147.182.229.165/api';
       const form = new FormData();
       form.append('title_type', data.propertyTitle || '');
       form.append('lga', data.lga || '');
