@@ -29,72 +29,16 @@ const GetAccessPage = () => {
         name: "Ajenagho Norevoweiro",
       },
       callback: async function (data: any) {
-        // After payment, perform the search
+        // After successful payment, redirect to the make-search page
         try {
-          const params = JSON.parse(sessionStorage.getItem("pendingSearchParams") || '{}');
-          // Make sure we're using HTTPS for the API endpoint
-          const baseUrl = process.env.NEXT_PUBLIC_BASEURL || 'http://147.182.229.165/api';
-          const form = new FormData();
-          form.append('title_type', params.propertyTitle || '');
-          form.append('lga', params.lga || '');
-          form.append('state', params.state || '');
+          toast.success("Payment successful!");
           
-          try {
-            const response = await fetch(`${baseUrl}/search-property`, {
-              method: 'POST',
-              body: form,
-            });
-            
-            if (!response.ok) throw new Error(`Search failed with status: ${response.status}`);
-            const result = await response.json();
-            
-            // Process the result as before
-            if (result && result.data && Array.isArray(result.data) && result.data.length > 0) {
-              toast.success("Property found!");
-              
-              // Map the results to a consistent format
-              const mappedResults = result.data.map((item: any) => ({
-                id: item.id,
-                property_title: item.property_title,
-                name_of_owner: item.name_of_owner,
-                property_location: item.property_location,
-                date_of_registration: item.date_of_registration
-              }));
-              
-              // Store the results in localStorage
-              localStorage.setItem("searchResultData", JSON.stringify({ data: mappedResults }));
-              
-              const firstId = mappedResults[0]?.id;
-              console.log("Stored mappedResults:", mappedResults, "Redirecting to id:", firstId);
-              setTimeout(() => {
-                if (firstId) {
-                  window.location.href = `/search-details/${firstId}`;
-                } else {
-                  window.location.href = "/pages/search-results";
-                }
-              }, 1200);
-            } else {
-              window.location.href = "/pages/no-search-result";
-            }
-          } catch (error: any) {
-            console.error('API Error:', error);
-            // If there's a connection error, show a more specific message
-            if (error.message && (
-                error.message.includes('Failed to fetch') || 
-                error.message.includes('NetworkError') ||
-                error.message.includes('ERR_CONNECTION_REFUSED'))) {
-              toast.error('Unable to connect to the search server. Please try again later or contact support.');
-              
-              // Redirect to a fallback page after a delay
-              setTimeout(() => {
-                window.location.href = "/pages/server-error";
-              }, 2000);
-            } else {
-              toast.error('Search failed. Please try again.');
-            }
-          }
+          // Short delay before redirecting to make-search page
+          setTimeout(() => {
+            window.location.href = "/pages/make-search";
+          }, 1200);
         } catch (error) {
-          console.error('General Error:', error);
+          console.error('Error after payment:', error);
           toast.error('An unexpected error occurred. Please try again.');
         }
       },
