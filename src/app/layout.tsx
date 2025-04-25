@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthProvider";
 import { LoadingProvider } from "@/components/utils/LoadingProvider";
+import GoogleMapsScript from "@/components/utils/GoogleMapsScript";
 
 // Load fonts with preload optimization
 const geistSans = Geist({
@@ -49,6 +50,7 @@ export default function RootLayout({
         {/* Wrap the children with the context provider */}
         <AuthProvider>
           <LoadingProvider>
+            <GoogleMapsScript />
             {children}
           </LoadingProvider>
         </AuthProvider>

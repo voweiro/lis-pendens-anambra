@@ -1,21 +1,26 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import NavBar from "@/components/home/Navbar";
 import { useRouter } from "next/navigation";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const FLW_PUBLIC_KEY = "FLWPUBK_TEST-3b48e543af90cfc1a33822d02376a17b-X"; // User's Flutterwave test public key
+// Move this to .env.local for better security
+const FLW_PUBLIC_KEY = "FLWPUBK_TEST-3b48e543af90cfc1a33822d02376a17b-X";
 
 const GetAccessPage = () => {
   const router = useRouter();
 
+  // Improved Flutterwave payment handler
   const handleFlutterwavePayment = () => {
+    // Generate a unique transaction reference
+    const txRef = "tx-" + Date.now() + "-" + Math.floor(Math.random() * 1000000);
+    
     // @ts-ignore
     window.FlutterwaveCheckout({
       public_key: FLW_PUBLIC_KEY,
-      tx_ref: "tx-" + Date.now(),
+      tx_ref: txRef,
       amount: 200,
       currency: "NGN",
       payment_options: "card,ussd,banktransfer",
@@ -69,14 +74,14 @@ const GetAccessPage = () => {
         toast.info("Payment window closed");
       },
       customizations: {
-        title: "LES-PENEDNT",
-        description: "Access search information",
-        logo: "https://yourdomain.com/logo.png",
+        title: "Les-Pendes Access Payment",
+        description: "Payment for access to Les-Pendes services",
+        logo: "https://les-pendes-n1ss.vercel.app/lis-pendens-logo.png",
       },
     });
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!window.FlutterwaveCheckout) {
       const script = document.createElement("script");
       script.src = "https://checkout.flutterwave.com/v3.js";
