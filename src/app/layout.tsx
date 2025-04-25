@@ -6,6 +6,7 @@ import "./globals.css";
 import { AuthProvider } from "@/context/AuthProvider";
 import { LoadingProvider } from "@/components/utils/LoadingProvider";
 import GoogleMapsScript from "@/components/utils/GoogleMapsScript";
+import PageLoadingAnimation from "@/components/utils/PageLoadingAnimation";
 
 // Load fonts with preload optimization
 const geistSans = Geist({
@@ -51,6 +52,7 @@ export default function RootLayout({
         <AuthProvider>
           <LoadingProvider>
             <GoogleMapsScript />
+            <PageLoadingAnimation />
             {children}
           </LoadingProvider>
         </AuthProvider>
