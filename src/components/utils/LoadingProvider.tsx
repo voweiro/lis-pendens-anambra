@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, Suspense } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import LoadingSpinner from './LoadingSpinner';
 
@@ -19,7 +19,8 @@ export const useLoading = () => {
   return context;
 };
 
-export const LoadingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+// Inner component that uses client-side hooks
+const LoadingProviderInner: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -64,5 +65,14 @@ export const LoadingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       <LoadingSpinner isLoading={isLoading} />
       {children}
     </LoadingContext.Provider>
+  );
+};
+
+// Outer component that provides the Suspense boundary
+export const LoadingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoadingProviderInner>{children}</LoadingProviderInner>
+    </Suspense>
   );
 };

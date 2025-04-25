@@ -20,7 +20,7 @@ const SearchResultsList = () => {
   }, []);
 
   if (!results.length) {
-    return <div className="text-center text-gray-500">No search results found.</div>;
+    return <div className="text-center text-gray-500 p-8">No search results found. Please try searching again.</div>;
   }
 
   return (
@@ -33,9 +33,11 @@ const SearchResultsList = () => {
             className="bg-gray-100 rounded-lg p-4 cursor-pointer hover:bg-gray-200 transition"
             onClick={() => router.push(`/search-details/${result.id}`)}
           >
-            <div className="font-semibold text-lg">{result.title}</div>
-            <div className="text-sm text-gray-700">Owner: {result.owner}</div>
-            {result.summary && <div className="text-xs text-gray-500 mt-1">{result.summary}</div>}
+            <div className="font-semibold text-lg">{result.title || 'Untitled Property'}</div>
+            <div className="text-sm text-gray-700">Owner: {result.owner || 'Unknown'}</div>
+            {result.summary && (
+              <div className="text-sm text-gray-700">{result.summary}</div>
+            )}
           </li>
         ))}
       </ul>

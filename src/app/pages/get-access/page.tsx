@@ -23,9 +23,47 @@ const GetAccessPage = () => {
         email: "ajenaghonorevoweiro@email.com",
         name: "Ajenagho Norevoweiro",
       },
-      callback: function (data: any) {
-        // Redirect to /search-results after successful payment
-        router.push("/pages/search-results");
+      callback: async function (data: any) {
+        // After payment, perform the search
+        try {
+          const params = JSON.parse(sessionStorage.getItem("pendingSearchParams") || '{}');
+          const baseUrl = process.env.NEXT_PUBLIC_BASEURL;
+          const form = new FormData();
+          form.append('title_type', params.propertyTitle || '');
+          form.append('lga', params.lga || '');
+          form.append('state', params.state || '');
+          const response = await fetch(`${baseUrl}/search-property`, {
+            method: 'POST',
+            body: form,
+          });
+          if (!response.ok) throw new Error('Search failed');
+          const result = await response.json();
+          if (Array.isArray(result.data) && result.data.length > 0) {
+            // Map results to ensure each has a normalized SearchResult shape
+            const mappedResults = result.data.map((item: any) => ({
+              id: item.id,
+              title: item.property_title || '',
+              owner: item.name_of_owner || '',
+              summary: item.property_location || '',
+              details: item,
+            }));
+            toast.success("Property found!");
+            sessionStorage.setItem("searchResults", JSON.stringify(mappedResults));
+            const firstId = mappedResults[0]?.id;
+            console.log("Stored mappedResults:", mappedResults, "Redirecting to id:", firstId);
+            setTimeout(() => {
+              if (firstId) {
+                window.location.href = `/search-details/${firstId}`;
+              } else {
+                window.location.href = "/pages/search-results";
+              }
+            }, 1200);
+          } else {
+            window.location.href = "/pages/no-search-result";
+          }
+        } catch (error) {
+          toast.error('Search failed. Please try again.');
+        }
       },
       onclose: function () {
         toast.info("Payment window closed");
@@ -33,7 +71,7 @@ const GetAccessPage = () => {
       customizations: {
         title: "LES-PENEDNT",
         description: "Access search information",
-        logo: "https://yourdomain.com/logo.png", // Optional, replace with your logo
+        logo: "https://yourdomain.com/logo.png",
       },
     });
   };

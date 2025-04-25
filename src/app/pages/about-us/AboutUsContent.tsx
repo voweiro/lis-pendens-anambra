@@ -1,14 +1,14 @@
-// components/about-us/AboutUsContent.tsx
-"use client"
+"use client";
 import { useSearchParams } from "next/navigation";
 import NavBar from "@/components/home/Navbar";
 import { motion } from "framer-motion";
 import { Footer } from "@/components/home/Footer";
 import Image from "next/image";
 import Link from "next/link";
-import heroImg from "@/asserts/about-us-hero-img.jpg"; // adjust path if needed
+import heroImg from "@/asserts/about-us-hero-img.jpg";
 
 const AboutUsContent = () => {
+  // Example usage of useSearchParams (even if not needed, for demo)
   const searchParams = useSearchParams();
 
   return (

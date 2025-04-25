@@ -6,30 +6,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { toast, ToastContainer  } from "react-toastify";
 import { useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
- import Button from "@/components/utils/Button"; // Unused
- import Link from "next/link"; // Unused
+import Button from "@/components/utils/Button"; // Unused
+import Link from "next/link"; // Unused
 import NavBar from "@/components/home/Navbar";
 import {Modal} from "@/components/utils/Modal";
-import {AccessModal} from "@/components/utils/AccessModal";
-import {CaseResultModal} from "@/components/utils/CaseResultModal";
-// import {CaseInformationModal} from "@/components/utils/CaseInformationModal"; // Unused
-// import {SearchPageLayout} from "@/components/search/SearchPageLayout"; // Unused
-// import{ BlurredSearchLayout} from "@/components/search/BlurredSearchLayout"; // Unused
-import {PaymentDetails }from "@/components/search/PaymentDetails";
-import {PaymentSuccess}from "@/components/search/PaymentSuccess";
-import {SearchPageLayoutTwo} from "@/components/search/SearchPageLayoutTwo";
-import {CaseInformation} from "@/components/search/CaseInformation";
-import {BlurredSearchLayoutTwo} from "@/components/search/BlurredSearchLayoutTwo";
-import {PaymentDetailsTwo} from "@/components/search/PaymentDetailsTwo";
-import {PaymentSuccessTwo} from "@/components/search/PaymentSuccessTwo";
-import {DownloadRecordTwo} from "@/components/search/DownloadRecordTwo";
-import {SearchSuccessTwo }from "@/components/search/SearchSuccessTwo";
-import {PaymentDetailsThree} from "@/components/search/PaymentDetailsThree";
-import {PaymentSuccessThree} from "@/components/search/PaymentSuccessThree";
-import {SearchPageLayoutThree} from "@/components/search/SearchPageLayoutThree";
-import {CaseInformationThree} from "@/components/search/CaseInformationThree";
-import {DownloadRecordThree} from "@/components/search/DownloadRecordThree";
-import {SearchSuccessThree} from "@/components/search/SearchSuccessThree";
+
+
 import SearchForm from "@/components/search/SearchForm";
 
 interface PropertyItem {
@@ -59,17 +41,7 @@ const SearchPage = () => {
   const [showSearchResultData, setShowSearchResultData] = useState<any>();
   const [showSearchResult, setShowSearchResult] = useState(false);
   const [showNoResults, setShowNoResults] = useState(false);
-  const [showSearchResultTwo, setShowSearchResultTwo] = useState(false);
-  const [selectedCaseData, setSelectedCaseData] = useState(null);
-  const [showBlurredScreenTwo, setShowBlurredScreenTwo] = useState(false);
-  const [showBlurredScreen, setShowBlurredScreen] = useState(false);
-  const [showCaseInformation, setShowCaseInformation] = useState(false);
-  const [showPaymentDetails, setShowPaymentDetails] = useState(false);
-  const [showPaymentDetailsTwo, setShowPaymentDetailsTwo] = useState(false);
-  const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
-  const [showPaymentSuccessTwo, setShowPaymentSuccessTwo] = useState(false);
-  const [showSearchSuccessTwo, setShowSearchSuccessTwo] = useState(false);
-  const [showDownloadAndEmail, setShowDownloadAndEmail] = useState(false);
+ 
   const [paymentResponse, setPaymentResponse] = useState(null);
   const [paymentResponseTwo, setPaymentResponseTwo] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
@@ -106,31 +78,37 @@ const SearchPage = () => {
       form.append('lga', data.lga || '');
       form.append('state', data.state || '');
 
+      // Store search parameters for later use (after payment)
+      sessionStorage.setItem("pendingSearchParams", JSON.stringify({
+        propertyTitle: data.propertyTitle || '',
+        lga: data.lga || '',
+        state: data.state || ''
+      }));
+
+      // Redirect user to get-access page before making the API call
+      window.location.href = "/pages/get-access";
+      return;
+
+      // The code below will not run because of the redirect above
+      // If you want to trigger the search after payment, move this logic to the get-access/payment success handler
+      /*
       const response = await fetch(`${baseUrl}/search-property`, {
         method: 'POST',
         body: form,
       });
       if (!response.ok) throw new Error('Search failed');
       const result = await response.json();
-      console.log('SEARCH API RESULT:', result); // DEBUG LINE
-      setShowSearchResultData(result);
-      if (Array.isArray(result.data) && result.data.length > 0) {
-        toast.success("Property found!");
-        localStorage.setItem("searchResultData", JSON.stringify(result));
-        // Map backend data to UI format for sessionStorage
-        const mappedResults = result.data.map((item: PropertyItem) => ({
-          id: item.id,
-          title: item.property_title,
-          owner: item.name_of_owner,
-          summary: item.property_location,
-          details: item,
-        }));
-        sessionStorage.setItem("searchResults", JSON.stringify(mappedResults));
-        window.location.href = "/pages/search-result";
-      } else {
-        toast.info("No properties found matching your search criteria.");
-        setShowNoResults(true);
-      }
+      // Don't toast or store results yet
+      // setShowSearchResultData(result);
+      // if (Array.isArray(result.data) && result.data.length > 0) {
+      //   toast.success("Property found!");
+      //   localStorage.setItem("searchResultData", JSON.stringify(result));
+      //   // ...
+      // } else {
+      //   toast.info("No properties found matching your search criteria.");
+      //   setShowNoResults(true);
+      // }
+      */
     } catch (error) {
       toast.error('Search failed. Please try again.');
     } finally {
@@ -138,22 +116,9 @@ const SearchPage = () => {
     }
   };
 
-  const handleShowPaymentDetails = () => {
-    if (!hasSearchResults) {
-      toast.error('No property found to make payment for. Please try a different search.');
-      return;
-    }
-    setShowPaymentDetails(true);
-  };
+ 
 
-  const handleShowPaymentDetailsTwo = () => {
-    if (!hasSearchResults) {
-      toast.error('No property found to make payment for. Please try a different search.');
-      return;
-    }
-    setShowPaymentDetailsTwo(true);
-  };
-
+  
   const handleShowPaymentDetailsThree = () => {
     if (!hasSearchResults) {
       toast.error('No property found to make payment for. Please try a different search.');
@@ -163,10 +128,7 @@ const SearchPage = () => {
   };
 
   // Handler for payment success to update access state
-  const handlePaymentSuccess = () => {
-    setPaymentCompleted(true);
-    setShowPaymentSuccess(true);
-  };
+  
 
   // Reset search function
   const handleResetSearch = () => {
@@ -259,67 +221,17 @@ const SearchPage = () => {
           {/* Only show detailed search results after payment */}
           
 
-          {/* ===Show case information=== */}
-          
-            <section className="bg-[#ebeef5] pb-6">
-              
-          {/* ===Show Blurred screen=== */}
-         
-
-          {/* ===Payment details screen=== */}
-          <AccessModal
-            show={showPaymentDetailsTwo}
-            onClose={() => setShowPaymentDetailsTwo(false)}
-          >
-            <PaymentDetailsTwo
-              setShowPaymentDetailsTwo={setShowPaymentDetailsTwo}
-              setShowPaymentSuccessTwo={setShowPaymentSuccessTwo}
-              selectedCaseData={selectedCaseData}
-              setPaymentResponseTwo={setPaymentResponseTwo}
-            />
-          </AccessModal>
-          </section>
-
-          {/* ===Success Payment screen=== */}
-          
-
-          {/* ===Download and Send Email modal ==== */}
+       
           
 
           {/* ===Success Search screen=== */}
-          <AccessModal
-            show={showSearchSuccessTwo}
-            onClose={() => setShowSearchSuccessTwo(false)}
-          >
-            <SearchSuccessTwo setShowSearchSuccessTwo={setShowSearchSuccessTwo} />
-          </AccessModal>
+       
 
           {/* SEARCH AND REPORT LOGIC */}
           {/* ===Payment details screen for search and report=== */}
-          <AccessModal
-            show={showPaymentDetailsThree}
-            onClose={() => setShowPaymentDetailsThree(false)}
-          >
-            <PaymentDetailsThree
-              setShowPaymentDetailsThree={setShowPaymentDetailsThree}
-              setShowPaymentSuccessThree={setShowPaymentSuccessThree}
-              caseData={caseData}
-              setPaymentResponse={setPaymentResponse}
-            />
-          </AccessModal>
+        
 
-          {/* ===Success Payment screen for search and report=== */}
-          <AccessModal
-            show={showPaymentSuccessThree}
-            onClose={() => setShowPaymentSuccessThree(false)}
-          >
-            <PaymentSuccessThree
-              showSearchResultData={showSearchResultData}
-              setShowPaymentSuccessThree={setShowPaymentSuccessThree}
-              setShowCaseInformation={setShowCaseInformation}
-              setShowSearchResultThree={setShowSearchResultThree}
-            />
-          </AccessModal>
+        
 
           {/* search and report - only show after payment */}
           
