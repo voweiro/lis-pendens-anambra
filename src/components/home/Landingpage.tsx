@@ -239,7 +239,7 @@ const LandingPage = () => {
 
           </section>
 
-          <div className=" bg-gray-400 flex flex-col sm:flex-row items-center sm:justify-center gap-[0.6rem] sm:gap-[1.8rem] md:gap-[2.625rem] py-[1rem] sm:py-[1.75rem] md:py-[2.75rem]">
+          <div className=" bg-white flex flex-col sm:flex-row items-center sm:justify-center gap-[0.6rem] sm:gap-[1.8rem] md:gap-[2.625rem] py-[1rem] sm:py-[1.75rem] md:py-[2.75rem]">
         <p className="text-center font-medium text-[0.8rem] sm:text-[1.15rem] md:text-[1.625rem]">
           For further enquires and more informations
         </p>

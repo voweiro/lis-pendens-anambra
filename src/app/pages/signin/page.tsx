@@ -13,7 +13,7 @@ import { LoginRequest } from "@/Services/AuthRequest/auth.request";
 import useAuth from "@/hooks/useAuth";
 import BounceLoader from "react-spinners/BounceLoader";
 import logoWhite from "@/asserts/lis-pendens-logo-white.png";
-import authimg from "@/asserts/auth-bg.png"; // ✅ update path if needed
+import authimg from "@/asserts/auth-bg.png"; // update path if needed
 import Image from "next/image";
 
 const schema = yup.object().shape({
@@ -48,26 +48,55 @@ const SignIn = () => {
 
     try {
       const response = await LoginRequest(body);
-      const role = response?.data?.user?.role;
-      const accessToken = response?.data?.token?.access_token;
-      const email = response?.data?.user?.email;
-      const firstName = response?.data?.user?.firstName;
-
-      setAuth({ 
+      console.log('Login response:', response);
+      
+      // Extract data from the new API response structure
+      const role = response?.role;
+      const accessToken = response?.token;
+      const email = response?.data?.email;
+      const firstName = response?.data?.first_name;
+      const lastName = response?.data?.last_name;
+      
+      // Set user data in localStorage
+      const user = response?.data;
+      const userId = response?.user_id?.toString(); // Convert to string to match expected type
+      if (user) {
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+      if (userId) {
+        localStorage.setItem('session_id', userId);
+        sessionStorage.setItem('user_id', userId); // <-- ensure sessionStorage is set for search history auth
+      }
+      
+      // Create auth object with all necessary data
+      const authData = { 
         role: role ?? null, 
         accessToken: accessToken ?? null, 
         email: email ?? undefined, 
-        firstName: firstName ?? undefined 
-      });
+        firstName: firstName ?? undefined, 
+        user_id: userId ?? undefined
+      };
+      
+      // Set auth state
+      setAuth(authData);
+      
+      // Also directly set in sessionStorage as a backup
+      sessionStorage.setItem('auth', JSON.stringify(authData));
 
       toast.success("Login Successful");
-
-      if (role === "superadmin") {
+      console.log('Redirecting with role:', role);
+      
+      // Handle routing based on the role from the API response
+      if (role === "admin") {
         router.push("/admin");
       } else if (role === "registrar") {
         router.push("/court-registrar");
+      } else if (role === "user_company") {
+        // Handle user_company role from the API response
+        router.push("/users");
       } else {
-        router.push("/pages/users");
+        // Default route for other roles
+        router.push("/users");
       }
     } catch (error: any) {
       toast.error(error?.message);
@@ -106,7 +135,7 @@ const SignIn = () => {
             />
           </Link>
 
-          {/* ✅ Back to Home Button */}
+          {/* Back to Home Button */}
           <Link
             href="/"
             className="inline-flex items-center mt-4 text-black bg-white border border-black px-4 py-2 rounded-xl hover:bg-black hover:text-white transition-all duration-300"

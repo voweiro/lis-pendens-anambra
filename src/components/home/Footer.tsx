@@ -12,18 +12,21 @@ export const Footer = () => {
   const currentYear = today.getFullYear();
 
   return (
-    <div className="bg-black text-white">
+    <div className="bg-white text-black">
       <div className="px-6 md:px-2 py-10 lg:px-10 max-w-[1400px] mx-auto">
         {/* Top Section */}
         <section className="mb-2 md:flex justify-between pb-10 md:mb-20">
           <div className="h-[100px] md:mx-10">
             <Link href="/" className="my-auto cursor-pointer text-[20px] font-bold">
-              <Image
+              {/* <Image
                 src={logo}
                 alt="LisPendens brand logo"
                 className="w-[120px] h-[36px] md:w-[150px] md:h-[40px]"
                 priority
-              />
+              /> */}
+
+            <span className="text-black  text-[35px] font-extrabold">Lis Pendens  </span>
+            <span className="text-green-600 font-extrabold text-[35px]"> Enugu</span>
             </Link>
           </div>
 
@@ -45,11 +48,12 @@ export const Footer = () => {
               </ul>
             </div>
             <div>
-              <p className="font-bold mb-4 text-[20px]">Address</p>
+              <p className="font-bold mb-4 text-[18px]">Address</p>
               <ul className="cursor-pointer font-light text-md">
-                <li>Alausa, Ikeja, Lagos state.</li>
-                <li>+234 80 1234 5678</li>
-                <li>info@elispendens.com</li>
+                <li>Aguleri Street, Independence Layout, Enugu </li>
+                <li>08032453748, 08023243984</li>
+                <li>info@judiciary.en.gov.ng</li>
+                
               </ul>
             </div>
           </div>

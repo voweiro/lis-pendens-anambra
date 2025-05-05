@@ -78,13 +78,58 @@ const SearchPage = () => {
       form.append('title_type', data.propertyTitle || '');
       form.append('lga', data.lga || '');
       form.append('state', data.state || '');
-
-      // Store search parameters for later use (after payment)
+      
+      // Get user ID from session storage if available
+      const userId = sessionStorage.getItem('user_id');
+      if (userId) {
+        form.append('user_id', userId);
+      }
+      
+      // Make the search API call immediately
+      const response = await fetch(`${baseUrl}/search-property-user`, {
+        method: 'POST',
+        body: form,
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Search failed with status: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log('Search API response:', result);
+      
+      // Extract the pendens_ids directly from the API response
+      // The API returns them in the format shown in Postman: "pendens_ids": [1, 4, 8, 9]
+      const pendensIdsArray = result.pendens_ids || [];
+      console.log('Raw pendens_ids from API:', pendensIdsArray);
+      
+      // Format as comma-separated string for the backend
+      const pendensIdsString = pendensIdsArray.join(',');
+      console.log('Formatted pendens_ids as string:', pendensIdsString);
+      
+      // Store the search results for later display
+      if (result.data && Array.isArray(result.data) && result.data.length > 0) {
+        const mappedResults = result.data.map((item: any) => ({
+          id: item._id,
+          title: item.property_title || item.title_type,
+          owner: item.name_of_owner,
+          summary: item.property_location,
+          details: item
+        }));
+        sessionStorage.setItem("searchResults", JSON.stringify(mappedResults));
+      }
+      
+      // Store the search parameters and pendens_ids for payment processing
       sessionStorage.setItem("pendingSearchParams", JSON.stringify({
         propertyTitle: data.propertyTitle || '',
         lga: data.lga || '',
-        state: data.state || ''
+        state: data.state || '',
+        pendens_ids: pendensIdsArray, // Store the exact array from the API
+        pendens_id: pendensIdsString, // Store as comma-separated string for the API
+        has_results: result.found > 0 // Use the 'found' property from the API response
       }));
+      
+      console.log('Stored search parameters with pendens_ids:', pendensIdsString);
 
       // Check if the API is reachable before redirecting
       try {

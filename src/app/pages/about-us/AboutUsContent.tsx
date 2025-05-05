@@ -50,21 +50,21 @@ const AboutUsContent = () => {
             {/* ====== Body Content ====== */}
             <section className="w-full text-[0.7rem] sm:text-[0.85rem] md:text-[1.125rem]">
               <p className="font-medium">
-                e-Lis Pendens is a platform that helps you find out if a property you are interested in has any encumbrance or ongoing lawsuit on it...
+                e-Lis Pendens Enugu is a platform that helps you find out if a property you are interested in has any encumbrance or ongoing lawsuit on it...
               </p>
 
               <p className="font-black my-3 sm:my-4 md:my-6">
-                Why do you need e-Lis Pendens?
+                Why do you need e-Lis Pendens Enugu?
               </p>
               <p className="font-medium">
                 Buying or selling a property is a major decision that involves a lot of money and risk...
               </p>
 
               <p className="font-black my-3 sm:my-4 md:my-6">
-                How does e-Lis Pendens work?
+                How does e-Lis Pendens Enugu work?
               </p>
               <p className="font-medium">
-                e-Lis Pendens is a simple and convenient way to access the information of any lawsuit-encumbered property...
+                e-Lis Pendens Enugu is a simple and convenient way to access the information of any lawsuit-encumbered property...
               </p>
               <ul className="font-black my-3 sm:my-4 md:my-6 list-disc pl-4">
                 <li>
@@ -72,14 +72,14 @@ const AboutUsContent = () => {
                 </li>
               </ul>
               <p className="font-medium">
-                e-Lis Pendens is powered by a reliable and updated database...
+                e-Lis Pendens  Enugu is powered by a reliable and updated database...
               </p>
 
               <p className="font-black my-3 sm:my-4 md:my-6">
                 Who are we?
               </p>
               <p className="font-medium mb-2">
-                e-Lis Pendens is supported by a team of professionals passionate about real estate and technology...
+                e-Lis Pendens Enugu is supported by a team of professionals passionate about real estate and technology...
               </p>
             </section>
 

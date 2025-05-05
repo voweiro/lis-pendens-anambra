@@ -7,6 +7,7 @@ export interface AuthType {
   accessToken: string | null;
   email?: string;
   firstName?: string;
+  user_id?: string;
 }
 
 interface AuthContextType {
@@ -25,13 +26,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [auth, setAuth] = useState<AuthType>(() => {
     if (typeof window !== 'undefined') {
       const storedAuth = sessionStorage.getItem("auth");
-      return storedAuth ? JSON.parse(storedAuth) : { role: null, accessToken: null };
+      if (storedAuth) {
+        try {
+          const parsedAuth = JSON.parse(storedAuth);
+          console.log('Retrieved auth from session:', parsedAuth);
+          return parsedAuth;
+        } catch (e) {
+          console.error('Error parsing auth from sessionStorage:', e);
+          return { role: null, accessToken: null };
+        }
+      }
     }
     return { role: null, accessToken: null };
   });
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      console.log('Saving auth to session:', auth);
       sessionStorage.setItem("auth", JSON.stringify(auth));
     }
   }, [auth]);

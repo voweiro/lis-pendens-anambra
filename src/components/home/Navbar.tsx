@@ -41,7 +41,7 @@ const mobileRoutes = [
   },
   {
     name: "Log in",
-    href: "/login",
+    href: "/pages/login",
   },
   {
     name: "Sign Up",
@@ -87,8 +87,10 @@ const NavBar = ({ bgColor, backdropBlur }: NavBarProps) => {
       <div className="max-w-[1100px] xl:max-w-[1300px] mx-auto p-2 flex justify-between px-6">
         {/* LOGO */}
         <Link href="/" className="flex items-center space-x-4">
-  <Image src={logo} alt="LisPendens brand logo" priority />
-  <span className="text-green-600 font-semibold text-[30px]">Enugu</span>
+  {/* <Image src={logo} alt="LisPendens brand logo" priority /> */}
+  <span className="text-black  text-[35px] font-extrabold">Lis Pendens  </span>
+  <span className="text-green-600 font-extrabold text-[35px]"> Enugu</span>
+
 </Link>
         
 

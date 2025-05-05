@@ -4,7 +4,7 @@ import LandingpageClientWrapper from '@/components/home/LandingpageClientWrapper
 
 export default function Home() {
   return (
-    <div className=" " >
+    <div  className="" >
      <MyContextProvider>
       <LandingpageClientWrapper />
     </MyContextProvider>

@@ -1,7 +1,7 @@
 "use client"
 import Image from "next/image"
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation"; 
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 import { useForm } from "react-hook-form";
@@ -60,7 +60,12 @@ const SignUpIndividual = () => {
     register,
     handleSubmit,
     formState: { errors },
+    setValue
   } = useForm({ resolver: yupResolver(schema) });
+
+  useEffect(() => {
+    setValue('user_type', 'user');
+  }, [setValue]);
 
   const onSubmitHandler = async (data: { 
     first_name: string; 
@@ -126,22 +131,10 @@ const SignUpIndividual = () => {
         >
           ← Back to Home
         </Link>
-        <div className="max-w-[540px] w-full mx-auto mt-10 lg:mt-24">
-          <section className="py-4 m-2 px-4 md:m-6 md:px-12 bg-white rounded-[30px]">
+        <div className=" backdrop-blur-md p-6 rounded-lg shadow-xl mx-auto w-full max-w-md h-[80vh] overflow-y-auto">
+          <section className=" py-4 m-2 px-4 md:m-6 md:px-12 bg-white rounded-[30px]">
             <form onSubmit={handleSubmit(onSubmitHandler)} className="w-full">
               <h3 className="mb-2 text-[24px] font-bold text-black">Sign up</h3>
-
-              <div className="max-w-[400px] mb-2">
-                <input
-                  type="text"
-                  placeholder="user_type"
-                  className="w-full mt-2 outline-none focus:out-none border-[1.2px] border-slate-300 rounded-lg p-2"
-                  {...register("user_type")}
-                />
-                <p className="text-red-500 text-[0.75rem] text-right">
-                  {errors.user_type?.message}
-                </p>
-              </div>
 
               {/* FIRST NAME */}
               <div className="max-w-[400px] mb-2">

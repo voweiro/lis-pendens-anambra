@@ -55,21 +55,21 @@ const ContactUs = () => {
                   <div className="w-[1.7rem] h-[1.7rem] sm:w-[3rem] sm:h-[3rem] rounded-full bg-white flex items-center justify-center">
                     <MdLocationOn size={22} />
                   </div>
-                  <p className="max-w-[90%] sm:max-w-[65%]">Alausa, Ikeja, Lagos state.</p>
-                </div>
+                  <p className="max-w-[90%] sm:max-w-[65%]"> Aguleri Street, Independence Layout, Enugu                  </p>
+</div>
 
                 <div className="flex items-center bg-[#ebeef5] gap-2 sm:gap-6 sm:p-2 sm:rounded-md my-2 sm:my-14 max-w-[90%]">
                   <div className="w-[1.7rem] h-[1.7rem] sm:w-[3rem] sm:h-[3rem] rounded-full bg-white flex items-center justify-center">
                     <FaPhone />
                   </div>
-                  <p>+234 80 1234 5678</p>
+                  <p>08032453748, 08023243984</p>
                 </div>
 
                 <div className="flex items-center bg-[#ebeef5] gap-2 sm:gap-6 sm:p-2 sm:rounded-md max-w-[90%]">
                   <div className="w-[1.7rem] h-[1.7rem] sm:w-[3rem] sm:h-[3rem] rounded-full bg-white flex items-center justify-center">
                     <MdOutlineMailOutline size={22} />
                   </div>
-                  <p>info@elispendens.com</p>
+                  <p>info@judiciary.en.gov.ng</p>
                 </div>
               </div>
 

@@ -36,18 +36,26 @@ interface SignUpResponse {
 }
 
 interface LoginResponse {
-  accessToken: string;
-  refreshToken: string;
+  status: boolean;
+  message: string;
+  role: string;
   data: {
-    user: {
-      role: string;
-      email: string;
-      firstName: string;
-    };
-    token: {
-      access_token: string;
-    };
+    id: number;
+    user_type: string;
+    first_name: string;
+    last_name: string;
+    company_name: string | null;
+    email: string;
+    phone: string;
+    date_of_birth: string;
+    email_verified_at: string;
+    verification_code: string | null;
+    status: string;
+    created_at: string;
+    updated_at: string;
   };
+  user_id: number;
+  token: string;
 }
 
 interface LogoutResponse {

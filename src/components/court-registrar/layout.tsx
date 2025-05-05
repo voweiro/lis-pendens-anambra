@@ -1,8 +1,8 @@
 // components/layout/NormalUserLayout.tsx
 
 import React, { ReactNode } from 'react';
-import UserSidebar from '@/components/users/User-Sidebar';
-import Topbar from '@/components/users/dashboard/UserTopbar';
+import UserSidebar from '@/components/court-registrar/dashboard/Sidebar';
+import Topbar from '@/components/court-registrar/dashboard/Header';
 
 type NormalUserLayoutProps = {
   title: string; // Page title to pass to the topbar
@@ -10,7 +10,7 @@ type NormalUserLayoutProps = {
   className?: string; // Allow className prop
 };
 
-const NormalUserLayout = ({ title, children, className }: NormalUserLayoutProps) => {
+const CourtRegistrarLayout = ({ title, children, className }: NormalUserLayoutProps) => {
   return (
     <div className={`flex h-screen bg-[#F6F6F6] ${className || ''}`}>
       {/* Sidebar */}
@@ -34,4 +34,4 @@ const NormalUserLayout = ({ title, children, className }: NormalUserLayoutProps)
   );
 };
 
-export default NormalUserLayout;
+export default CourtRegistrarLayout;

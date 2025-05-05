@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 #root {
-  background: #ebeef5;
+  background: linear-gradient(to left top, #23A863, #eef2ff);
 }
 
 body {
-  background: #ebeef5;
+  /* background: linear-gradient(to left top, #23A863, #eef2ff); */
 }
 
 /* SUCCESS MESSAGE MARK ANIMATION */
@@ -130,21 +130,21 @@ body {
 }
 
 #about-us-page {
-  background: linear-gradient(to left top, #feebc1, #91b9fe);
+  background: linear-gradient(to left top, #23A863, #eef2ff);
 }
 
 /* FAQ page */
 #faq-page {
-  background: linear-gradient(to left top, #feebc1, #91b9fe);
+  background: linear-gradient(to left top, #23A863, #eef2ff);
 }
 
 #faq-item {
-  background: rgb(145, 185, 254, 0.6);
+  background: rgba(145, 254, 183, 0.575);
 }
 
 /* Contact page */
 #contact-page {
-  background: linear-gradient(to left top, #feebc1, #91b9fe);
+  background: linear-gradient(to left top, #23A863, #eef2ff);
 }
 
 
@@ -181,7 +181,7 @@ to {
 
 /* For Home page */
 #home-page-container {
-  background: linear-gradient(to top, #D3D8DD, #BCC9DD);
+  background: linear-gradient(to top, #23A863, #eef2ff)
 }
 
 
