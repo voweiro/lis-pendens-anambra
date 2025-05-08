@@ -78,7 +78,7 @@ const MakeSearchPage = () => {
     <div className="flex h-screen">
       <UserSidebar />
       <div className="flex-1 flex flex-col">
-        <UserTopbar title="Payment Successful" />
+        <UserTopbar title="Access Your Search Results" />
         <div className="min-h-screen bg-[#f5f6fa] flex flex-col items-center justify-center relative">
           {isLoading && <PageLoadingAnimation />}
           <ToastContainer />

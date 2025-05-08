@@ -88,7 +88,7 @@ const SignIn = () => {
       
       // Handle routing based on the role from the API response
       if (role === "admin") {
-        router.push("/admin");
+        router.push("/Super-admin");
       } else if (role === "registrar") {
         router.push("/court-registrar");
       } else if (role === "user_company") {
@@ -127,13 +127,16 @@ const SignIn = () => {
       >
         <div className="pt-6 pl-4">
           <Link href="/">
-            <Image
+            {/* <Image
               src={logoWhite}
               alt="LisPendens brand logo"
               className="object-cover"
               priority
-            />
+            /> */} 
+            <span className="text-white  text-[35px] font-extrabold">Lis Pendens  </span>
+            <span className="text-green-600 font-extrabold text-[35px]"> Enugu</span>
           </Link>
+          <br />
 
           {/* Back to Home Button */}
           <Link

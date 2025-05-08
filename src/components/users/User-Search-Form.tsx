@@ -177,15 +177,22 @@ const UsersSearchForm: React.FC<SearchFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="bg-white rounded-2xl shadow-2xl max-w-5xl w-full mx-auto">
-        {/* Header */}
-        <div className="bg-[#4E4448] rounded-t-2xl px-6 py-4 flex items-center justify-between">
-          <span className="text-white text-lg font-semibold">Property Information</span>
-          <button type="button" className="text-white text-2xl font-bold focus:outline-none" onClick={onClose}>&times;</button>
-        </div>
+     <div className="bg-white rounded-none sm:rounded-2xl shadow-none sm:shadow-2xl w-full max-w-full sm:max-w-5xl mx-auto sm:my-8 px-4 sm:px-8 py-6">
 
+        {/* Header */}
+        <div className="bg-[#4E4448] rounded-t-2xl px-4 sm:px-6 py-4 flex items-center justify-between">
+          <span className="text-white text-lg font-semibold">Property Information</span>
+          <button
+            type="button"
+            className="text-white text-2xl font-bold focus:outline-none"
+            onClick={onClose}
+          >
+            &times;
+          </button>
+        </div>
+  
         {/* Form Fields */}
-        <div className="px-8 py-8 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+        <div className="px-4 sm:px-8 py-8 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6">
           {/* Row 1 */}
           <div>
             <label className="block text-sm font-medium mb-1">Property Title (certificate of occupancy):</label>
@@ -205,6 +212,7 @@ const UsersSearchForm: React.FC<SearchFormProps> = ({
               {...register("registerTitle")}
             />
           </div>
+  
           {/* Row 2 */}
           <div>
             <label className="block text-sm font-medium mb-1">Plot Number:</label>
@@ -224,6 +232,7 @@ const UsersSearchForm: React.FC<SearchFormProps> = ({
               {...register("plotStreetName")}
             />
           </div>
+  
           {/* Row 3 */}
           <div>
             <label className="block text-sm font-medium mb-1">City/Town:</label>
@@ -248,6 +257,7 @@ const UsersSearchForm: React.FC<SearchFormProps> = ({
               ))}
             </select>
           </div>
+  
           {/* Row 4 */}
           <div>
             <label className="block text-sm font-medium mb-1">LGA:</label>
@@ -272,8 +282,9 @@ const UsersSearchForm: React.FC<SearchFormProps> = ({
               {...register("surveyPlanNumber")}
             />
           </div>
-          {/* Row 5: Owner (optional) spans both columns */}
-          <div className="md:col-span-2">
+  
+          {/* Row 5 */}
+          <div className="sm:col-span-2">
             <label className="block text-sm font-medium mb-1">Name of Owner of property (optional):</label>
             <input
               type="text"
@@ -283,13 +294,13 @@ const UsersSearchForm: React.FC<SearchFormProps> = ({
             />
           </div>
         </div>
-
+  
         {/* Submit Button */}
-        <div className="flex justify-end mt-4">
+        <div className="flex flex-col sm:flex-row sm:justify-end items-center gap-4 px-4 sm:px-8 pb-6">
           <button
             type="submit"
             disabled={isSearching}
-            className="bg-black text-white shadow-xl font-semibold text-sm px-4 py-2 rounded transition duration-700 hover:bg-white hover:text-black hover:border border-black"
+            className="w-full sm:w-auto bg-black text-white shadow-xl font-semibold text-sm px-6 py-2 rounded transition duration-700 hover:bg-white hover:text-black hover:border border-black"
           >
             {isSearching ? "Searching..." : "Search"}
           </button>
@@ -297,6 +308,8 @@ const UsersSearchForm: React.FC<SearchFormProps> = ({
       </div>
     </form>
   );
+  
+    
 };
 
 export default UsersSearchForm;

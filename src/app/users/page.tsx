@@ -12,9 +12,8 @@ const UserDashboard = () => {
         <DashboardSummary
           userName="Victor"
           totalProperties="40000"
-          totalLispendees="18000"
           totalSearches="50"
-          profileCompletion={80}
+          profileCompletion={8000}
         />
       </div>
       {/* Searched History Table Section */}

@@ -1,20 +1,22 @@
 import React from 'react';
 import CourtRegistrarLayout from '@/components/court-registrar/layout';
 
-import TopActions from '@/components/court-registrar/dashboard/TopActions';
 import StatsBar from '@/components/court-registrar/dashboard/StatsBar';
+import UsersAndReports from '@/components/super-admin/dashboard/UsersAndReports';
 import UploadedCasesTable from '@/components/court-registrar/dashboard/UploadedCasesTable';
 
 const CourtRegistrarDashboardPage = () => {
   return (
  
-      <CourtRegistrarLayout className="mb-8" title="Court Registrar"  description="Court 3 of the Awka Judicial Division">
+      <CourtRegistrarLayout className="mb-8" prop title="Dashboard">
      
       <StatsBar />
-      <TopActions />
+      
       <div className="mt-8 px-8">
         <UploadedCasesTable />
       </div>
+      <UsersAndReports />
+
       </CourtRegistrarLayout>
     
   );

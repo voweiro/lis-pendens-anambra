@@ -1,28 +1,28 @@
-import React from 'react'
-import { BiAlarm, BiBell, BiSearch, BiUser } from 'react-icons/bi'
-
-
-
+import { Bell, Search } from "lucide-react"
+import Image from "next/image"
+import usericon from "@/asserts/user-avatar.png"
 type HeaderProps = {
-  title: string
+  title: string,
+  description: string
 }
 
-const Header = ({ title }: HeaderProps) => {
+const Header = ({ title, description }: HeaderProps) => {
   return (
-    <div className="flex justify-between items-center max-w-[95%] mx-auto ">
-      <h1 className="text-[28px] font-[800] ">{title}</h1>
-      <div className="flex items-center gap-4 ">
-        <div className='w-[42px] h-[42px] border border-gray-300 rounded-full flex items-center justify-center'>
-          <BiSearch className="w-8 h-8" />
-        </div>
-        <div className='w-[42px] h-[42px] border border-gray-300 rounded-full flex items-center justify-center'>
-          <BiBell className="w-8 h-8" />
-        </div>
-        <div className='w-10 h-10 border border-gray-300 rounded-full flex items-center justify-center'>
-          <BiUser className="w-6 h-6" />
-        </div>
-
+    <div className="  pt-7">
+    <div className=" lg:w-[98%]  w-full  rounded-2xl  border-[#23A863] shadow-sm flex justify-between items-center  h-full  lg:h-[100px]">
+      <div className="pl-5">
+      <h1 className="   lg:text-[38px]  text-[28px] sm:text-[10px]   font-semibold">{title}  </h1>
+      <p  className="text-[#4D4D4D] text-[14px] font-medium">{description}</p>
       </div>
+      
+      
+      <div className="flex items-center gap-10">
+        <Search className="text-gray-500 cursor-pointer" />
+        <Bell className="text-gray-500 cursor-pointer" />
+        <Image src={usericon} alt="User" className="w-15 h-15 cursor-pointer rounded-full" />
+      </div>
+    </div>
+    <hr  className="w-full lg:w-[98%]  border-[#23A863]  border-b-[1px]"/>
     </div>
   )
 }

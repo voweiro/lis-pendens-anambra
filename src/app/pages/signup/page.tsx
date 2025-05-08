@@ -7,7 +7,7 @@ import authimg from "@/asserts/auth-bg.png";
 const SignUp = () => {
   return (
     <div
-      className="h-screen bg-no-repeat bg-cover"
+      className="h-screen bg-no-repeat bg-cover "
       style={{ backgroundImage: `url(${authimg.src})` }}
     >
       <div className="pt-6 pl-4">
@@ -21,7 +21,7 @@ const SignUp = () => {
           />
         </Link>
 
-        {/* ✅ Back to Home Button */}
+        
         <Link
           href="/"
           className="inline-flex items-center mt-4 text-black bg-white border border-black px-4 py-2 rounded-xl hover:bg-black hover:text-white transition-all duration-300"

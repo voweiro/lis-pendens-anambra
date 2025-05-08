@@ -14,9 +14,9 @@ const NormalUserLayout = ({ title, children, className }: NormalUserLayoutProps)
   return (
     <div className={`flex h-screen bg-[#F6F6F6] ${className || ''}`}>
       {/* Sidebar */}
-      <aside className="w-[240px] bg-white border-r border-gray-200">
+      
         <UserSidebar />
-      </aside>
+      
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col overflow-hidden">
