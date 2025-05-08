@@ -8,7 +8,7 @@ import UploadedCasesTable from '@/components/court-registrar/dashboard/UploadedC
 const CourtRegistrarDashboardPage = () => {
   return (
  
-      <CourtRegistrarLayout className="mb-8" title="Court Registrar"  description="Court 3 of the Awka Judicial Division">
+      <CourtRegistrarLayout className="mb-8 " title="Court Registrar"  description="Court 3 of the Awka Judicial Division">
      
       <StatsBar />
       <TopActions />
