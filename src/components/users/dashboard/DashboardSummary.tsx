@@ -42,6 +42,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
               errors={errors}
               watch={watch}
               isSearching={isSearching}
+              onClose={() => setShowSearchForm(false)}
             />
           </div>
         </div>
