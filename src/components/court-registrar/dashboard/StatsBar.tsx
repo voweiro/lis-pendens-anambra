@@ -8,7 +8,7 @@ const stats = [
 ];
 
 const StatsBar: React.FC = () => (
-  <div className="bg-[#4E4448] rounded-2xl flex flex-col sm:flex-row items-center justify-between w-full px-2 sm:px-8 md:px-12 py-3 sm:py-6 mt-4 text-white text-center gap-4 sm:gap-0">
+  <div className="bg-[#524A4C] rounded-[29px] flex flex-col sm:flex-row items-center justify-between  px-2 sm:px-8 md:px-12 py-3 sm:py-6 mt-4 text-white text-center gap-4 sm:gap-0">
 
     {stats.map((stat, idx) => (
       <div key={idx} className="flex flex-col items-center flex-1">
