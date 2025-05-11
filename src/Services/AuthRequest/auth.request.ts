@@ -92,6 +92,14 @@ interface ResendVerificationCodeParams {
   type: "REGISTER" | "PASSWORD_RESET"
 }
 
+// Interface for reset password request
+interface ResetPasswordParams {
+  email: string
+  token: string
+  password: string
+  password_confirmation: string
+}
+
 // Base URL for API
 const baseURL = process.env.NEXT_PUBLIC_URL;
 console.log(baseURL, "Base URL is here");
@@ -319,6 +327,29 @@ export const ResendVerificationCodeRequest = async (params: ResendVerificationCo
 
     return await response.json()
   } catch (error) {
+    throw error
+  }
+}
+
+// Reset Password Request
+export const ResetPasswordRequest = async (params: ResetPasswordParams) => {
+  try {
+    const response = await fetch(`${baseURL}/auth/reset-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(params),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw { response: { data: errorData } }
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error('Error resetting password:', error)
     throw error
   }
 }
