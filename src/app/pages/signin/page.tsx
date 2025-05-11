@@ -229,7 +229,7 @@ const SignIn = () => {
 
               {/* Forgot Password */}
               <div className="text-right mt-2 text-[14px] text-[#818181]">
-                <Link href="/forgot-password">Forgot password?</Link>
+                <Link href="/pages/resend-token">Forgot password?</Link>
               </div>
 
               {/* Login Button */}
