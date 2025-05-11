@@ -1,4 +1,5 @@
 import axios from "axios";
+import api from "../api";
 
 // Define types for the body of the requests
 interface SignUpIndividualBody {
@@ -101,8 +102,17 @@ interface ResetPasswordParams {
 }
 
 // Base URL for API
-const baseURL = process.env.NEXT_PUBLIC_URL;
+const baseURL = process.env.NEXT_PUBLIC_URL || 'https://api.lispendens.com';
 console.log(baseURL, "Base URL is here");
+
+// Helper function to handle API URLs
+const getApiUrl = (endpoint: string) => {
+  // Remove any trailing slashes from the base URL
+  const cleanBaseUrl = baseURL?.replace(/\/$/, '');
+  // Add a leading slash to the endpoint if it doesn't have one
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  return `${cleanBaseUrl}${cleanEndpoint}`;
+};
 
 // SIGNUP REQUEST FOR INDIVIDUAL
 export const SignUpRequestForIndividual = async (body: SignUpIndividualBody): Promise<SignUpResponse | undefined> => {
@@ -171,12 +181,8 @@ export const getUserRedirectPath = (userType: string): string => {
 // LOGIN REQUEST
 export const LoginRequest = async (body: LoginBody): Promise<LoginResponse | undefined> => {
   try {
-    const response = await axios.post(`${baseURL}/auth/login`, body, {
-      headers: {
-        Accept: "application/vnd.connect.v1+json",
-        "Content-Type": "application/json",
-      },
-    });
+    // Use the api instance with better error handling for network issues
+    const response = await api.post('/auth/login', body);
     const responseData = response.data;
     console.log(responseData, "====== Login response data ======");
     
