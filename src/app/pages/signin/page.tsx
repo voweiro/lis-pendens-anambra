@@ -114,12 +114,14 @@ const SignIn = () => {
 
       toast.success("Login Successful");
       
+
       // Get the appropriate redirect path based on user type
       const redirectPath = getUserRedirectPath(userType);
       console.log('Redirecting to:', redirectPath);
       
       // Navigate to the appropriate page
       router.push(redirectPath);
+
     } catch (error: any) {
       toast.error(error?.message);
       toast.error(error?.response?.data?.message);
