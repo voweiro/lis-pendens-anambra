@@ -127,23 +127,8 @@ const SignIn = () => {
       router.push(redirectPath);
 
     } catch (error: any) {
-      // Enhanced error handling for better debugging
-      console.error('Login error details:', error);
-      
-      if (error.message === 'Network Error') {
-        toast.error('Network Error: Unable to connect to the server. Please check your internet connection or try again later.');
-        console.error('Network Error - This could be a CORS issue or API availability problem');
-      } else if (error.response) {
-        // The server responded with an error status
-        toast.error(`Server Error (${error.response.status}): ${error.response.data?.message || 'Unknown error'}`);
-      } else if (error.request) {
-        // The request was made but no response received
-        toast.error('No response from server. Please try again later.');
-      } else {
-        // Something else went wrong
-        toast.error(error?.message || 'Login failed');
-      }
-      
+      toast.error(error?.message || 'Login failed');
+      toast.error(error?.response?.data?.message);
       // Set login loading state to false when there's an error
       setLoginLoading(false);
     }
