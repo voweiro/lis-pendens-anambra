@@ -88,8 +88,8 @@ const NavBar = ({ bgColor, backdropBlur }: NavBarProps) => {
         {/* LOGO */}
         <Link href="/" className="flex items-center space-x-4">
   {/* <Image src={logo} alt="LisPendens brand logo" priority /> */}
-  <span className="text-black  text-[35px] font-extrabold">Lis Pendens  </span>
-  <span className="text-green-600 font-extrabold text-[35px]"> Enugu</span>
+  <span className="text-[#00AD20]  lg:text-[35px]  text-[15px] font-extrabold">Lis Pendens  Enugu </span>
+  {/* <span className="text-[#00AD20] font-extrabold text-[35px]"> Enugu</span> */}
 
 </Link>
         

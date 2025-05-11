@@ -12,8 +12,8 @@ export const Footer = () => {
   const currentYear = today.getFullYear();
 
   return (
-    <div className="bg-white text-black">
-      <div className="px-6 md:px-2 py-10 lg:px-10 max-w-[1400px] mx-auto">
+    <div className="bg-[#00AD20] text-black w-full">
+      <div className="px-6 md:px-2 py-10 lg:px-10 w-full ">
         {/* Top Section */}
         <section className="mb-2 md:flex justify-between pb-10 md:mb-20">
           <div className="h-[100px] md:mx-10">
@@ -25,8 +25,8 @@ export const Footer = () => {
                 priority
               /> */}
 
-            <span className="text-black  text-[35px] font-extrabold">Lis Pendens  </span>
-            <span className="text-green-600 font-extrabold text-[35px]"> Enugu</span>
+            <span className="text-white  text-[35px] font-extrabold">Lis Pendens  </span>
+            <span className="text-white font-extrabold text-[35px]"> Enugu</span>
             </Link>
           </div>
 
@@ -39,14 +39,7 @@ export const Footer = () => {
                 <li>FAQs</li>
               </ul>
             </div>
-            <div className="my-10 md:my-0">
-              <p className="font-bold mb-4">Customer Care</p>
-              <ul className="cursor-pointer font-light text-md">
-                <li>Newsletter</li>
-                <li>Support</li>
-                <li>Resources</li>
-              </ul>
-            </div>
+            
             <div>
               <p className="font-bold mb-4 text-[18px]">Address</p>
               <ul className="cursor-pointer font-light text-md">

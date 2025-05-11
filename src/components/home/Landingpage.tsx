@@ -62,8 +62,8 @@ const LandingPage = () => {
         onRequestClose={() => setIsTourOpen(false)}
       />
 
-      <div id="home-page-container">
-        <div className="max-w-[1100px] mx-auto h-full flex flex-col ">
+      <div className="" id="home-page-container">
+        <div className=" w-full h-full flex flex-col  mx-auto">
           {/* ====== Navbar Section ====== */}
           <section>
             <NavBar bgColor="none" backdropBlur="blur(10px)" />
@@ -80,7 +80,7 @@ const LandingPage = () => {
                 className=" tour-0 bg-white/[0.6] w-[100%] sm:w-[75%] max-w-[45.375rem] mx-auto sm:mx-0 p-[1rem] rounded-lg sm:rounded-[1.125rem] sm:absolute z-10 sm:top-[1.938rem]"
               >
                 <h1 className="font-extrabold text-[1rem] sm:text-[1.75rem] md:text-[2.375rem] whitespace-pre-line">
-                  Ensure your property{"\n"}is litigation-free.
+                  Ensure your <span className="text-[#00AD20]">property</span> {"\n"}is <span className="text-[#00AD20]">litigation-free.</span> 
                 </h1>
                 <p className="border-l-2 border-[#000] pl-[0.4rem] sm:pl-[0.625rem] py-[0.4rem] sm:py-[0.625rem] font-normal text-[0.65rem] sm:text-[1.25rem] mt-[0.75rem] sm:mt-[1.125rem] mb-[2rem] sm:mb-[3.9rem]">
                   Get an official Search Report.
@@ -159,7 +159,7 @@ const LandingPage = () => {
               </motion.p>
 
               <Link href="/pages/about-us">
-                <button className="tour-3 mt-4 bg-black text-white py-2 px-6 rounded-md hover:bg-gray-800 transition-all flex items-center gap-2">
+                <button className="tour-3  mx-auto mt-4 bg-[#00AD20] text-white py-2 px-6 rounded-md hover:bg-gray-800 transition-all flex items-center gap-2">
                   <FiInfo className="text-lg" />
                   Learn More
                 </button>
@@ -176,32 +176,32 @@ const LandingPage = () => {
 
               <div className="flex w-full justify-around mt-[1.7rem] sm:mt-[2.3rem] md:mt-[3.125rem]">
                 <div className="flex items-center">
-                  <BsCheckCircle size={8} />
+                  <BsCheckCircle size={35} />
                   <p className="tour-4 font-medium text-[0.75rem] sm:text-[1rem] md:text-[1.25rem] ml-1 sm:ml-[0.938rem]">
                     Safe & Secured
                   </p>
                 </div>
 
                 <div className="tour-5 flex items-center">
-                  <BsCheckCircle  size={8} />
+                  <BsCheckCircle  size={35} />
                   <p className="tour-5 font-medium text-[0.75rem] sm:text-[1rem] md:text-[1.25rem] ml-1 sm:ml-[0.938rem]">
                     Timely & Efficient
                   </p>
                 </div>
 
                 <div className="flex items-center">
-                  <BsCheckCircle size={8} />
+                  <BsCheckCircle size={35} />
                   <p className="tour-6 font-medium text-[0.75rem] sm:text-[1rem] md:text-[1.25rem] ml-1 sm:ml-[0.938rem]">
                     Accurate & Reliable
                   </p>
                 </div>
               </div>
 
-              {/* Example usage of BsCheckCircle */}
+              {/* Example usage of BsCheckCircle
               <div className="tour-4 mt-6 flex items-center justify-center gap-2 text-green-600">
-                <BsCheckCircle className="text-2xl" />
+                <BsCheckCircle size={35} className="text-2xl" />
                 <span className="text-sm sm:text-base font-medium">Verified legal status</span>
-              </div>
+              </div> */}
             </div>
 
             <div className="relative w-full mb-[4rem] sm:mb-[6rem] md:mb-[10.313rem]">
@@ -217,7 +217,7 @@ const LandingPage = () => {
                     e-Lis Pendens is powered by a reliable and updated database
                     that collects and verifies information from various sources.
                   </p>
-                  <Link href="/contact-us">
+                  <Link className="bg-[#00AD20]" href="/contact-us">
                     <Button>Contact us</Button>
                   </Link>
                 </motion.div>

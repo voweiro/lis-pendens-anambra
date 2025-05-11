@@ -20,7 +20,9 @@ const Sidebar = () => {
     <>
       {/* Mobile Toggle Button */}
       <button
-        className="md:hidden fixed top-4 left-4 z-50 bg-white border border-gray-300 rounded p-2 shadow"
+
+        className="md:hidden fixed top-2 left-2  z-70 bg-white border border-gray-300 rounded p-2 shadow"
+
         onClick={() => setIsOpen(true)}
       >
         <Bars3Icon className="w-6 h-6 text-black" />
@@ -28,7 +30,9 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed md:static top-0 left-0 h-full w-[250px] z-40 transform bg-[#98d8b7] p-6 transition-transform duration-300 ease-in-out 
+
+        className={`fixed md:static top-0 left-0 h-full w-[250px] z-40 transform bg-white p-6 transition-transform duration-300 ease-in-out 
+
         ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
       >
         {/* Close button on mobile */}
@@ -44,7 +48,9 @@ const Sidebar = () => {
             href="/users"
             className="flex items-center gap-3 px-4 py-2 rounded-full border border-black font-medium text-black"
           >
-            <HomeIcon className="w-5 h-5" />
+
+            <HomeIcon className="w-5 h-5 hover:bg-[#23A863] hover:text-white" />
+
             <span>Dashboard</span>
           </Link>
 
@@ -52,15 +58,19 @@ const Sidebar = () => {
             href="/users/user-search-history"
             className="flex items-center gap-3 px-4 py-2 text-gray-600 hover:text-black"
           >
-            <ClockIcon className="w-5 h-5" />
+
+            <ClockIcon className="w-5 h-5   hover:bg-[#23A863] hover:text-white" />
+
             <span>Search History</span>
           </Link>
 
           <Link
             href="/users/user-setting"
-            className="flex items-center gap-3 px-4 py-2 text-gray-600 hover:text-black"
+
+            className="flex items-center gap-3 px-4 py-2 text-gray-600   hover:bg-[#23A863] hover:text-white"
           >
-            <Cog6ToothIcon className="w-5 h-5" />
+            <Cog6ToothIcon className="w-5 h-5   hover:bg-[#23A863] hover:text-white" />
+
             <span>Settings</span>
           </Link>
         </nav>

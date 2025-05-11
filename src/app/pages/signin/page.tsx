@@ -9,7 +9,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { LoginRequest } from "@/Services/AuthRequest/auth.request";
+import { LoginRequest, getUserRedirectPath } from "@/Services/AuthRequest/auth.request";
 import useAuth from "@/hooks/useAuth";
 import BounceLoader from "react-spinners/BounceLoader";
 import logoWhite from "@/asserts/lis-pendens-logo-white.png";
@@ -41,63 +41,87 @@ const SignIn = () => {
   } = useForm({ resolver: yupResolver(schema) });
 
   const onSubmitHandler = async (data: any) => {
-    const body = {
-      email: data.email,
-      password: data.password,
-    };
-
     try {
-      const response = await LoginRequest(body);
+      // Only pass email and password to match LoginBody type
+      const response = await LoginRequest({
+        email: data.email,
+        password: data.password
+      });
       console.log('Login response:', response);
       
-      // Extract data from the new API response structure
-      const role = response?.role;
-      const accessToken = response?.token;
-      const email = response?.data?.email;
-      const firstName = response?.data?.first_name;
-      const lastName = response?.data?.last_name;
+      if (!response) {
+        toast.error("Login failed: No response from server");
+        return;
+      }
       
-      // Set user data in localStorage
-      const user = response?.data;
-      const userId = response?.user_id?.toString(); // Convert to string to match expected type
+      // Extract data from the API response structure
+      let userType = '';
+      let token = null;
+      
+      // Use type assertion to handle the response type
+      const typedResponse = response as any;
+      
+      // Try to get user type from different possible locations in the response
+      if (typedResponse.data && typedResponse.data.type) {
+        // Based on the Postman example, the type is in data.type
+        userType = typedResponse.data.type;
+        console.log('Found user type in data.type:', userType);
+      } else if (typedResponse.data && typedResponse.data.user_type) {
+        userType = typedResponse.data.user_type;
+        console.log('Found user type in data.user_type:', userType);
+      } else if (typedResponse.role) {
+        userType = typedResponse.role;
+        console.log('Found user type in role:', userType);
+      } else if (typedResponse.type) {
+        userType = typedResponse.type;
+        console.log('Found user type in type:', userType);
+      }
+      
+      // Try to get token from different possible locations in the response
+      if (typedResponse.token) {
+        token = typedResponse.token;
+      } else if (typedResponse.data && typedResponse.data.token) {
+        token = typedResponse.data.token;
+      }
+      
+      console.log('Extracted user type:', userType);
+      console.log('Extracted token:', token);
+      
+      // Set user data in localStorage for backward compatibility
+      const user = typedResponse.data;
+      const userId = (typedResponse.user_id || (typedResponse.data && typedResponse.data.id))?.toString();
+      
       if (user) {
         localStorage.setItem('user', JSON.stringify(user));
       }
+      
       if (userId) {
         localStorage.setItem('session_id', userId);
-        sessionStorage.setItem('user_id', userId); // <-- ensure sessionStorage is set for search history auth
+        sessionStorage.setItem('user_id', userId); // For search history auth
       }
       
       // Create auth object with all necessary data
       const authData = { 
-        role: role ?? null, 
-        accessToken: accessToken ?? null, 
-        email: email ?? undefined, 
-        firstName: firstName ?? undefined, 
-        user_id: userId ?? undefined
+        role: userType || null, 
+        accessToken: token || null, 
+        email: typedResponse.data?.email || undefined, 
+        firstName: typedResponse.data?.first_name || undefined, 
+        user_id: userId || undefined
       };
       
       // Set auth state
       setAuth(authData);
-      
-      // Also directly set in sessionStorage as a backup
-      sessionStorage.setItem('auth', JSON.stringify(authData));
 
       toast.success("Login Successful");
-      console.log('Redirecting with role:', role);
       
-      // Handle routing based on the role from the API response
-      if (role === "admin") {
-        router.push("/Super-admin");
-      } else if (role === "registrar") {
-        router.push("/court-registrar");
-      } else if (role === "user_company") {
-        // Handle user_company role from the API response
-        router.push("/users");
-      } else {
-        // Default route for other roles
-        router.push("/users");
-      }
+
+      // Get the appropriate redirect path based on user type
+      const redirectPath = getUserRedirectPath(userType);
+      console.log('Redirecting to:', redirectPath);
+      
+      // Navigate to the appropriate page
+      router.push(redirectPath);
+
     } catch (error: any) {
       toast.error(error?.message);
       toast.error(error?.response?.data?.message);

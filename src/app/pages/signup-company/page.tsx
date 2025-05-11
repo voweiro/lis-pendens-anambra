@@ -25,6 +25,7 @@ const schema = yup.object().shape({
     .required("Email is required")
     .email("Invalid Email format"),
   phoneNumber: yup.string(),
+  dob: yup.string(), // Date of establishment
   password: yup
     .string()
     .required("Password is required")
@@ -43,19 +44,31 @@ const SignUpCompany = () => {
   } = useForm({ resolver: yupResolver(schema) });
 
   const onSubmitHandler = async (data: any) => {
+    // Format the request body to match the structure expected by the API
     const body = {
-      businessName: data.nameOfCompany,
+      type: "company", // Set the type to company
+      name: data.nameOfCompany, // Use nameOfCompany as the name field
       email: data.email,
       password: data.password,
-      phoneNumber: data?.phoneNumber || undefined,
+      phone_number: data?.phoneNumber || undefined, // Use phone_number instead of phoneNumber
+      dob: data?.dob || undefined, // Include date of establishment
     };
+    
+    console.log('Company signup request body:', body);
+    
     try {
-      await SignUpRequestForBusiness(body);
+      const response = await SignUpRequestForBusiness(body);
+      console.log('Company signup response:', response);
       toast.success("SignUp Successful");
+      
+      // Redirect to the verify-token page with email parameter
       setTimeout(() => {
-        router.push("/login");
+        // Construct the URL with query parameters
+        const verifyTokenUrl = `/pages/verify-token?email=${encodeURIComponent(data.email)}&type=REGISTER`;
+        router.push(verifyTokenUrl);
       }, 2000);
     } catch (error: any) {
+      console.error('Company signup error:', error);
       toast.error(error?.response?.data?.message || "Sign up failed");
     }
   };
@@ -130,6 +143,19 @@ const SignUpCompany = () => {
                 />
                 <p className="text-red-500 text-sm text-right">
                   {errors.phoneNumber?.message}
+                </p>
+              </div>
+
+              {/* Date of Establishment */}
+              <div className="max-w-[400px] mb-2">
+                <input
+                  type="date"
+                  placeholder="Date of Establishment (optional)"
+                  className="w-full mt-2 border border-slate-300 rounded-lg p-2 outline-none"
+                  {...register("dob")}
+                />
+                <p className="text-red-500 text-sm text-right">
+                  {errors.dob?.message}
                 </p>
               </div>
 
