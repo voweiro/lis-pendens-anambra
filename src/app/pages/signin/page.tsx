@@ -30,7 +30,8 @@ const schema = yup.object().shape({
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [pageLoading, setPageLoading] = useState(true);
+  const [loginLoading, setLoginLoading] = useState(false);
   const { setAuth } = useAuth();
   const router = useRouter();
 
@@ -41,6 +42,9 @@ const SignIn = () => {
   } = useForm({ resolver: yupResolver(schema) });
 
   const onSubmitHandler = async (data: any) => {
+    // Set login loading state to true when the login button is clicked
+    setLoginLoading(true);
+    
     try {
       // Only pass email and password to match LoginBody type
       const response = await LoginRequest({
@@ -123,22 +127,24 @@ const SignIn = () => {
       router.push(redirectPath);
 
     } catch (error: any) {
-      toast.error(error?.message);
+      toast.error(error?.message || 'Login failed');
       toast.error(error?.response?.data?.message);
+      // Set login loading state to false when there's an error
+      setLoginLoading(false);
     }
   };
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setLoading(false);
+      setPageLoading(false);
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
 
-  if (loading) {
+  if (pageLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <BounceLoader loading={loading} size={100} color="#36d7b7" />
+        <BounceLoader loading={pageLoading} size={100} color="#36d7b7" />
       </div>
     );
   }
@@ -229,9 +235,20 @@ const SignIn = () => {
               {/* Login Button */}
               <button
                 type="submit"
-                className="w-full my-4 p-5 bg-black text-white rounded-2xl transition duration-700 ease-in-out hover:bg-white hover:text-black hover:border-black border-[1.3px] border-[#A1A1A1]"
+                disabled={loginLoading}
+                className="w-full my-4 p-5 bg-black text-white rounded-2xl transition duration-700 ease-in-out hover:bg-white hover:text-black hover:border-black border-[1.3px] border-[#A1A1A1] flex justify-center items-center"
               >
-                Login
+                {loginLoading ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Logging in...
+                  </>
+                ) : (
+                  'Login'
+                )}
               </button>
 
               {/* Sign up Link */}
