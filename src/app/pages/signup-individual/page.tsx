@@ -1,112 +1,106 @@
 "use client"
 import Image from "next/image"
-import Link from "next/link";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation"; 
-import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
-import { useForm } from "react-hook-form";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { SignUpRequestForIndividual } from "@/Services/AuthRequest/auth.request";
+import Link from "next/link"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs"
+import { useForm } from "react-hook-form"
+import * as yup from "yup"
+import { yupResolver } from "@hookform/resolvers/yup"
+import { ToastContainer, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
+import { SignUpRequestForIndividual } from "@/Services/AuthRequest/auth.request"
 
 // Import images
-import authBgImage from "@/asserts/auth-bg.png";
-import logoImage from "@/asserts/lis-pendens-logo-white.png";
+import authBgImage from "@/asserts/auth-bg.png"
+import logoImage from "@/asserts/lis-pendens-logo-white.png"
 
 // Schema validation with Yup
 const schema = yup.object().shape({
-  user_type: yup.string().required("User type is required"),
-  first_name: yup
-    .string()
-    .required("First Name is required")
-    .min(3, "First Name must be greater than 3 letters"),
-  last_name: yup
-    .string()
-    .required("Last Name is required")
-    .min(3, "Last Name must be greater than 3 letters"),
-  email: yup
-    .string()
-    .required("Email is required")
-    .email("Invalid Email format"),
-  phone: yup.string(),
-  date_of_birth: yup.string(),
+  type: yup.string().required("User type is required"),
+  name: yup.string().required("First Name is required").min(3, "First Name must be greater than 3 letters"),
+  email: yup.string().required("Email is required").email("Invalid Email format"),
+  phone_number: yup.string(),
+  dob: yup.string(),
   password: yup
     .string()
     .required("Password is required")
     .min(8, "Password must be at least 6 characters")
     .max(20, "Password must not exceed 20 characters"),
-
-    password_confirmation: yup
-    .string()
-    .required("Password is required")
-    .min(8, "Password must be at least 6 characters")
-    .max(20, "Password must not exceed 20 characters"),
-});
+})
 
 interface ApiError {
   response?: {
     data?: {
-      message?: string;
-    };
-  };
+      message?: string
+    }
+  }
 }
 
 const SignUpIndividual = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter(); 
+  const [showPassword, setShowPassword] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const router = useRouter()
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setValue
-  } = useForm({ resolver: yupResolver(schema) });
+    setValue,
+    watch,
+  } = useForm({ resolver: yupResolver(schema) })
+
+  // Watch the email field to access its value
+  const email = watch("email")
 
   useEffect(() => {
-    setValue('user_type', 'user');
-  }, [setValue]);
+    setValue("type", "individual")
+  }, [setValue])
 
-  const onSubmitHandler = async (data: { 
-    first_name: string; 
-    last_name: string; 
-    email: string; 
-    password: string; 
-    phone?: string; 
-    date_of_birth?: string; 
-    user_type: string; 
-    password_confirmation: string 
+  const onSubmitHandler = async (data: {
+    name: string
+    email: string
+    password: string
+    phone_number?: string
+    dob?: string
+    type: string
   }) => {
+    setIsSubmitting(true)
+
     const body = {
-      first_name: data.first_name,
-      last_name: data.last_name,
+      name: data.name,
       email: data.email,
       password: data.password,
-      phone: data?.phone || undefined,
-      date_of_birth: data?.date_of_birth || undefined,
-      user_type: data.user_type,
-      password_confirmation: data.password_confirmation,
-    };
-    
-    try {
-      await SignUpRequestForIndividual(body);
-      toast.success("SignUp Successful");
-      setTimeout(() => {
-        router.push("/pages/signin");
-      }, 2000);
-    } catch (error: unknown) {
-      const apiError = error as ApiError;
-      console.log(apiError?.response?.data?.message);
-      toast.error(apiError?.response?.data?.message);
+      phone_number: data?.phone_number || undefined,
+      dob: data?.dob || undefined,
+      type: data.type,
     }
-  };
+
+    try {
+      await SignUpRequestForIndividual(body)
+      toast.success("SignUp Successful")
+
+      // Store email in localStorage for the verification page
+      localStorage.setItem("userEmail", data.email)
+
+      // Navigate to verification page with email as query parameter
+      setTimeout(() => {
+        router.push(`/pages/verify-token?email=${encodeURIComponent(data.email)}&type=REGISTER`)
+      }, 2000)
+    } catch (error: unknown) {
+      const apiError = error as ApiError
+      console.log(apiError?.response?.data?.message)
+      toast.error(apiError?.response?.data?.message)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   return (
     <>
       <div className="relative w-full h-screen">
         {/* Background image */}
         <Image
-          src={authBgImage}
+          src={authBgImage || "/placeholder.svg"}
           alt="Auth background"
           fill
           priority
@@ -114,25 +108,20 @@ const SignUpIndividual = () => {
         />
         <a href="/" className="flex items-center pt-6 pl-4">
           <img
-            src={logoImage.src}
+            src={logoImage.src || "/placeholder.svg"}
             alt="LisPendens brand logo"
             className="text-white object-cover"
           />
-
-
-
-        
         </a>
 
-        
         <Link
           href="/"
-          className="inline-flex items-center mt-4 text-black bg-white border border-black px-4 py-2 rounded-xl hover:bg-black hover:text-white transition-all duration-300"
+          className="inline-flex items-center mt-4 ml-4 text-black bg-white border border-black px-4 py-2 rounded-xl hover:bg-black hover:text-white transition-all duration-300"
         >
           ← Back to Home
         </Link>
-        <div className=" backdrop-blur-md p-6 rounded-lg shadow-xl mx-auto w-full max-w-md h-[80vh] overflow-y-auto">
-          <section className=" py-4 m-2 px-4 md:m-6 md:px-12 bg-white rounded-[30px]">
+        <div className="backdrop-blur-md p-6 rounded-lg shadow-xl mx-auto w-full max-w-md h-[80vh] overflow-y-auto">
+          <section className="py-4 m-2 px-4 md:m-6 md:px-12 bg-white rounded-[30px]">
             <form onSubmit={handleSubmit(onSubmitHandler)} className="w-full">
               <h3 className="mb-2 text-[24px] font-bold text-black">Sign up</h3>
 
@@ -142,24 +131,9 @@ const SignUpIndividual = () => {
                   type="text"
                   placeholder="First name"
                   className="w-full mt-2 outline-none focus:out-none border-[1.2px] border-slate-300 rounded-lg p-2"
-                  {...register("first_name")}
+                  {...register("name")}
                 />
-                <p className="text-red-500 text-[0.75rem] text-right">
-                  {errors.first_name?.message}
-                </p>
-              </div>
-
-              {/* LAST NAME */}
-              <div className="max-w-[400px] mb-2">
-                <input
-                  type="text"
-                  placeholder="Last name"
-                  className="w-full mt-2 outline-none focus:out-none border-[1.2px] border-slate-300 rounded-lg p-2"
-                  {...register("last_name")}
-                />
-                <p className="text-red-500 text-[0.75rem] text-right">
-                  {errors.last_name?.message}
-                </p>
+                <p className="text-red-500 text-[0.75rem] text-right">{errors.name?.message}</p>
               </div>
 
               {/* EMAIL */}
@@ -170,9 +144,7 @@ const SignUpIndividual = () => {
                   className="w-full mt-2 outline-none focus:out-none border-[1.2px] border-slate-300 rounded-lg p-2"
                   {...register("email")}
                 />
-                <p className="text-red-500 text-[0.75rem] text-right">
-                  {errors.email?.message}
-                </p>
+                <p className="text-red-500 text-[0.75rem] text-right">{errors.email?.message}</p>
               </div>
 
               {/* PHONE NUMBER */}
@@ -181,17 +153,16 @@ const SignUpIndividual = () => {
                   type="tel"
                   placeholder="Phone number (optional)"
                   className="w-full mt-2 outline-none focus:out-none border-[1.2px] border-slate-300 rounded-lg p-2"
-                  {...register("phone")}
+                  {...register("phone_number")}
                 />
               </div>
-
 
               <div className="max-w-[400px] mb-2">
                 <input
                   type="date"
                   placeholder="date of birth"
                   className="w-full mt-2 outline-none focus:out-none border-[1.2px] border-slate-300 rounded-lg p-2"
-                  {...register("date_of_birth")}
+                  {...register("dob")}
                 />
               </div>
 
@@ -220,65 +191,27 @@ const SignUpIndividual = () => {
                     />
                   )}
                 </div>
-                <p className="text-red-500 text-[0.75rem] text-right">
-                  {errors.password?.message}
-                </p>
-              </div>
-
-
-              
-              {/* PASSWORD */}
-              <div className="mb-4">
-                <div className="max-w-[400px] mb-2 relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Confirm Password"
-                    className="w-full mt-2 outline-none focus:out-none border-[1.2px] border-slate-300 rounded-lg p-2"
-                    {...register("password_confirmation")}
-                  />
-                  {showPassword ? (
-                    <BsEyeSlashFill
-                      className="absolute right-2 top-8 cursor-pointer"
-                      size={20}
-                      onClick={() => setShowPassword((prev) => !prev)}
-                      color="#8A8A8A"
-                    />
-                  ) : (
-                    <BsEyeFill
-                      className="absolute right-2 top-6 cursor-pointer"
-                      size={20}
-                      onClick={() => setShowPassword((prev) => !prev)}
-                      color="#8A8A8A"
-                    />
-                  )}
-                </div>
-                <p className="text-red-500 text-[0.75rem] text-right">
-                  {errors.password_confirmation?.message}
-                </p>
+                <p className="text-red-500 text-[0.75rem] text-right">{errors.password?.message}</p>
               </div>
 
               {/* TERMS AND CONDITIONS */}
               <div className="w-full mb-4 pt-1 text-[14px]">
                 <p className="text-[#818181]">
-                  By selecting Agree and continue, I agree to LisPendes’{" "}
-                  <span className="text-[#524A4C]">
-                    Terms of Service, Information Terms of Service,{" "}
-                  </span>
+                  By selecting Agree and continue, I agree to LisPendes'{" "}
+                  <span className="text-[#524A4C]">Terms of Service, Information Terms of Service, </span>
                   and
-                  <span className="text-[#524A4C] ml-1">
-                    Nondiscrimination Policy{" "}
-                  </span>
-                  and acknowledge the{" "}
-                  <span className="text-[#524A4C]">Privacy Policy.</span>
+                  <span className="text-[#524A4C] ml-1">Nondiscrimination Policy </span>
+                  and acknowledge the <span className="text-[#524A4C]">Privacy Policy.</span>
                 </p>
               </div>
 
               {/* AGREE AND CONTINUE BUTTON */}
               <button
                 type="submit"
-                className="w-full mb-4 p-3 text-center bg-[#524A4C] rounded-2xl text-white border-1 border-[#A1A1A1] cursor-pointer transition duration-700 ease-in-out hover:bg-white hover:text-[#E37C42] hover:border-[#E37C42] border-[1.3px]"
+                disabled={isSubmitting}
+                className="w-full mb-4 p-3 text-center bg-[#524A4C] rounded-2xl text-white border-1 border-[#A1A1A1] cursor-pointer transition duration-700 ease-in-out hover:bg-white hover:text-[#E37C42] hover:border-[#E37C42] border-[1.3px] disabled:opacity-70"
               >
-                Agree and continue
+                {isSubmitting ? "Processing..." : "Agree and continue"}
               </button>
 
               {/* LOGIN LINK */}
@@ -294,7 +227,7 @@ const SignUpIndividual = () => {
       </div>
       <ToastContainer />
     </>
-  );
-};
+  )
+}
 
-export default SignUpIndividual;
+export default SignUpIndividual

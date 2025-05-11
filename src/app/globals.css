@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 #root {
-  background: linear-gradient(to left top, #23A863, #eef2ff);
+  background:white;
 }
 
 body {
@@ -150,22 +150,6 @@ body {
 
 
 /* User dashboard progress bar */
-.progress-bar {
-  /* background: #000 linear-gradient(to left, transparent 50%, #FFF 0); */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: conic-gradient(#000 80%, #FFF 20%);
-}
-
-.progress-bar::before {
-  content: "";
-  position: absolute;
-  background: #d7d7d7;
-  height: 84%;
-  width: 84%;
-  border-radius: 50%;
-}
 
 /* .animate-progress {
 animation: animate-progress 1s ease-in-out forwards;
@@ -182,7 +166,7 @@ to {
 
 /* For Home page */
 #home-page-container {
-  background: linear-gradient(to top, #23A863, #eef2ff)
+  background: white;
 }
 
 

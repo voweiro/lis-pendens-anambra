@@ -42,6 +42,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
               errors={errors}
               watch={watch}
               isSearching={isSearching}
+              onClose={() => setShowSearchForm(false)}
             />
           </div>
         </div>
@@ -91,8 +92,8 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
         </div>
 
         {/* Profile Section */}
-        <div className="w-full lg:w-[350px] bg-[#6ad89ffd] text-black rounded-[30px] p-6 md:p-8 flex flex-col">
-          <h3 className="text-[28px] font-medium">Total Amount</h3>
+        <div className="w-full lg:w-[350px] bg-[#23A863] text-white rounded-[30px] p-6 md:p-8 flex flex-col">
+          <h3 className="text-[26px] font-medium">Total Amount Spent</h3>
           <div className="flex justify-between items-center mt-6 flex-wrap gap-4">
             <div>
               <p className="text-[60px] font-bold"> ₦{profileCompletion}</p>

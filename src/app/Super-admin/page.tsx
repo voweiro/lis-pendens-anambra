@@ -8,7 +8,7 @@ import UploadedCasesTable from '@/components/court-registrar/dashboard/UploadedC
 const CourtRegistrarDashboardPage = () => {
   return (
  
-      <CourtRegistrarLayout className="mb-8" prop title="Dashboard">
+      <CourtRegistrarLayout className="mb-8" title="Dashboard" description="This is the dashboard page">
      
       <StatsBar />
       

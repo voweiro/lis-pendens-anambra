@@ -4,7 +4,7 @@ import LandingpageClientWrapper from '@/components/home/LandingpageClientWrapper
 
 export default function Home() {
   return (
-    <div  className="" >
+    <div  className="bg-white" >
      <MyContextProvider>
       <LandingpageClientWrapper />
     </MyContextProvider>

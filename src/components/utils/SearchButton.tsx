@@ -16,7 +16,7 @@ const SearchButton = () => {
       }}
     >
       <span
-        className="relative tracking-wide h-full w-full flex items-center justify-center rounded-[0.55rem] 
+        className="relative tracking-wide h-full w-full flex items-center justify-center cursor-pointer bg-[#00AD20]  text-white rounded-[0.55rem] 
                    sm:rounded-[0.7rem] md:rounded-[1rem] linear-mask"
       >
         Search property
