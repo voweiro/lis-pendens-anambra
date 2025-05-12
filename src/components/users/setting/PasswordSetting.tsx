@@ -4,14 +4,13 @@ import { FiLock } from 'react-icons/fi';
 interface PasswordSettingProps {
   password?: string;
   onChange: (value: string) => void;
-  passwordConfirmation?: string;
-  onChangeConfirmation?: (value: string) => void;
+  
 }
 
-const PasswordSetting: React.FC<PasswordSettingProps> = ({ password = '', onChange, passwordConfirmation = '', onChangeConfirmation }) => {
+const PasswordSetting: React.FC<PasswordSettingProps> = ({ password = '', onChange, }) => {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(password);
-  const [confirmValue, setConfirmValue] = useState(passwordConfirmation);
+  
   const inputRef = useRef<HTMLInputElement>(null);
   const confirmInputRef = useRef<HTMLInputElement>(null);
 
@@ -23,18 +22,14 @@ const PasswordSetting: React.FC<PasswordSettingProps> = ({ password = '', onChan
   const handleBlur = () => {
     setEditing(false);
     onChange(value);
-    if (onChangeConfirmation) {
-      onChangeConfirmation(confirmValue);
-    }
+    
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       setEditing(false);
       onChange(value);
-      if (onChangeConfirmation) {
-        onChangeConfirmation(confirmValue);
-      }
+      
     }
   };
 
@@ -63,27 +58,9 @@ const PasswordSetting: React.FC<PasswordSettingProps> = ({ password = '', onChan
           )}
         </div>
         
-        {editing && (
-          <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-4">
-            <FiLock className="text-2xl text-gray-400" />
-            <input
-              ref={confirmInputRef}
-              className="bg-transparent outline-none text-base w-full"
-              value={confirmValue}
-              onChange={e => setConfirmValue(e.target.value)}
-              onBlur={handleBlur}
-              onKeyDown={handleKeyDown}
-              type="password"
-              placeholder="Confirm new password"
-            />
-          </div>
-        )}
+       
         
-        {editing && value && confirmValue && value !== confirmValue && (
-          <div className="text-red-500 text-sm mt-1 ml-2">
-            Passwords do not match
-          </div>
-        )}
+       
       </div>
     </div>
   );
