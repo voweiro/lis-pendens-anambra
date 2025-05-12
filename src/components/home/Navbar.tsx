@@ -41,7 +41,7 @@ const mobileRoutes = [
   },
   {
     name: "Log in",
-    href: "/pages/login",
+    href: "/pages/sigin",
   },
   {
     name: "Sign Up",
