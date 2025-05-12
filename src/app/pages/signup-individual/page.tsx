@@ -209,7 +209,7 @@ const SignUpIndividual = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full mb-4 p-3 text-center bg-[#524A4C] rounded-2xl text-white border-1 border-[#A1A1A1] cursor-pointer transition duration-700 ease-in-out hover:bg-white hover:text-[#E37C42] hover:border-[#E37C42] border-[1.3px] disabled:opacity-70"
+                className="w-full mb-4 p-3 text-center bg-[#00AD20] rounded-2xl text-white border-1 border-[#00AD20] cursor-pointer transition duration-700 ease-in-out hover:bg-[#00ad204f] hover:text-black hover:border-[#00AD20] border-[1.3px] disabled:opacity-70"
               >
                 {isSubmitting ? "Processing..." : "Agree and continue"}
               </button>
