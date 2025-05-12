@@ -62,7 +62,7 @@ const LandingPage = () => {
         onRequestClose={() => setIsTourOpen(false)}
       />
 
-      <div className="" id="home-page-container">
+      <div className=" max-w-[1280px]" id="home-page-container">
         <div className=" w-full h-full flex flex-col  mx-auto">
           {/* ====== Navbar Section ====== */}
           <section>
@@ -251,9 +251,10 @@ const LandingPage = () => {
       </div>
 
           {/* ====== Footer ====== */}
-          <Footer />
+         
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

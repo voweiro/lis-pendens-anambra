@@ -253,7 +253,7 @@ const VerifyToken = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full mb-4 p-3 text-center bg-[#524A4C] rounded-2xl text-white border-1 border-[#A1A1A1] cursor-pointer transition duration-700 ease-in-out hover:bg-white hover:text-[#E37C42] hover:border-[#E37C42] border-[1.3px] disabled:opacity-70"
+                className="w-full mb-4 p-3 text-center bg-[#00AD20] rounded-2xl text-white border-1 border-white cursor-pointer transition duration-700 ease-in-out hover:bg-white hover:text-black hover:border-[#00AD20] border-[1.3px] disabled:opacity-70"
               >
                 {isSubmitting ? "Verifying..." : "Verify Email"}
               </button>
@@ -277,7 +277,7 @@ const VerifyToken = () => {
                       router.push(`/pages/resend-token?type=${type}&email=${email}`);
                     }}
                     disabled={isResending}
-                    className="text-[#E37C42] font-medium hover:underline disabled:opacity-50"
+                    className="text-[#00AD20] font-medium hover:underline disabled:opacity-50"
                   >
                     Resend Code
                   </button>
@@ -287,7 +287,7 @@ const VerifyToken = () => {
               {/* LOGIN LINK */}
               <p className="text-center text-[14px]">
                 Already verified?{" "}
-                <a href="/pages/signin" className="text-[#E37C42] cursor-pointer">
+                <a href="/pages/signin" className="text-[#00AD20] cursor-pointer">
                   Login
                 </a>
               </p>
