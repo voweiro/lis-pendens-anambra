@@ -4,8 +4,8 @@ import React, { useState, useEffect } from "react";
 import UserTopbar from "@/components/users/dashboard/UserTopbar";
 import UserSidebar from "@/components/users/User-Sidebar";
 
-const FLUTTERWAVE_PUBLIC_KEY = "FLWPUBK_TEST-3b48e543af90cfc1a33822d02376a17b-X"; // TODO: Replace with your real public key
-const PAYMENT_AMOUNT = 5000; // NGN, change as needed
+const FLUTTERWAVE_PUBLIC_KEY = "FLWPUBK_TEST-3b48e543af90cfc1a33822d02376a17b-X"; 
+const PAYMENT_AMOUNT = 2000; 
 const CURRENCY = "NGN";
 
 const UserGetAccessPage = () => {
