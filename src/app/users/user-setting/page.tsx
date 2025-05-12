@@ -135,7 +135,7 @@ const UserSettingPage = () => {
     <NormalUserLayout title="Settings">
       <div className="relative min-h-screen bg-gray-50">
         <div className={`max-w-7xl mx-auto p-8 w-full transition-all duration-300 ${modalOpen ? 'filter blur-sm pointer-events-none select-none' : ''}`}>
-          <h1 className="text-3xl font-bold mb-8">Settings</h1>
+        
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
             <UsernameSetting username={username} onChange={setUsername} />
             <DOBSetting dob={dob} onChange={setDob} />

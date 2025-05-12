@@ -6,7 +6,7 @@ import SearchHistoryTable from '@/components/users/dashboard/SearchHistoryTable'
 
 const UserDashboard = () => {
   return (
-    <NormalUserLayout className="mb-8" title="Dashboard">
+    <NormalUserLayout className="mb-5" title="Dashboard">
       {/* Welcome and Stats Section */}
       <div className="mb-8">
         <DashboardSummary

@@ -46,14 +46,14 @@ const SignUp = () => {
 
           <Link
             href="/pages/signup-individual"
-            className="w-full mt-4 p-3 text-center bg-[#524A4C] rounded-2xl text-white border-1 border-[#A1A1A1] cursor-pointer transition duration-700 ease-in-out hover:bg-white hover:text-[#E37C42] hover:border-[#E37C42] border-[1.3px]"
+            className="w-full mt-4 p-3 text-center bg-[#00AD20] rounded-2xl text-white border-1 border-[#00AD20] cursor-pointer transition duration-700 ease-in-out hover:bg-[rgba(45,80,51,0.16)] hover:text-white  hover:border-[#00AD20] border-[1.3px]"
           >
             <p>Individual</p>
           </Link>
 
           <Link
             href="/pages/signup-company"
-            className="w-full mt-4 mb-4 p-3 text-center bg-[#D9D9D9] rounded-2xl text-black border-1 border-[#A1A1A1] cursor-pointer transition duration-700 ease-in-out hover:bg-white hover:text-[#E37C42] hover:border-[#E37C42] border-[1.3px]"
+            className="w-full mt-4 mb-4 p-3 text-center bg-[rgba(110,221,130,0.39)] rounded-2xl text-black border-1 border-[#00AD20] cursor-pointer transition duration-700 ease-in-out hover:bg-[#00AD20] hover:text-white hover:border-[#E37C42] border-[1.3px]"
           >
             <p>Company</p>
           </Link>

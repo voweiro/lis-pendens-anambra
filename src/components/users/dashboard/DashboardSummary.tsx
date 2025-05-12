@@ -1,11 +1,11 @@
 "use client"
-import Link from "next/link"
+
 import type React from "react"
-import { FaHome, FaSearch, FaArrowRight } from "react-icons/fa"
-import { useState } from "react"
+
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import UsersSearchForm from "@/components/users/User-Search-Form"
-import { Gavel, GavelIcon, Home } from "lucide-react"
+import { Home } from "lucide-react"
 import { LuGavel } from "react-icons/lu"
 
 interface DashboardSummaryProps {
@@ -22,19 +22,44 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
   profileCompletion,
 }) => {
   const [showSearchForm, setShowSearchForm] = useState(false)
-  const { register, watch, formState: { errors } } = useForm();
-  const [isSearching, setIsSearching] = useState(false);
+  const {
+    register,
+    watch,
+    formState: { errors },
+  } = useForm()
+  const [isSearching, setIsSearching] = useState(false)
+  const [screenSize, setScreenSize] = useState<"small" | "medium" | "large">("large")
+
+  // Detect screen size for better responsiveness
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth
+      if (width < 640) {
+        setScreenSize("small")
+      } else if (width < 1024) {
+        setScreenSize("medium")
+      } else {
+        setScreenSize("large")
+      }
+    }
+
+    // Initial check
+    handleResize()
+
+    // Add event listener
+    window.addEventListener("resize", handleResize)
+
+    // Cleanup
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
   return (
     <>
       {/* Modal rendered at root level */}
       {showSearchForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="bg-[#23A863] text-black rounded-2xl shadow-2xl p-6 relative w-full max-w-sm sm:max-w-md">
-            <button
-              className="absolute top-2 right-2 text-black text-lg"
-              onClick={() => setShowSearchForm(false)}
-            >
+          <div className="bg-[#00AD20] text-black rounded-2xl shadow-2xl p-6 relative w-full max-w-sm sm:max-w-md">
+            <button className="absolute top-2 right-2 text-black text-lg" onClick={() => setShowSearchForm(false)}>
               &times;
             </button>
             <UsersSearchForm
@@ -49,63 +74,96 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
       )}
 
       {/* Dashboard Content */}
-      <div className={`flex flex-col lg:flex-row gap-6 w-full ${showSearchForm ? "blur-sm pointer-events-none select-none" : ""}`}>
-        {/* Welcome Section */}
-        <div className="flex-1 bg-[#23A863] text-white rounded-[30px] p-6 md:p-8 relative">
-          <div className="flex flex-col h-full w-full sm:max-w-[90%] relative">
-            <h2 className="text-2xl md:text-3xl font-normal">
-              Hello, <span className="font-bold">{userName}</span>
-            </h2>
-            <p className="mt-2 text-sm opacity-90 max-w-md">
-              The User Dashboard is designed to efficiently manage the biodata of your searches.
-            </p>
-            <div className="mt-6">
-              <button onClick={() => setShowSearchForm(true)} className="px-6 py-3 bg-white text-black rounded-full font-medium hover:bg-gray-100 transition">
-                Search property
-              </button>
-            </div>
-            <p className="mt-4 text-sm cursor-pointer">How property search work?</p>
+      <div
+        className={`flex flex-col sm:flex-row gap-4 w-full ${showSearchForm ? "blur-sm pointer-events-none select-none" : ""}`}
+      >
+        {/* Welcome Section - Left card */}
+        <div className="flex-1 bg-[#00AD20] text-white rounded-[30px] p-5 sm:p-6 lg:p-8 relative overflow-hidden">
+          {/* Content layout based on screen size */}
+          <div className="flex flex-col h-full">
+            <div className={`${screenSize !== "small" ? "max-w-[60%]" : ""}`}>
+              <h2 className="text-2xl sm:text-3xl font-normal">
+                Hello, <span className="font-bold">{userName}</span>
+              </h2>
+              <p className="mt-2 text-sm">
+                The User Dashboard is designed to efficiently manage the biodata of your searches.
+              </p>
 
-            {/* Stats on right for large screens, bottom for small */}
-            <div className="mt-10 lg:mt-0 lg:absolute lg:top-1/2 lg:right-0 lg:transform lg:-translate-y-1/2 flex flex-col sm:flex-row lg:flex-col gap-10 lg:mr-8">
-              <div className="flex items-center gap-3">
-                <div className="bg-[#ffffff] text-[#23A863] p-2 rounded-full">
-                  <Home size={42} />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{totalProperties}</p>
-                  <p className="text-xs opacity-80">Total Properties</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="bg-[#ffffff] text-[#23A863] p-2 rounded-full">
-                  <LuGavel size={50} />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{totalSearches}</p>
-                  <p className="text-xs opacity-80">Total Searches</p>
-                </div>
+              <div className="mt-4 sm:mt-6">
+                <button
+                  onClick={() => setShowSearchForm(true)}
+                  className="px-4 py-2 sm:px-6 sm:py-3 bg-white text-black rounded-full font-medium hover:bg-gray-100 transition"
+                >
+                  Search property
+                </button>
+                <p className="mt-2 sm:mt-3 text-sm cursor-pointer hover:underline">How property search work?</p>
               </div>
             </div>
+
+            {/* Stats - Positioned differently based on screen size */}
+            {screenSize === "small" ? (
+              // Mobile layout - stacked
+              <div className="mt-6 flex flex-col gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="bg-white text-[#00AD20] p-2 rounded-full">
+                    <Home size={32} />
+                  </div>
+                  <div>
+                    <p className="text-xl font-bold">{totalProperties}</p>
+                    <p className="text-xs">Total Properties</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="bg-white text-[#00AD20] p-2 rounded-full">
+                    <LuGavel size={36} />
+                  </div>
+                  <div>
+                    <p className="text-xl font-bold">{totalSearches}</p>
+                    <p className="text-xs">Total Searches</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              // Tablet and Desktop layout - positioned to the right
+              <div
+                className={`${
+                  screenSize === "medium"
+                    ? "absolute bottom-6 right-6 flex flex-row gap-6"
+                    : "absolute top-1/2 right-8 -translate-y-1/2 flex flex-col gap-8"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="bg-white text-[#00AD20] p-2 rounded-full">
+                    <Home size={screenSize === "medium" ? 32 : 42} />
+                  </div>
+                  <div>
+                    <p className="text-xl sm:text-2xl font-bold">{totalProperties}</p>
+                    <p className="text-xs">Total Properties</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="bg-white text-[#00AD20] p-2 rounded-full">
+                    <LuGavel size={screenSize === "medium" ? 36 : 46} />
+                  </div>
+                  <div>
+                    <p className="text-xl sm:text-2xl font-bold">{totalSearches}</p>
+                    <p className="text-xs">Total Searches</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Profile Section */}
+        {/* Amount Spent Section - Right card */}
+        <div className="w-full sm:w-[300px] md:w-[320px] lg:w-[350px] bg-[#23A863] text-white rounded-[30px] p-5 sm:p-6 lg:p-8 flex flex-col">
+          <h3 className="text-xl sm:text-2xl lg:text-[26px] font-medium">Total Amount Spent</h3>
 
-        <div className="w-full lg:w-[350px] bg-[#23A863] text-white rounded-[30px] p-6 md:p-8 flex flex-col">
-          <h3 className="text-[26px] font-medium">Total Amount Spent</h3>
-      
-          <div className="flex justify-between items-center mt-6 flex-wrap gap-4">
-            <div>
-              <p className="text-[60px] font-bold"> ₦{profileCompletion}</p>
-              
-            </div>
-           
+          <div className="flex items-center justify-center flex-grow py-4 sm:py-6">
+            <p className="text-4xl sm:text-5xl lg:text-[60px] font-bold">₦{profileCompletion}</p>
           </div>
-
-          {/* CTA */}
-          
         </div>
       </div>
     </>

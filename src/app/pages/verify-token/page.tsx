@@ -57,6 +57,7 @@ const VerifyToken = () => {
     handleSubmit,
     formState: { errors },
     setValue,
+    watch,
   } = useForm<VerifyTokenFormData>({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -140,18 +141,40 @@ const VerifyToken = () => {
     try {
       // Call your actual API endpoint with token and type in uppercase
       // The API expects token and type (REGISTER or PASSWORD_RESET) as shown in Postman
-      await VerifyTokenRequest({
+      const response = await VerifyTokenRequest({
         token: data.verificationCode, // Use the verification code as the token
         type: data.type, // Already in uppercase from the form
       })
 
-      toast.success("Email verified successfully")
+      toast.success("Verification successful")
+
+      // Extract the auth token from the response if available
+      let authToken = null
+      if (response && response.token) {
+        authToken = response.token
+      } else if (response && response.data && response.data.token) {
+        authToken = response.data.token
+      }
+
+      console.log('Auth token from verification response:', authToken)
+
+      // Store the auth token in session storage for use in the new password page
+      if (authToken && data.type === "PASSWORD_RESET") {
+        sessionStorage.setItem('resetPasswordToken', authToken)
+      }
 
       // Clear stored email from localStorage if it exists
       localStorage.removeItem("userEmail")
 
+      // Determine where to redirect based on the verification type
       setTimeout(() => {
-        router.push("/pages/signin")
+        if (data.type === "PASSWORD_RESET") {
+          // For password reset, redirect to the new password page with email
+          router.push(`/pages/new-password?email=${encodeURIComponent(email)}`)
+        } else {
+          // For registration, redirect to signin
+          router.push("/pages/signin")
+        }
       }, 2000)
     } catch (error: unknown) {
       const apiError = error as ApiError
@@ -189,7 +212,10 @@ const VerifyToken = () => {
         <div className="backdrop-blur-md p-6 rounded-lg shadow-xl mx-auto w-full max-w-md h-[80vh] overflow-y-auto">
           <section className="py-4 m-2 px-4 md:m-6 md:px-12 bg-white rounded-[30px]">
             <form onSubmit={handleSubmit(onSubmitHandler)} className="w-full">
-              <h3 className="mb-2 text-[24px] font-bold text-black">Verify Your Email</h3>
+              <h3 className="mb-2 text-[24px] font-bold text-black">
+                {/* Dynamic heading based on verification type */}
+                {watch('type') === 'PASSWORD_RESET' ? 'Verify OTP' : 'Verify Your Email'}
+              </h3>
 
               <div className="flex justify-center my-6">
                 <div className="w-20 h-20 bg-[#f5f5f5] rounded-full flex items-center justify-center">
@@ -198,8 +224,8 @@ const VerifyToken = () => {
               </div>
 
               <p className="text-center text-gray-600 mb-6">
-                We've sent a verification code to <span className="font-medium">{email}</span>. Please enter the code
-                below to verify your account.
+                We've sent a {watch('type') === 'PASSWORD_RESET' ? 'one-time password' : 'verification code'} to <span className="font-medium">{email}</span>. Please enter the code
+                below to {watch('type') === 'PASSWORD_RESET' ? 'reset your password' : 'verify your account'}.
               </p>
 
               {/* VERIFICATION CODE */}
@@ -227,7 +253,7 @@ const VerifyToken = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full mb-4 p-3 text-center bg-[#524A4C] rounded-2xl text-white border-1 border-[#A1A1A1] cursor-pointer transition duration-700 ease-in-out hover:bg-white hover:text-[#E37C42] hover:border-[#E37C42] border-[1.3px] disabled:opacity-70"
+                className="w-full mb-4 p-3 text-center bg-[#00AD20] rounded-2xl text-white border-1 border-white cursor-pointer transition duration-700 ease-in-out hover:bg-white hover:text-black hover:border-[#00AD20] border-[1.3px] disabled:opacity-70"
               >
                 {isSubmitting ? "Verifying..." : "Verify Email"}
               </button>
@@ -251,7 +277,7 @@ const VerifyToken = () => {
                       router.push(`/pages/resend-token?type=${type}&email=${email}`);
                     }}
                     disabled={isResending}
-                    className="text-[#E37C42] font-medium hover:underline disabled:opacity-50"
+                    className="text-[#00AD20] font-medium hover:underline disabled:opacity-50"
                   >
                     Resend Code
                   </button>
@@ -261,7 +287,7 @@ const VerifyToken = () => {
               {/* LOGIN LINK */}
               <p className="text-center text-[14px]">
                 Already verified?{" "}
-                <a href="/pages/signin" className="text-[#E37C42] cursor-pointer">
+                <a href="/pages/signin" className="text-[#00AD20] cursor-pointer">
                   Login
                 </a>
               </p>
