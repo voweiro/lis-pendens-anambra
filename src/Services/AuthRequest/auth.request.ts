@@ -80,6 +80,23 @@ interface UpdateProfileParams {
   dob?: string;
 }
 
+// Interface for search request
+interface SearchRequestParams {
+  search_type?: string;
+  title_type?: string;
+  lga_id?: string;
+  state_id?: string;
+  lga?: string;
+  state?: string;
+  register_title?: string;
+  plot_number?: string;
+  plot_street_name?: string;
+  city?: string;
+  survey_plan_number?: string;
+  property_owner?: string;
+  user_id?: string;
+}
+
 
 interface VerifyTokenRequestParams {
   token: string
@@ -288,69 +305,103 @@ export const ForgotPasswordRequest = async (body: ForgotPasswordBody): Promise<F
 // Verify token API request
 export const VerifyTokenRequest = async (params: VerifyTokenRequestParams) => {
   try {
-    // Replace with your actual API endpoint and implementation
-    const response = await fetch(`${baseURL}/auth/verify-token`, {
-      method: "POST",
+    console.log('Verifying token with params:', params);
+    console.log('Using base URL:', baseURL);
+    
+    // Use axios instead of fetch to handle CORS better
+    const response = await axios.post(`${baseURL}/auth/verify-token`, params, {
       headers: {
         "Content-Type": "application/json",
+        "Accept": "application/json"
       },
-      body: JSON.stringify(params),
-    })
-
-    if (!response.ok) {
-      const errorData = await response.json()
-      throw { response: { data: errorData } }
+    });
+    
+    console.log('Token verification response:', response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error('Token verification error:', error.response?.data || error.message);
+    // Format error to match expected structure
+    if (error.response) {
+      throw { response: { data: error.response.data } };
     }
-
-    return await response.json()
-  } catch (error) {
-    throw error
+    throw error;
   }
 }
 
 // Resend verification code API request
 export const ResendVerificationCodeRequest = async (params: ResendVerificationCodeParams) => {
   try {
-    // Replace with your actual API endpoint and implementation
-    const response = await fetch(`${baseURL}/auth/resend-token`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(params),
-    })
-
-    if (!response.ok) {
-      const errorData = await response.json()
-      throw { response: { data: errorData } }
+    console.log('Resending verification code with params:', params);
+    console.log('Using base URL:', baseURL);
+    
+    // Try multiple possible endpoint URLs since the correct one may vary
+    const possibleEndpoints = [
+      '/auth/resend-token',            // Most likely correct endpoint
+                 // Common Laravel endpoint
+    ];
+    
+    let response = null;
+    let lastError = null;
+    
+    // Try each endpoint until one works
+    for (const endpoint of possibleEndpoints) {
+      try {
+        console.log(`Trying endpoint: ${baseURL}${endpoint}`);
+        response = await axios.post(`${baseURL}${endpoint}`, params, {
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+        });
+        console.log(`Success with endpoint: ${endpoint}`);
+        break; // Exit loop if successful
+      } catch (error: any) {
+        console.log(`Failed with endpoint: ${endpoint}`, error.response?.status);
+        lastError = error;
+        // Continue to next endpoint
+      }
     }
-
-    return await response.json()
-  } catch (error) {
-    throw error
+    
+    // If all endpoints failed, throw the last error
+    if (!response) {
+      throw lastError || new Error('All resend verification code endpoints failed');
+    }
+    
+    console.log('Resend verification code response:', response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error('Resend verification code error:', error.response?.data || error.message);
+    // Format error to match expected structure
+    if (error.response) {
+      throw { response: { data: error.response.data } };
+    }
+    throw error;
   }
 }
 
 // Reset Password Request
 export const ResetPasswordRequest = async (params: ResetPasswordParams) => {
   try {
-    const response = await fetch(`${baseURL}/auth/reset-password`, {
-      method: "POST",
+    console.log('Resetting password with params:', params);
+    console.log('Using base URL:', baseURL);
+    
+    // Use axios instead of fetch to handle CORS better
+    const response = await axios.post(`${baseURL}/auth/reset-password`, params, {
       headers: {
         "Content-Type": "application/json",
+        "Accept": "application/json"
       },
-      body: JSON.stringify(params),
-    })
-
-    if (!response.ok) {
-      const errorData = await response.json()
-      throw { response: { data: errorData } }
+    });
+    
+    console.log('Reset password response:', response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error('Reset password error:', error.response?.data || error.message);
+    // Format error to match expected structure
+    if (error.response) {
+      throw { response: { data: error.response.data } };
     }
-
-    return await response.json()
-  } catch (error) {
-    console.error('Error resetting password:', error)
-    throw error
+    throw error;
   }
 }
 
@@ -495,6 +546,744 @@ export const UpdateProfileRequest = async (params: UpdateProfileParams) => {
     return data;
   } catch (error) {
     console.error('Error updating profile:', error);
+    throw error;
+  }
+}
+
+// SEARCH REQUEST
+export const SearchRequest = async (params: SearchRequestParams) => {
+  try {
+    console.log('Performing search with params:', params);
+    
+    // Get the user ID from session storage for authentication
+    const userId = sessionStorage.getItem('user_id');
+    
+    if (!userId) {
+      throw new Error('User ID not found. Please login again.');
+    }
+    
+    // Get authentication token from session storage
+    let authToken = null;
+    
+    // Try getting the token directly from the token storage
+    const tokenStr = sessionStorage.getItem('token');
+    if (tokenStr) {
+      console.log('Found token in session storage:', tokenStr);
+      authToken = tokenStr;
+    }
+    
+    // If that fails, try getting it from the auth object
+    if (!authToken) {
+      const authStr = sessionStorage.getItem('auth');
+      if (authStr) {
+        try {
+          const auth = JSON.parse(authStr);
+          
+          if (auth.accessToken) {
+            authToken = auth.accessToken;
+          } else if (auth.data && auth.data.token) {
+            authToken = auth.data.token;
+          } else if (auth.token) {
+            authToken = auth.token;
+          }
+        } catch (error) {
+          console.error('Error parsing auth data:', error);
+        }
+      }
+    }
+    
+    if (!authToken) {
+      throw new Error('Authentication token not found. Please login again.');
+    }
+    
+    // Create a regular object for axios
+    const searchData = {
+      search_type: params.search_type || 'search_report',
+      title_type: params.title_type || '',
+      lga_id: params.lga_id || '',
+      state_id: params.state_id || '',
+      lga: params.lga || '',
+      state: params.state || '',
+      register_title: params.register_title || '',
+      plot_number: params.plot_number || '',
+      plot_street_name: params.plot_street_name || '',
+      city: params.city || '',
+      survey_plan_number: params.survey_plan_number || '',
+      property_owner: params.property_owner || '',
+      user_id: userId
+    };
+    
+    // Make the API call using axios
+    const response = await axios.post(`${baseURL}/user/search`, searchData, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Accept': 'application/vnd.connect.v1+json',
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    const data = response.data;
+    console.log('Search response:', data);
+    
+    return data;
+  } catch (error) {
+    console.error('Error performing search:', error);
+    throw error;
+  }
+}
+
+// GET SEARCH HISTORY
+export const GetSearchHistory = async () => {
+  try {
+    // Get the user ID from session storage for authentication
+    const userId = sessionStorage.getItem('user_id');
+    
+    if (!userId) {
+      throw new Error('User ID not found. Please login again.');
+    }
+    
+    // Get authentication token from session storage
+    let authToken = null;
+    
+    // Try getting the token directly from the token storage
+    const tokenStr = sessionStorage.getItem('token');
+    if (tokenStr) {
+      console.log('Found token in session storage:', tokenStr);
+      authToken = tokenStr;
+    }
+    
+    // If that fails, try getting it from the auth object
+    if (!authToken) {
+      const authStr = sessionStorage.getItem('auth');
+      if (authStr) {
+        try {
+          const auth = JSON.parse(authStr);
+          
+          if (auth.accessToken) {
+            authToken = auth.accessToken;
+          } else if (auth.data && auth.data.token) {
+            authToken = auth.data.token;
+          } else if (auth.token) {
+            authToken = auth.token;
+          }
+        } catch (error) {
+          console.error('Error parsing auth data:', error);
+        }
+      }
+    }
+    
+    if (!authToken) {
+      throw new Error('Authentication token not found. Please login again.');
+    }
+    
+    // Make the API call using axios
+    const response = await axios.get(`${baseURL}/user/search/history`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Accept': 'application/vnd.connect.v1+json',
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    const data = response.data;
+    console.log('Search history response:', data);
+    
+    return data;
+  } catch (error) {
+    console.error('Error getting search history:', error);
+    throw error;
+  }
+}
+
+// GET SEARCH BY ID
+export const GetSearchById = async (searchId: string) => {
+  try {
+    // Get the user ID from session storage for authentication
+    const userId = sessionStorage.getItem('user_id');
+    
+    if (!userId) {
+      throw new Error('User ID not found. Please login again.');
+    }
+    
+    // Get authentication token from session storage
+    let authToken = null;
+    
+    // Try getting the token directly from the token storage
+    const tokenStr = sessionStorage.getItem('token');
+    if (tokenStr) {
+      console.log('Found token in session storage:', tokenStr);
+      authToken = tokenStr;
+    }
+    
+    // If that fails, try getting it from the auth object
+    if (!authToken) {
+      const authStr = sessionStorage.getItem('auth');
+      if (authStr) {
+        try {
+          const auth = JSON.parse(authStr);
+          
+          if (auth.accessToken) {
+            authToken = auth.accessToken;
+          } else if (auth.data && auth.data.token) {
+            authToken = auth.data.token;
+          } else if (auth.token) {
+            authToken = auth.token;
+          }
+        } catch (error) {
+          console.error('Error parsing auth data:', error);
+        }
+      }
+    }
+    
+    if (!authToken) {
+      throw new Error('Authentication token not found. Please login again.');
+    }
+    
+    // Make the API call using axios
+    const response = await axios.get(`${baseURL}/user/search/${searchId}`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Accept': 'application/vnd.connect.v1+json',
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    const data = response.data;
+    console.log('Search by ID response:', data);
+    
+    return data;
+  } catch (error) {
+    console.error('Error getting search by ID:', error);
+    throw error;
+  }
+}
+
+// GET STATES
+export const GetStates = async () => {
+  try {
+    console.log('Making API call to get states...');
+    console.log('Base URL:', baseURL);
+    
+    // Get auth token for authenticated requests
+    let authToken = null;
+    const tokenStr = sessionStorage.getItem('token');
+    const authStr = sessionStorage.getItem('auth');
+    
+    if (tokenStr) {
+      authToken = tokenStr;
+    } else if (authStr) {
+      try {
+        const auth = JSON.parse(authStr);
+        if (auth.token) authToken = auth.token;
+        else if (auth.accessToken) authToken = auth.accessToken;
+        else if (auth.data && auth.data.token) authToken = auth.data.token;
+      } catch (e) {
+        console.error('Error parsing auth:', e);
+      }
+    }
+    
+    // Try both with and without authentication
+    let response;
+    try {
+      // First try with authentication
+      if (authToken) {
+        console.log('Trying with authentication');
+        response = await axios.get(`${baseURL}/states`, {
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+        });
+      } else {
+        throw new Error('No auth token found');
+      }
+    } catch (authError) {
+      console.log('Auth request failed, trying without authentication');
+      // If that fails, try without authentication
+      response = await axios.get(`${baseURL}/states`, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+    }
+    
+    const data = response.data;
+    console.log('States response:', data);
+    
+    // Handle different response formats
+    if (data && data.data && Array.isArray(data.data)) {
+      return data.data.map((state: any) => ({
+        id: state.id.toString(),
+        label: state.name,
+        active: true
+      }));
+    } else if (Array.isArray(data)) {
+      return data.map((state: any) => ({
+        id: state.id?.toString() || state.state_id?.toString() || '0',
+        label: state.name || state.state || '',
+        active: true
+      }));
+    }
+    
+    console.warn('Unexpected state data format:', data);
+    return [];
+  } catch (error) {
+    console.error('Error fetching states:', error);
+    // Return empty array instead of throwing to prevent UI breakage
+    return [];
+  }
+};
+
+// GET ALL CASES
+export const GetAllCases = async () => {
+  try {
+    console.log('Fetching all cases...');
+    const baseURL = process.env.NEXT_PUBLIC_URL || '';
+    
+    // Get authentication token from session storage
+    let authToken = '';
+    
+    if (typeof window !== 'undefined') {
+      // Try multiple possible storage locations for the token
+      
+      // First try direct token storage
+      const directToken = sessionStorage.getItem('token');
+      if (directToken) {
+        console.log('Found token in direct storage');
+        authToken = directToken;
+      }
+      
+      // If not found, try the auth object
+      if (!authToken) {
+        const authData = sessionStorage.getItem('auth');
+        if (authData) {
+          try {
+            const parsedData = JSON.parse(authData);
+            if (parsedData.token) {
+              authToken = parsedData.token;
+            } else if (parsedData.accessToken) {
+              authToken = parsedData.accessToken;
+            } else if (parsedData.data && parsedData.data.token) {
+              authToken = parsedData.data.token;
+            }
+          } catch (error) {
+            console.error('Error parsing auth data:', error);
+          }
+        }
+      }
+      
+      // For testing purposes, use a mock token if no token is found
+      if (!authToken) {
+        console.warn('No auth token found, using mock token for development');
+        authToken = 'mock_token_for_development';
+      }
+    }
+    
+    if (!authToken) {
+      console.error('Authentication token not found');
+      return { success: false, error: 'Authentication token not found', data: [] };
+    }
+    
+    // Use the correct endpoint
+    const endpoint = '/courtStaff/case';
+    
+    console.log(`Making API request to: ${baseURL}${endpoint}`);
+    const response = await axios.get(`${baseURL}${endpoint}`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    console.log('API Response:', response.data);
+    
+    // Process the response data to ensure it matches our expected format
+    let casesData = [];
+    
+    if (response.data && Array.isArray(response.data)) {
+      casesData = response.data;
+    } else if (response.data && response.data.data && Array.isArray(response.data.data)) {
+      casesData = response.data.data;
+    } else if (response.data && typeof response.data === 'object') {
+      // If it's a single case object, wrap it in an array
+      casesData = [response.data];
+    }
+    
+    // Map the API response to our expected format if needed
+    const formattedCases = casesData.map((caseItem: any) => ({
+      id: caseItem.id || caseItem._id || String(Math.random()),
+      title: caseItem.title || caseItem.tile || 'Untitled Case',
+      address: caseItem.address || 'No address provided',
+      status: (caseItem.status || 'pending').toLowerCase(),
+      owner_name: caseItem.owner_name || 'Unknown owner',
+      suit_number: caseItem.suit_number || 'No suit number',
+      date_of_commencement: caseItem.date_of_commencement || '',
+      date_of_disposal: caseItem.date_of_disposal || '',
+      court_details: caseItem.court_details || '',
+      nature_of_case: caseItem.nature_of_case || '',
+      judicial_division_id: caseItem.judicial_division_id || '',
+      state_id: caseItem.state_id || '',
+      lga_id: caseItem.lga_id || '',
+      created_at: caseItem.created_at || '',
+      updated_at: caseItem.updated_at || ''
+    }));
+    
+    console.log('Formatted cases data:', formattedCases);
+    return { success: true, data: formattedCases };
+  } catch (error) {
+    console.error('Error in GetAllCases:', error);
+    return { success: false, error: (error as Error).message || 'Failed to fetch cases', data: [] };
+  }
+};
+
+// GET JUDICIAL DIVISIONS
+export const GetJudicialDivisions = async () => {
+  try {
+    console.log('Making API call to get judicial divisions');
+    console.log('Base URL:', baseURL);
+    
+    // Get auth token for authenticated requests
+    let authToken = null;
+    const tokenStr = sessionStorage.getItem('token');
+    const authStr = sessionStorage.getItem('auth');
+    
+    if (tokenStr) {
+      authToken = tokenStr;
+    } else if (authStr) {
+      try {
+        const auth = JSON.parse(authStr);
+        if (auth.token) authToken = auth.token;
+        else if (auth.accessToken) authToken = auth.accessToken;
+        else if (auth.data && auth.data.token) authToken = auth.data.token;
+      } catch (e) {
+        console.error('Error parsing auth:', e);
+      }
+    }
+    
+    // Try multiple endpoint formats
+    let response;
+    const endpoints = [
+      
+      '/court-staff/judicial-divisions',
+      
+    ];
+    
+    let lastError = null;
+    
+    // Try with authentication first
+    if (authToken) {
+      for (const endpoint of endpoints) {
+        try {
+          console.log(`Trying authenticated endpoint: ${endpoint}`);
+          response = await axios.get(`${baseURL}${endpoint}`, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`,
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          });
+          console.log(`Success with endpoint: ${endpoint}`);
+          break; // Exit loop if successful
+        } catch (error) {
+          console.log(`Failed with endpoint: ${endpoint}`, error);
+          lastError = error;
+        }
+      }
+    }
+    
+    // If all authenticated attempts failed, try without authentication
+    if (!response) {
+      for (const endpoint of endpoints) {
+        try {
+          console.log(`Trying unauthenticated endpoint: ${endpoint}`);
+          response = await axios.get(`${baseURL}${endpoint}`, {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          });
+          console.log(`Success with endpoint: ${endpoint}`);
+          break; // Exit loop if successful
+        } catch (error) {
+          console.log(`Failed with endpoint: ${endpoint}`, error);
+          lastError = error;
+        }
+      }
+    }
+    
+    // If all attempts failed, throw the last error
+    if (!response) {
+      throw lastError || new Error('All judicial divisions API endpoints failed');
+    }
+    
+    const data = response.data;
+    console.log('Judicial divisions response:', data);
+    
+    // Handle different response formats
+    if (data && data.data && Array.isArray(data.data)) {
+      return data.data.map((division: any) => ({
+        id: division.id?.toString() || '0',
+        label: division.name || division.label || '',
+        active: true
+      }));
+    } else if (Array.isArray(data)) {
+      return data.map((division: any) => ({
+        id: division.id?.toString() || division.division_id?.toString() || '0',
+        label: division.name || division.label || division.division || '',
+        active: true
+      }));
+    }
+    
+    console.warn('Unexpected judicial divisions data format:', data);
+    return [];
+  } catch (error) {
+    console.error('Error fetching judicial divisions:', error);
+    // Return empty array instead of throwing to prevent UI breakage
+    return [];
+  }
+};
+
+// GET LGAS BY STATE
+export const GetLGAs = async (stateId: string) => {
+  try {
+    console.log('Making API call to get LGAs for state ID:', stateId);
+    console.log('Base URL:', baseURL);
+    
+    // Get auth token for authenticated requests
+    let authToken = null;
+    const tokenStr = sessionStorage.getItem('token');
+    const authStr = sessionStorage.getItem('auth');
+    
+    if (tokenStr) {
+      authToken = tokenStr;
+    } else if (authStr) {
+      try {
+        const auth = JSON.parse(authStr);
+        if (auth.token) authToken = auth.token;
+        else if (auth.accessToken) authToken = auth.accessToken;
+        else if (auth.data && auth.data.token) authToken = auth.data.token;
+      } catch (e) {
+        console.error('Error parsing auth:', e);
+      }
+    }
+    
+    // Try multiple endpoint formats
+    let response;
+    const endpoints = [
+      `/lgas/${stateId}`,  // With slash between lgas and stateId
+      `/lgas?state_id=${stateId}`, // Query parameter format
+      `/lgas`  // Try getting all LGAs and filter client-side
+    ];
+    
+    let lastError = null;
+    
+    // Try with authentication first
+    if (authToken) {
+      for (const endpoint of endpoints) {
+        try {
+          console.log(`Trying authenticated endpoint: ${endpoint}`);
+          response = await axios.get(`${baseURL}${endpoint}`, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`,
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          });
+          console.log(`Success with endpoint: ${endpoint}`);
+          break; // Exit loop if successful
+        } catch (error) {
+          console.log(`Failed with endpoint: ${endpoint}`, error);
+          lastError = error;
+        }
+      }
+    }
+    
+    // If all authenticated attempts failed, try without authentication
+    if (!response) {
+      for (const endpoint of endpoints) {
+        try {
+          console.log(`Trying unauthenticated endpoint: ${endpoint}`);
+          response = await axios.get(`${baseURL}${endpoint}`, {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          });
+          console.log(`Success with endpoint: ${endpoint}`);
+          break; // Exit loop if successful
+        } catch (error) {
+          console.log(`Failed with endpoint: ${endpoint}`, error);
+          lastError = error;
+        }
+      }
+    }
+    
+    // If all attempts failed, throw the last error
+    if (!response) {
+      throw lastError || new Error('All LGA API endpoints failed');
+    }
+    
+    const data = response.data;
+    console.log('LGAs response:', data);
+    
+    // Handle different response formats
+    if (data && data.data && Array.isArray(data.data)) {
+      return data.data.map((lga: any) => ({
+        id: lga.id?.toString() || '0',
+        label: lga.name || lga.label || '',
+        active: true
+      }));
+    } else if (Array.isArray(data)) {
+      return data.map((lga: any) => ({
+        id: lga.id?.toString() || lga.lga_id?.toString() || '0',
+        label: lga.name || lga.label || lga.lga || '',
+        active: true
+      }));
+    } else if (data && typeof data === 'object') {
+      // Try to extract LGAs from other possible formats
+      const possibleArrays = Object.values(data).filter(val => Array.isArray(val));
+      if (possibleArrays.length > 0) {
+        const lgaArray = possibleArrays[0] as any[];
+        return lgaArray.map((lga: any) => ({
+          id: lga.id?.toString() || lga.lga_id?.toString() || '0',
+          label: lga.name || lga.label || lga.lga || '',
+          active: true
+        }));
+      }
+    }
+    
+    console.warn('Unexpected LGA data format:', data);
+    return [];
+  } catch (error) {
+    console.error('Error fetching LGAs:', error);
+    // Return empty array instead of throwing to prevent UI breakage
+    return [];
+  }
+};
+
+// VERIFY PAYMENT
+export const VerifyPayment = async (reference: string) => {
+  try {
+    // Get authentication token from session storage
+    let authToken = null;
+    
+    // Try getting the token directly from the token storage
+    const tokenStr = sessionStorage.getItem('token');
+    if (tokenStr) {
+      console.log('Found token in session storage:', tokenStr);
+      authToken = tokenStr;
+    }
+    
+    // If that fails, try getting it from the auth object
+    if (!authToken) {
+      const authStr = sessionStorage.getItem('auth');
+      if (authStr) {
+        try {
+          const auth = JSON.parse(authStr);
+          
+          if (auth.accessToken) {
+            authToken = auth.accessToken;
+          } else if (auth.data && auth.data.token) {
+            authToken = auth.data.token;
+          } else if (auth.token) {
+            authToken = auth.token;
+          }
+        } catch (error) {
+          console.error('Error parsing auth data:', error);
+        }
+      }
+    }
+    
+    if (!authToken) {
+      throw new Error('Authentication token not found. Please login again.');
+    }
+    
+    // Create form data for the API request
+    const formData = new FormData();
+    formData.append('reference', reference);
+    
+    // Make the API call using axios
+    const response = await axios.post(`${baseURL}/user/payment/verify`, formData, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        // Don't set Content-Type for FormData - browser will set it with boundary
+      },
+    });
+    
+    const data = response.data;
+    console.log('Payment verification response:', data);
+    
+    return data;
+  } catch (error) {
+    console.error('Error verifying payment:', error);
+    throw error;
+  }
+}
+
+// DELETE ACCOUNT
+export const DeleteAccountRequest = async () => {
+  try {
+    // Get authentication token from session storage
+    let authToken = null;
+    
+    // Try getting the token directly from the token storage
+    const tokenStr = sessionStorage.getItem('token');
+    if (tokenStr) {
+      console.log('Found token in session storage:', tokenStr);
+      authToken = tokenStr;
+    }
+    
+    // If that fails, try getting it from the auth object
+    if (!authToken) {
+      const authStr = sessionStorage.getItem('auth');
+      if (authStr) {
+        try {
+          const auth = JSON.parse(authStr);
+          
+          if (auth.accessToken) {
+            authToken = auth.accessToken;
+          } else if (auth.data && auth.data.token) {
+            authToken = auth.data.token;
+          } else if (auth.token) {
+            authToken = auth.token;
+          }
+        } catch (error) {
+          console.error('Error parsing auth data:', error);
+        }
+      }
+    }
+    
+    if (!authToken) {
+      throw new Error('Authentication token not found. Please login again.');
+    }
+    
+    console.log('Deleting account...');
+    
+    // Make the API call using axios
+    const response = await axios.post(`${baseURL}/delete/account`, 
+      {},  // Empty payload as per Postman screenshot
+      {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        timeout: 10000,
+      }
+    );
+    
+    const data = response.data;
+    console.log('Delete account response:', data);
+    
+    // Clear session storage after successful account deletion
+    sessionStorage.clear();
+    
+    return data;
+  } catch (error) {
+    console.error('Error deleting account:', error);
     throw error;
   }
 }

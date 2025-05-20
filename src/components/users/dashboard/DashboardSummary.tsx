@@ -16,7 +16,7 @@ interface DashboardSummaryProps {
 }
 
 const DashboardSummary: React.FC<DashboardSummaryProps> = ({
-  userName,
+  userName: propUserName,
   totalProperties,
   totalSearches,
   profileCompletion,
@@ -29,7 +29,62 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
   } = useForm()
   const [isSearching, setIsSearching] = useState(false)
   const [screenSize, setScreenSize] = useState<"small" | "medium" | "large">("large")
+  const [userName, setUserName] = useState(propUserName || 'User')
 
+  // Fetch user name from storage
+  useEffect(() => {
+    const getUserNameFromStorage = () => {
+      try {
+        // Try to get user data from auth in session storage first
+        const authStr = sessionStorage.getItem('auth');
+        if (authStr) {
+          const auth = JSON.parse(authStr);
+          if (auth.data) {
+            // Use name or first_name from auth data
+            const name = auth.data.first_name || auth.data.name || auth.data.email;
+            if (name) {
+              setUserName(name);
+              return;
+            }
+          }
+        }
+        
+        // Try to get user data from user in session storage
+        const userStr = sessionStorage.getItem('user');
+        if (userStr) {
+          const userData = JSON.parse(userStr);
+          const name = userData.first_name || userData.name || userData.email;
+          if (name) {
+            setUserName(name);
+            return;
+          }
+        }
+        
+        // Try localStorage as a fallback
+        const localUserStr = localStorage.getItem('user');
+        if (localUserStr) {
+          const localUserData = JSON.parse(localUserStr);
+          const name = localUserData.first_name || localUserData.name || localUserData.email;
+          if (name) {
+            setUserName(name);
+            return;
+          }
+        }
+        
+        // If we still don't have a name, use the prop value or default
+        if (!userName || userName === 'User') {
+          setUserName(propUserName || 'User');
+        }
+      } catch (error) {
+        console.error('Error getting user name from storage:', error);
+        // Fallback to prop value
+        setUserName(propUserName || 'User');
+      }
+    };
+    
+    getUserNameFromStorage();
+  }, [propUserName]);
+  
   // Detect screen size for better responsiveness
   useEffect(() => {
     const handleResize = () => {

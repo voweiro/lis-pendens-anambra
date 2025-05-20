@@ -113,22 +113,66 @@ const SignIn = () => {
         user_id: userId || undefined
       };
       
+      // Check if the user's email is verified
+      const isEmailVerified = typedResponse.data?.email_verified_at || false;
+      console.log('Email verification status:', isEmailVerified);
+      
       // Set auth state
       setAuth(authData);
 
-      toast.success("Login Successful");
-      
-
-      // Get the appropriate redirect path based on user type
-      const redirectPath = getUserRedirectPath(userType);
-      console.log('Redirecting to:', redirectPath);
-      
-      // Navigate to the appropriate page
-      router.push(redirectPath);
+      // If email is not verified, redirect to verification page
+      if (!isEmailVerified) {
+        toast.warning("Please verify your email address to continue");
+        console.log('Email not verified, redirecting to verification page');
+        
+        // Store the email in localStorage for the verification page
+        if (typedResponse.data?.email) {
+          localStorage.setItem('userEmail', typedResponse.data.email);
+        }
+        
+        // Redirect to verify-token page
+        router.push(`/pages/verify-token?email=${encodeURIComponent(typedResponse.data?.email || '')}&type=REGISTER`);
+      } else {
+        toast.success("Login Successful");
+        
+        // Get the appropriate redirect path based on user type
+        const redirectPath = getUserRedirectPath(userType);
+        console.log('Redirecting to:', redirectPath);
+        
+        // Navigate to the appropriate page
+        router.push(redirectPath);
+      }
 
     } catch (error: any) {
-      toast.error(error?.message || 'Login failed');
-      toast.error(error?.response?.data?.message);
+      console.error('Login error:', error);
+      
+      // Check if the error is related to email verification
+      const errorMessage = error?.response?.data?.message || error?.message || 'Login failed';
+      console.log('Error message:', errorMessage);
+      
+      // Check if the error message contains verification related text
+      if (errorMessage.toLowerCase().includes('verified') || 
+          errorMessage.toLowerCase().includes('verify') || 
+          errorMessage.toLowerCase().includes('verification') ||
+          errorMessage.toLowerCase().includes('account hasn\'t been verified')) {
+        
+        toast.warning("Please verify your email address to continue");
+        console.log('Email verification required, redirecting to verification page');
+        
+        // Try to get the email from the form data that was submitted
+        const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
+        const email = emailInput?.value || '';
+        if (email) {
+          localStorage.setItem('userEmail', email);
+        }
+        
+        // Redirect to verify-token page
+        router.push(`/pages/verify-token?email=${encodeURIComponent(email || '')}&type=REGISTER`);
+      } else {
+        // For other errors, show the error message
+        toast.error(errorMessage);
+      }
+      
       // Set login loading state to false when there's an error
       setLoginLoading(false);
     }

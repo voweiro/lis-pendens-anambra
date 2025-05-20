@@ -2,12 +2,12 @@
 
 import type React from "react"
 
-import { useState } from "react"
-import { NigeriaStateLGAData } from "@/components/utils/StateData"
+import { useState, useEffect } from "react"
 import type { FieldErrors, UseFormRegister, UseFormWatch } from "react-hook-form"
 import { useRouter } from "next/navigation"
 import { toast } from "react-toastify"
 import { Search, MapPin, FileText, User, X, Loader2 } from "lucide-react"
+import { SearchRequest, GetStates, GetLGAs } from "@/Services/AuthRequest/auth.request"
 
 interface SearchFormProps {
   register: UseFormRegister<any>
@@ -17,137 +17,285 @@ interface SearchFormProps {
   onClose: () => void
 }
 
+interface State {
+  id: string;
+  label: string;
+  active: boolean;
+  url?: string;
+}
+
+interface LGA {
+  id: string;
+  label: string;
+  active: boolean;
+  url?: string;
+}
+
 const UsersSearchForm: React.FC<SearchFormProps> = ({ register, errors, watch, isSearching, onClose }) => {
   const router = useRouter()
   const [activeSection, setActiveSection] = useState<"property" | "location" | "owner">("property")
-
-  const stateList = (stateName: string) => {
-    const stateResult = NigeriaStateLGAData.find((state) => state.name === stateName)
-    return stateResult ? stateResult.lgas : []
-  }
+  const [states, setStates] = useState<State[]>([])
+  const [lgas, setLgas] = useState<LGA[]>([])
+  const [loadingStates, setLoadingStates] = useState(false)
+  const [loadingLgas, setLoadingLgas] = useState(false)
+  const [stateError, setStateError] = useState<string | null>(null)
+  const [lgaError, setLgaError] = useState<string | null>(null)
+  
+  // Fetch states when component mounts
+  useEffect(() => {
+    const fetchStates = async () => {
+      setLoadingStates(true)
+      setStateError(null)
+      try {
+        const response = await GetStates()
+        if (response && Array.isArray(response)) {
+          setStates(response)
+        } else if (response && response.data && Array.isArray(response.data)) {
+          setStates(response.data)
+        } else {
+          console.error('Unexpected states response format:', response)
+          setStateError('Failed to load states. Please try again.')
+        }
+      } catch (error) {
+        console.error('Error fetching states:', error)
+        setStateError('Failed to load states. Please try again.')
+      } finally {
+        setLoadingStates(false)
+      }
+    }
+    
+    fetchStates()
+  }, [])
+  
+  // Fetch LGAs when state changes
+  const selectedState = watch('state')
+  
+  useEffect(() => {
+    if (!selectedState) {
+      setLgas([])
+      return
+    }
+    
+    const fetchLgas = async () => {
+      setLoadingLgas(true)
+      setLgaError(null)
+      try {
+        const response = await GetLGAs(selectedState)
+        if (response && Array.isArray(response)) {
+          setLgas(response)
+        } else if (response && response.data && Array.isArray(response.data)) {
+          setLgas(response.data)
+        } else {
+          console.error('Unexpected LGAs response format:', response)
+          setLgaError('Failed to load local governments. Please try again.')
+        }
+      } catch (error) {
+        console.error('Error fetching LGAs:', error)
+        setLgaError('Failed to load local governments. Please try again.')
+      } finally {
+        setLoadingLgas(false)
+      }
+    }
+    
+    fetchLgas()
+  }, [selectedState])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     try {
+      // Find the selected state and LGA objects from our arrays
+      const stateId = (e.target as any).state.value;
+      const lgaId = (e.target as any).lga.value;
+      
+      // Find the state and LGA labels for display purposes
+      const selectedState = states.find(state => state.id === stateId);
+      const selectedLGA = lgas.find(lga => lga.id === lgaId);
+      
+      console.log('Selected state:', selectedState);
+      console.log('Selected LGA:', selectedLGA);
+      
+      // Extract form data
       const formData = {
         search_type: "search_report", // Always set for user dashboard search
         title_type: (e.target as any).propertyTitle.value,
-        lga: (e.target as any).lga.value,
-        state: (e.target as any).state.value,
-        registerTitle: (e.target as any).registerTitle.value,
-        plotNumber: (e.target as any).plotNumber.value,
-        plotStreetName: (e.target as any).plotStreetName.value,
+        lga_id: lgaId, // Use the ID directly as lga_id
+        state_id: stateId, // Use the ID directly as state_id
+        lga: selectedLGA?.label || lgaId, // Use label for display, fallback to ID
+        state: selectedState?.label || stateId, // Use label for display, fallback to ID
+        register_title: (e.target as any).registerTitle.value,
+        plot_number: (e.target as any).plotNumber.value,
+        plot_street_name: (e.target as any).plotStreetName.value,
         city: (e.target as any).city.value,
-        surveyPlanNumber: (e.target as any).surveyPlanNumber.value,
-        propertyOwner: (e.target as any).propertyOwner.value,
+        survey_plan_number: (e.target as any).surveyPlanNumber.value,
+        property_owner: (e.target as any).propertyOwner.value,
       }
-
-      const baseUrl = process.env.NEXT_PUBLIC_URL || "http://147.182.229.165/api"
 
       try {
-        // Create form data for the API request - using only form values
-        const form = new FormData()
+        // Call the SearchRequest function from auth.request.ts
+        const result = await SearchRequest(formData)
 
-        // Add the required fields in the exact format from Postman
-        form.append("search_type", "search_report")
-        form.append("title_type", formData.title_type || "")
-        form.append("lga", formData.lga || "")
-        form.append("state", formData.state || "")
-
-        // Get user ID from session storage if available
-        const userId = sessionStorage.getItem("user_id")
-        if (userId) {
-          form.append("user_id", userId)
+        if (!result) {
+          throw new Error('No response from search API')
         }
 
-        // Get authentication token from sessionStorage
-        let authToken = null
-        try {
-          // Try to get token from auth object
-          const authStr = sessionStorage.getItem("auth")
-          if (authStr) {
-            const auth = JSON.parse(authStr)
-            authToken = auth.accessToken || auth.token
+        console.log('Search response:', result);
+
+        // Process the search results
+        let searchId = null;
+        
+        // Based on the screenshot, the search response contains the data directly
+        // The search_id is in the data object
+        if (result.success === true) {
+          // Extract search_id from the response
+          if (result.data && result.data.search_id) {
+            searchId = result.data.search_id;
+            console.log('Found search_id in response.data:', searchId);
+          } else if (result.search_id) {
+            searchId = result.search_id;
+            console.log('Found search_id in response root:', searchId);
           }
-
-          // If not found in auth object, try direct token
-          if (!authToken) {
-            authToken = sessionStorage.getItem("accessToken") || sessionStorage.getItem("token")
+          
+          // If we have a message about proceeding to payment but no search_id,
+          // look for the ID in the response data
+          if (!searchId && result.message && result.message.includes("payment")) {
+            // Try to extract ID from the data
+            if (result.data && result.data.id) {
+              searchId = result.data.id;
+              console.log('Using data.id as search_id:', searchId);
+            } else if (result.id) {
+              searchId = result.id;
+              console.log('Using result.id as search_id:', searchId);
+            }
           }
-        } catch (e) {
-          console.error("Error getting auth token:", e)
-        }
-
-        // Add proper headers for the API call with authentication
-        const response = await fetch(`${baseUrl}/search-property-user`, {
-          method: "POST",
-          headers: {
-            // Don't set Content-Type for FormData - browser will set it with boundary
-            Accept: "application/json",
-            ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
-          },
-          body: form,
-        })
-
-        if (!response.ok) {
-          console.error(`Search API failed with status: ${response.status}`)
-          // Continue with hardcoded values if the API fails
-          throw new Error(`Search failed with status: ${response.status}`)
-        }
-
-        const result = await response.json()
-
-        // Extract the pendens_ids directly from the API response
-        const pendensIdsArray = result.pendens_ids || []
-
-        // Format as comma-separated string for the backend
-        const pendensIdsString = pendensIdsArray.join(",")
-
-        // Add pendens_ids to the form data before storing
-        const formDataWithPendensId = {
-          ...formData,
-          pendens_ids: pendensIdsArray,
-          pendens_id: pendensIdsString,
-        }
-
-        // Store the search parameters with pendens_id
-        sessionStorage.setItem("pendingSearchParams", JSON.stringify(formDataWithPendensId))
-
-        // Process and store the real search results
-        if (result.data && Array.isArray(result.data) && result.data.length > 0) {
-          // Format the search results for display
+          
+          // Format the results for display
+          const formattedResults = [{
+            id: searchId || 'pending',
+            title: formData.title_type || "Property Title",
+            owner: formData.property_owner || "Property Owner",
+            summary: `${formData.lga}, ${formData.state}`,
+            details: result.data || result,
+          }];
+          
+          // Store the formatted results
+          sessionStorage.setItem("searchResults", JSON.stringify(formattedResults));
+        } else if (Array.isArray(result.data) && result.data.length > 0) {
+          // Handle case where data is an array
           const formattedResults = result.data.map((item: any) => ({
-            id: item.id || item._id,
-            title: item.property_title || item.title_type || "Property Title",
-            owner: item.name_of_owner || "Property Owner",
+            id: item.id || item._id || item.search_id || 'pending',
+            title: item.property_title || item.title_type || formData.title_type || "Property Title",
+            owner: item.name_of_owner || formData.property_owner || "Property Owner",
             summary: `${item.lga || formData.lga}, ${item.state || formData.state}`,
-            details: item, // Keep all original data
-          }))
-
-          sessionStorage.setItem("searchResults", JSON.stringify(formattedResults))
+            details: item,
+          }));
+          
+          // Get the search ID from the first result if available
+          if (result.data[0].search_id) {
+            searchId = result.data[0].search_id;
+          } else if (result.data[0].id) {
+            searchId = result.data[0].id;
+          } else if (result.data[0]._id) {
+            searchId = result.data[0]._id;
+          }
+          
+          sessionStorage.setItem("searchResults", JSON.stringify(formattedResults));
         }
-      } catch (searchError) {
+        
+        // If we still don't have a search ID but need to proceed with payment
+        if (!searchId && result.message && result.message.includes("payment")) {
+          // Look for ID in the response data structure
+          const dataObj = typeof result.data === 'object' ? result.data : result;
+          
+          // Try to find any ID field that might be the search ID
+          for (const key of Object.keys(dataObj)) {
+            if (key.toLowerCase().includes('id') && typeof dataObj[key] === 'string' && dataObj[key].length > 0) {
+              searchId = dataObj[key];
+              console.log(`Found potential search ID in field ${key}:`, searchId);
+              break;
+            }
+          }
+        }
+        
+        // Store the search ID separately for easy access
+        if (searchId) {
+          console.log('Storing search ID in session storage:', searchId);
+          sessionStorage.setItem("currentSearchId", searchId);
+        } else {
+          console.warn('No search ID found in the response');
+          // If there's no search ID but we need to proceed, use the user ID as a fallback
+          const userId = sessionStorage.getItem('user_id');
+          if (userId) {
+            searchId = userId;
+            console.log('Using user ID as fallback search ID:', searchId);
+            sessionStorage.setItem("currentSearchId", searchId);
+          }
+        }
+
+        // Store the search parameters for the next page
+        sessionStorage.setItem("pendingSearchParams", JSON.stringify(formData))
+        
+        // Get user information from storage
+        let userName = ""
+        let userEmail = ""
+        
+        // Try to get user info from session storage
+        const userStr = sessionStorage.getItem('user')
+        if (userStr) {
+          try {
+            const userData = JSON.parse(userStr)
+            userName = userData.name || userData.fullName || ""
+            userEmail = userData.email || ""
+          } catch (error) {
+            console.error('Error parsing user data:', error)
+          }
+        }
+        
+        // If user info not found in 'user', try auth object
+        if (!userName || !userEmail) {
+          const authStr = sessionStorage.getItem('auth')
+          if (authStr) {
+            try {
+              const auth = JSON.parse(authStr)
+              
+              if (auth.data && auth.data.user) {
+                userName = auth.data.user.name || auth.data.user.fullName || ""
+                userEmail = auth.data.user.email || ""
+              } else if (auth.user) {
+                userName = auth.user.name || auth.user.fullName || ""
+                userEmail = auth.user.email || ""
+              }
+            } catch (error) {
+              console.error('Error parsing auth data:', error)
+            }
+          }
+        }
+        
+        // Store user payment info for the payment gateway
+        const paymentInfo = {
+          userName,
+          userEmail,
+          searchId: result.data && result.data.length > 0 ? result.data[0].id || result.data[0]._id : null,
+          amount: 5000, // Default amount, adjust as needed
+          description: `Property Search - ${formData.lga}, ${formData.state}`
+        }
+        
+        sessionStorage.setItem("paymentInfo", JSON.stringify(paymentInfo))
+        
+        // Show success message
+        toast.success("Search completed successfully")
+
+        // Redirect to the get-access page
+        router.push("/users/get-access")
+      } catch (searchError: any) {
         console.error("Search API error:", searchError)
-        // Use hardcoded working pendens_ids if the search API fails
-        const workingPendensIds = [6, 8, 7, 3]
-        const workingPendensIdString = "6,8,7,3"
-
-        // Store the form data with hardcoded pendens_ids
-        const formDataWithHardcodedIds = {
-          ...formData,
-          pendens_ids: workingPendensIds,
-          pendens_id: workingPendensIdString,
-        }
-
-        sessionStorage.setItem("pendingSearchParams", JSON.stringify(formDataWithHardcodedIds))
-
-        // Show a warning to the user
-        toast.warning("Search service is currently experiencing issues. Using test data for payment.")
+        
+        // Show error message
+        toast.error(searchError?.response?.data?.message || "Search failed. Please try again.")
+        
+        // Store the form data anyway so we can try again
+        sessionStorage.setItem("pendingSearchParams", JSON.stringify(formData))
       }
-
-      // Redirect to payment page
-      router.push("/users/get-access")
     } catch (error) {
       console.error("Unexpected error:", error)
       toast.error("An unexpected error occurred. Please try again later.")
@@ -316,18 +464,32 @@ const UsersSearchForm: React.FC<SearchFormProps> = ({ register, errors, watch, i
                 <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">
                   State
                 </label>
-                <select
-                  id="state"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#23A863] focus:border-transparent"
-                  {...register("state")}
-                >
-                  <option value="">Select State</option>
-                  {NigeriaStateLGAData.map((state, index) => (
-                    <option key={index} value={state.name}>
-                      {state.name}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    id="state"
+                    {...register("state", { required: "State is required" })}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#23A863] focus:border-transparent"
+                    disabled={loadingStates}
+                  >
+                    <option value="">Select State</option>
+                    {states.map((state) => (
+                      <option key={state.id} value={state.id}>
+                        {state.label}
+                      </option>
+                    ))}
+                  </select>
+                  {loadingStates && (
+                    <div className="absolute right-2 top-2">
+                      <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+                    </div>
+                  )}
+                </div>
+                {stateError && (
+                  <p className="text-red-500 text-xs mt-1">{stateError}</p>
+                )}
+                {errors.state && (
+                  <p className="text-red-500 text-xs mt-1">{errors.state.message as string}</p>
+                )}
               </div>
             </div>
 
@@ -335,19 +497,32 @@ const UsersSearchForm: React.FC<SearchFormProps> = ({ register, errors, watch, i
               <label htmlFor="lga" className="block text-sm font-medium text-gray-700 mb-1">
                 Local Government Area (LGA)
               </label>
-              <select
-                id="lga"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#23A863] focus:border-transparent"
-                {...register("lga")}
-                disabled={!watch("state")}
-              >
-                <option value="">{watch("state") ? "Select LGA" : "Please select a state first"}</option>
-                {stateList(watch("state")).map((lga, index) => (
-                  <option key={index} value={lga.name}>
-                    {lga.name}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  id="lga"
+                  {...register("lga", { required: "LGA is required" })}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#23A863] focus:border-transparent"
+                  disabled={loadingLgas || !selectedState}
+                >
+                  <option value="">{selectedState ? "Select LGA" : "Please select a state first"}</option>
+                  {lgas.map((lga) => (
+                    <option key={lga.id} value={lga.id}>
+                      {lga.label}
+                    </option>
+                  ))}
+                </select>
+                {loadingLgas && (
+                  <div className="absolute right-2 top-2">
+                    <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+                  </div>
+                )}
+              </div>
+              {lgaError && (
+                <p className="text-red-500 text-xs mt-1">{lgaError}</p>
+              )}
+              {errors.lga && (
+                <p className="text-red-500 text-xs mt-1">{errors.lga.message as string}</p>
+              )}
             </div>
 
             <div className="pt-4 flex justify-between">

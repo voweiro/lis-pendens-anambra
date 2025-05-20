@@ -7,10 +7,12 @@ import PasswordConfirmationSetting from '@/components/users/setting/PasswordConf
 import DOBSetting from '@/components/users/setting/DOBSetting';
 import DeleteAccountModal from '@/components/users/setting/DeleteAccountModal';
 import NormalUserLayout from '@/components/users/layout';
-import { UpdateProfileRequest } from '@/Services/AuthRequest/auth.request';
+import { UpdateProfileRequest, DeleteAccountRequest } from '@/Services/AuthRequest/auth.request';
 import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 const UserSettingPage = () => {
+  const router = useRouter();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [dob, setDob] = useState('');
@@ -119,15 +121,32 @@ const UserSettingPage = () => {
   const handleDelete = async () => {
     setLoading(true);
     setMessage(null);
-    // Simulate API call
+    
     try {
-      await new Promise((res) => setTimeout(res, 1500));
+      // Call the delete account API
+      const response = await DeleteAccountRequest();
+      console.log('Delete account response:', response);
+      
+      // Handle successful deletion
       setLoading(false);
       setModalOpen(false);
+      
+      // Show success message
       setMessage({ type: 'success', text: 'Account deleted successfully.' });
-    } catch (err) {
+      toast.success('Account deleted successfully');
+      
+      // Redirect to login page after a short delay
+      setTimeout(() => {
+        router.push('/pages/signin');
+      }, 2000);
+    } catch (error: any) {
+      console.error('Error deleting account:', error);
       setLoading(false);
-      setMessage({ type: 'error', text: 'Failed to delete account. Please try again.' });
+      
+      // Show error message
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to delete account. Please try again.';
+      setMessage({ type: 'error', text: errorMessage });
+      toast.error(errorMessage);
     }
   };
 
