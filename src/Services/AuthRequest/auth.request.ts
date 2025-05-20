@@ -887,7 +887,7 @@ export const GetAllCases = async () => {
     }
     
     // Use the correct endpoint
-    const endpoint = '/courtStaff/case';
+    const endpoint = '/court-staff/cases';
     
     console.log(`Making API request to: ${baseURL}${endpoint}`);
     const response = await axios.get(`${baseURL}${endpoint}`, {
