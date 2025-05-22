@@ -1,14 +1,15 @@
+"use client";
+
 import React, { useState, useRef } from 'react';
 import { FiLock } from 'react-icons/fi';
 
-interface PasswordSettingProps {
+interface PasswordConfirmationSettingProps {
   onChange: (value: string) => void;
-  value?: string;
 }
 
-const PasswordSetting: React.FC<PasswordSettingProps> = ({ onChange, value: initialValue = '' }) => {
+const PasswordConfirmationSetting: React.FC<PasswordConfirmationSettingProps> = ({ onChange }) => {
   const [editing, setEditing] = useState(false);
-  const [value, setValue] = useState(initialValue);
+  const [value, setValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleEdit = () => {
@@ -31,8 +32,12 @@ const PasswordSetting: React.FC<PasswordSettingProps> = ({ onChange, value: init
   return (
     <div className="bg-white rounded-2xl shadow p-6 flex flex-col gap-2 min-w-[320px]">
       <div className="flex justify-between items-center mb-2">
-        <span className="font-semibold text-lg">Change password</span>
-        <button onClick={handleEdit} className="text-gray-400 hover:text-black"><svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2l4 4M3 13.5V17h3.5l9.5-9.5-3.5-3.5L3 13.5z"/></svg></button>
+        <span className="font-semibold text-lg">Confirm password</span>
+        <button onClick={handleEdit} className="text-gray-400 hover:text-black">
+          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 2l4 4M3 13.5V17h3.5l9.5-9.5-3.5-3.5L3 13.5z"/>
+          </svg>
+        </button>
       </div>
       <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-4 cursor-pointer" onClick={handleEdit}>
         <FiLock className="text-2xl text-gray-400" />
@@ -45,16 +50,14 @@ const PasswordSetting: React.FC<PasswordSettingProps> = ({ onChange, value: init
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
             type="password"
-            placeholder="Enter new password"
-            name="password"
-            id="password"
+            placeholder="Confirm your new password"
           />
         ) : (
-          <span className="text-base">{value ? '***************' : 'Set a new password'}</span>
+          <span className="text-base">***************</span>
         )}
       </div>
     </div>
   );
 };
 
-export default PasswordSetting;
+export default PasswordConfirmationSetting;

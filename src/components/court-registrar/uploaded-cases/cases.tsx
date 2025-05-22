@@ -11,12 +11,14 @@ import {
 } from "@/components/utils/dropdown-menu";
 import { GetAllCases } from "@/Services/AuthRequest/auth.request";
 import { toast } from "react-toastify";
+import { CaseDetailsModal } from "./case-details-modal";
 
 type CaseStatus = "ongoing" | "pending" | "concluded";
 
 interface Case {
   id: string;
-  title: string;
+  tile?: string; // Note: API has a typo, using 'tile' instead of 'title'
+  title?: string; // Keep this for backward compatibility
   address?: string;
   status: CaseStatus;
   owner_name?: string;
@@ -30,6 +32,15 @@ interface Case {
   lga_id?: string;
   created_at?: string;
   updated_at?: string;
+  title_number?: string;
+  survey_plan_number?: string;
+  parties?: string;
+  description_of_properties?: string; // New field
+  subject_matter?: string; // New field
+  street?: string;
+  city?: string;
+  plot_number?: string;
+  user_id?: string;
 }
 
 export default function CaseListing() {
@@ -38,6 +49,8 @@ export default function CaseListing() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+  const [selectedCase, setSelectedCase] = useState<Case | null>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   useEffect(() => {
@@ -50,6 +63,15 @@ export default function CaseListing() {
         
         if (response.success && response.data) {
           console.log('Fetched cases:', response.data);
+          
+          // Log the first case to check if the new fields are present
+          if (response.data.length > 0) {
+            console.log('First case details:', response.data[0]);
+            console.log('name_of_parties:', response.data[0].name_of_parties);
+            console.log('description_of_properties:', response.data[0].description_of_properties);
+            console.log('subject_matter:', response.data[0].subject_matter);
+          }
+          
           setCases(response.data);
         } else {
           console.error('Failed to fetch cases:', response.error);
@@ -127,20 +149,47 @@ export default function CaseListing() {
 
   // Update case status
   const updateCaseStatus = (
-    caseId: string,
+    id: string,
     newStatus: CaseStatus
   ) => {
-    setCases(
-      cases.map((caseItem) =>
-        caseItem.id === caseId
-          ? { ...caseItem, status: newStatus }
-          : caseItem
+    // Close the dropdown
+    setOpenDropdownId(null);
+    
+    // Update the case status in the local state
+    setCases(prevCases =>
+      prevCases.map(caseItem =>
+        caseItem.id === id ? { ...caseItem, status: newStatus } : caseItem
       )
     );
-    setOpenDropdownId(null); // Close dropdown after selection
+    
+    // Here you would typically make an API call to update the status on the server
+    toast.success(`Case status updated to ${newStatus}`);
   };
 
-  // Toggle dropdown
+  const handleViewDetails = (caseItem: Case) => {
+    // Create a complete case object with all fields explicitly copied
+    const completeCase = {
+      ...caseItem,
+      // Ensure new fields are explicitly included
+      parties: caseItem.parties || "",
+      description_of_properties: caseItem.description_of_properties || "",
+      subject_matter: caseItem.subject_matter || ""
+    };
+    
+    console.log('Viewing case details with complete data:', completeCase);
+    console.log('parties:', completeCase.parties);
+    console.log('description_of_properties:', completeCase.description_of_properties);
+    console.log('subject_matter:', completeCase.subject_matter);
+    
+    setSelectedCase(completeCase);
+    setShowDetailsModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowDetailsModal(false);
+    setSelectedCase(null);
+  };
+
   const toggleDropdown = (caseId: string) => {
     setOpenDropdownId(openDropdownId === caseId ? null : caseId);
   };
@@ -179,7 +228,7 @@ export default function CaseListing() {
             key={caseItem.id}
             className="grid grid-cols-[2fr_2fr_1fr_1fr] gap-4 p-4 items-center"
           >
-            <div className="font-medium">{caseItem.title}</div>
+            <div className="font-medium">{caseItem.tile || caseItem.title || "Untitled Case"}</div>
             <div className="text-gray-600">{caseItem.address}</div>
             <div
               className="relative"
@@ -242,6 +291,7 @@ export default function CaseListing() {
                 variant="outline"
                 size="sm"
                 className="h-8 px-3 rounded-md"
+                onClick={() => handleViewDetails(caseItem)}
               >
                 See Details
               </Button>
@@ -327,6 +377,15 @@ export default function CaseListing() {
           </div>
         </div>
       </div>
+
+      {/* Case Details Modal */}
+      {showDetailsModal && selectedCase && (
+        <CaseDetailsModal
+          caseData={selectedCase}
+          onClose={handleCloseModal}
+          onStatusChange={updateCaseStatus}
+        />
+      )}
     </div>
   );
 }

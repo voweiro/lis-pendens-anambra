@@ -21,59 +21,73 @@
 
 // export default CourtRegistrarDashboardPage;
 
+"use client";
 
-"use client"
+import { useState } from "react";
+import {
+  ChevronDown,
+  ChevronRight,
+  Flag,
+  MoreHorizontal,
+  Plus,
+  Search,
+  Trash2,
+  X,
+  ChevronLeft,
+} from "lucide-react";
+import { DeleteConfirmationModal } from "@/components/super-admin/manage-cases/delete-confirmation-modal";
 
-import { useState } from "react"
-import { ChevronDown, ChevronRight, Flag, MoreHorizontal, Plus, Search, Trash2, X, ChevronLeft } from "lucide-react"
-import { DeleteConfirmationModal } from "@/components/manage-cases/delete-confirmation-modal"
-
-
-type ActivityType = "updated" | "uploaded"
+type ActivityType = "updated" | "uploaded";
 
 interface ActivityLog {
-  id: string
+  id: string;
   user: {
-    name: string
-    email: string
-    avatar: string
-    initial?: string
-  }
-  type: ActivityType
-  description: string
-  timestamp: string
-  date: string
-  time: string
-  caseTitle?: string
-  caseId?: string
+    name: string;
+    email: string;
+    avatar: string;
+    initial?: string;
+  };
+  type: ActivityType;
+  description: string;
+  timestamp: string;
+  date: string;
+  time: string;
+  caseTitle?: string;
+  caseId?: string;
   details?: {
-    propertyTitle: string
-    registeredTitleNumber: string
-    location: string
-    surveyPlanNumber: string
-    ownerName: string
-    caseStatus: "Pending" | "On appeal" | "Disposed"
-    lastUpdated: string
-  }
+    propertyTitle: string;
+    registeredTitleNumber: string;
+    location: string;
+    surveyPlanNumber: string;
+    ownerName: string;
+    caseStatus: "Pending" | "On appeal" | "Disposed";
+    lastUpdated: string;
+  };
 }
 
 interface User {
-  id: string
-  name: string
-  email: string
-  avatar: string
-  initial?: string
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+  initial?: string;
 }
 
-type RecordType = "Total searches" | "Pending records" | "On-appeal records" | "Dismissed records"
+type RecordType =
+  | "Total searches"
+  | "Pending records"
+  | "On-appeal records"
+  | "Dismissed records";
 
 export default function SuperAdminDashboard() {
-  const [showAllActivities, setShowAllActivities] = useState(false)
-  const [selectedActivity, setSelectedActivity] = useState<ActivityLog | null>(null)
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [openMenuId, setOpenMenuId] = useState<string | null>(null)
-  const [showRecordTypeDropdown, setShowRecordTypeDropdown] = useState(false)
-  const [recordType, setRecordType] = useState<RecordType>("Total searches")
+  const [showAllActivities, setShowAllActivities] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState<ActivityLog | null>(
+    null
+  );
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [showRecordTypeDropdown, setShowRecordTypeDropdown] = useState(false);
+  const [recordType, setRecordType] = useState<RecordType>("Total searches");
 
   const activityLogs: ActivityLog[] = [
     {
@@ -85,7 +99,8 @@ export default function SuperAdminDashboard() {
         initial: "M",
       },
       type: "updated",
-      description: "updated status of XAVIER vs. ABAH to Closed, on 24th Jan 2024 at 11:45AM",
+      description:
+        "updated status of XAVIER vs. ABAH to Closed, on 24th Jan 2024 at 11:45AM",
       timestamp: "2024-01-24T11:45:00",
       date: "24th Jan 2024",
       time: "11:45AM",
@@ -110,7 +125,8 @@ export default function SuperAdminDashboard() {
         initial: "M",
       },
       type: "uploaded",
-      description: "uploaded AAA vs. Primehomes & 2 Others, on 25th Jan 2024 at 6:34PM",
+      description:
+        "uploaded AAA vs. Primehomes & 2 Others, on 25th Jan 2024 at 6:34PM",
       timestamp: "2024-01-25T18:34:00",
       date: "25th Jan 2024",
       time: "6:34PM",
@@ -135,7 +151,8 @@ export default function SuperAdminDashboard() {
         initial: "D",
       },
       type: "uploaded",
-      description: "uploaded Samir A vs. Squareit & 12 Others, on 26th Jan 2024 at 8:15PM",
+      description:
+        "uploaded Samir A vs. Squareit & 12 Others, on 26th Jan 2024 at 8:15PM",
       timestamp: "2024-01-26T20:15:00",
       date: "26th Jan 2024",
       time: "8:15PM",
@@ -151,7 +168,7 @@ export default function SuperAdminDashboard() {
         lastUpdated: "26 Jan 2024",
       },
     },
-  ]
+  ];
 
   const users: User[] = [
     {
@@ -175,7 +192,7 @@ export default function SuperAdminDashboard() {
       avatar: "/placeholder.svg?height=40&width=40",
       initial: "C",
     },
-  ]
+  ];
 
   const monthlyData = [
     { name: "Jan", value: 38 },
@@ -184,63 +201,67 @@ export default function SuperAdminDashboard() {
     { name: "Apr", value: 45 },
     { name: "May", value: 30 },
     { name: "Jun", value: 22 },
-  ]
+  ];
 
   const handleReview = (activity: ActivityLog) => {
-    setSelectedActivity(activity)
-  }
+    setSelectedActivity(activity);
+  };
 
   const handleDelete = (activity: ActivityLog) => {
-    setSelectedActivity(activity)
-    setShowDeleteModal(true)
-  }
+    setSelectedActivity(activity);
+    setShowDeleteModal(true);
+  };
 
   const confirmDelete = () => {
     // Here you would typically delete the record from your backend
-    console.log(`Deleting record ${selectedActivity?.id}`)
-    setShowDeleteModal(false)
-    setSelectedActivity(null)
-  }
+    console.log(`Deleting record ${selectedActivity?.id}`);
+    setShowDeleteModal(false);
+    setSelectedActivity(null);
+  };
 
   const handleDownload = (activity: ActivityLog) => {
     // Here you would typically generate and download a file
-    console.log(`Downloading record ${activity.id}`)
+    console.log(`Downloading record ${activity.id}`);
     // Simulate a download
-    const link = document.createElement("a")
-    link.href = "#"
-    link.download = `${activity.caseTitle?.replace(/\s+/g, "_")}_${activity.id}.pdf`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
+    const link = document.createElement("a");
+    link.href = "#";
+    link.download = `${activity.caseTitle?.replace(/\s+/g, "_")}_${
+      activity.id
+    }.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const handleMenuToggle = (id: string) => {
-    setOpenMenuId(openMenuId === id ? null : id)
-  }
+    setOpenMenuId(openMenuId === id ? null : id);
+  };
 
   const handleFlagCase = (id: string) => {
     // Here you would typically flag the case in your backend
-    console.log(`Flagging case ${id}`)
-    setOpenMenuId(null)
-  }
+    console.log(`Flagging case ${id}`);
+    setOpenMenuId(null);
+  };
 
   const handleRecordTypeSelect = (type: RecordType) => {
-    setRecordType(type)
-    setShowRecordTypeDropdown(false)
-  }
+    setRecordType(type);
+    setShowRecordTypeDropdown(false);
+  };
 
   // Close dropdowns when clicking outside
   const handleClickOutside = () => {
-    if (openMenuId) setOpenMenuId(null)
-    if (showRecordTypeDropdown) setShowRecordTypeDropdown(false)
-  }
+    if (openMenuId) setOpenMenuId(null);
+    if (showRecordTypeDropdown) setShowRecordTypeDropdown(false);
+  };
 
   return (
     <div className="p-6" onClick={handleClickOutside}>
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold">Super Admin</h1>
-          <p className="text-gray-600 text-sm mt-1">Track your searches and manage overall activities</p>
+          <p className="text-gray-600 text-sm mt-1">
+            Track your searches and manage overall activities
+          </p>
         </div>
 
         <div className="flex items-center gap-4">
@@ -254,7 +275,11 @@ export default function SuperAdminDashboard() {
           </div>
 
           <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-            <img src="/placeholder.svg?height=40&width=40" alt="User avatar" className="h-10 w-10 rounded-full" />
+            <img
+              src="/placeholder.svg?height=40&width=40"
+              alt="User avatar"
+              className="h-10 w-10 rounded-full"
+            />
           </div>
         </div>
       </div>
@@ -400,15 +425,23 @@ export default function SuperAdminDashboard() {
         </div>
 
         <div className="space-y-4">
-          {(showAllActivities ? activityLogs.concat(activityLogs) : activityLogs.slice(0, 3)).map((log) => (
-            <div key={log.id} className="flex items-start gap-4 py-3 border-b border-gray-100 last:border-0">
+          {(showAllActivities
+            ? activityLogs.concat(activityLogs)
+            : activityLogs.slice(0, 3)
+          ).map((log) => (
+            <div
+              key={log.id}
+              className="flex items-start gap-4 py-3 border-b border-gray-100 last:border-0"
+            >
               <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 flex-shrink-0">
                 {log.user.initial}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1">
                   <span className="font-medium">{log.user.name}</span>
-                  <span className="text-gray-500 text-sm">{log.description}</span>
+                  <span className="text-gray-500 text-sm">
+                    {log.description}
+                  </span>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -422,8 +455,8 @@ export default function SuperAdminDashboard() {
                   <button
                     className="p-1 rounded-md hover:bg-gray-100"
                     onClick={(e) => {
-                      e.stopPropagation()
-                      handleMenuToggle(log.id)
+                      e.stopPropagation();
+                      handleMenuToggle(log.id);
                     }}
                   >
                     <MoreHorizontal className="h-5 w-5" />
@@ -435,8 +468,8 @@ export default function SuperAdminDashboard() {
                         <button
                           className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
                           onClick={(e) => {
-                            e.stopPropagation()
-                            handleFlagCase(log.id)
+                            e.stopPropagation();
+                            handleFlagCase(log.id);
                           }}
                         >
                           <Flag className="h-4 w-4 text-red-500" />
@@ -445,8 +478,8 @@ export default function SuperAdminDashboard() {
                         <button
                           className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2 text-red-600"
                           onClick={(e) => {
-                            e.stopPropagation()
-                            handleDelete(log)
+                            e.stopPropagation();
+                            handleDelete(log);
                           }}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -491,7 +524,9 @@ export default function SuperAdminDashboard() {
             <div className="relative">
               <button
                 className="flex items-center gap-2 px-4 py-1.5 border border-gray-300 rounded-md text-sm"
-                onClick={() => setShowRecordTypeDropdown(!showRecordTypeDropdown)}
+                onClick={() =>
+                  setShowRecordTypeDropdown(!showRecordTypeDropdown)
+                }
               >
                 <span>{recordType}</span>
                 <ChevronDown className="h-4 w-4" />
@@ -514,13 +549,17 @@ export default function SuperAdminDashboard() {
                     </button>
                     <button
                       className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                      onClick={() => handleRecordTypeSelect("On-appeal records")}
+                      onClick={() =>
+                        handleRecordTypeSelect("On-appeal records")
+                      }
                     >
                       On-appeal records
                     </button>
                     <button
                       className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                      onClick={() => handleRecordTypeSelect("Dismissed records")}
+                      onClick={() =>
+                        handleRecordTypeSelect("Dismissed records")
+                      }
                     >
                       Dismissed records
                     </button>
@@ -534,7 +573,10 @@ export default function SuperAdminDashboard() {
             <div className="flex items-end h-full w-full">
               {monthlyData.map((item, index) => (
                 <div key={index} className="flex-1 flex flex-col items-center">
-                  <div className="w-12 bg-gray-200 rounded-t" style={{ height: `${(item.value / 45) * 100}%` }}></div>
+                  <div
+                    className="w-12 bg-gray-200 rounded-t"
+                    style={{ height: `${(item.value / 45) * 100}%` }}
+                  ></div>
                   <div className="mt-2 text-xs text-gray-500">{item.name}</div>
                 </div>
               ))}
@@ -549,7 +591,10 @@ export default function SuperAdminDashboard() {
           <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-auto">
             <div className="p-4 bg-gray-700 text-white flex justify-between items-center">
               <h2 className="text-lg font-semibold">Record Details</h2>
-              <button onClick={() => setSelectedActivity(null)} className="text-white hover:text-gray-200">
+              <button
+                onClick={() => setSelectedActivity(null)}
+                className="text-white hover:text-gray-200"
+              >
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -557,39 +602,67 @@ export default function SuperAdminDashboard() {
             <div className="p-6">
               <div className="grid grid-cols-2 gap-6 mb-6">
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">Property Title (certificate of occupancy):</h3>
-                  <p className="text-gray-900 font-medium">{selectedActivity.details?.propertyTitle}</p>
+                  <h3 className="text-sm font-medium text-gray-500 mb-1">
+                    Property Title (certificate of occupancy):
+                  </h3>
+                  <p className="text-gray-900 font-medium">
+                    {selectedActivity.details?.propertyTitle}
+                  </p>
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">Registered Title number:</h3>
-                  <p className="text-gray-900 font-medium">{selectedActivity.details?.registeredTitleNumber}</p>
+                  <h3 className="text-sm font-medium text-gray-500 mb-1">
+                    Registered Title number:
+                  </h3>
+                  <p className="text-gray-900 font-medium">
+                    {selectedActivity.details?.registeredTitleNumber}
+                  </p>
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">Location/Address of Property:</h3>
-                  <p className="text-gray-900 font-medium">{selectedActivity.details?.location}</p>
+                  <h3 className="text-sm font-medium text-gray-500 mb-1">
+                    Location/Address of Property:
+                  </h3>
+                  <p className="text-gray-900 font-medium">
+                    {selectedActivity.details?.location}
+                  </p>
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">Survey plan number:</h3>
-                  <p className="text-gray-900 font-medium">{selectedActivity.details?.surveyPlanNumber}</p>
+                  <h3 className="text-sm font-medium text-gray-500 mb-1">
+                    Survey plan number:
+                  </h3>
+                  <p className="text-gray-900 font-medium">
+                    {selectedActivity.details?.surveyPlanNumber}
+                  </p>
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">Name of Owner of property (optional):</h3>
-                  <p className="text-gray-900 font-medium">{selectedActivity.details?.ownerName}</p>
+                  <h3 className="text-sm font-medium text-gray-500 mb-1">
+                    Name of Owner of property (optional):
+                  </h3>
+                  <p className="text-gray-900 font-medium">
+                    {selectedActivity.details?.ownerName}
+                  </p>
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">Case Status</h3>
-                  <p className="text-orange-500 font-medium">{selectedActivity.details?.caseStatus}</p>
+                  <h3 className="text-sm font-medium text-gray-500 mb-1">
+                    Case Status
+                  </h3>
+                  <p className="text-orange-500 font-medium">
+                    {selectedActivity.details?.caseStatus}
+                  </p>
                 </div>
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-1">Last Updated:</h3>
-                <p className="text-gray-900">{selectedActivity.details?.lastUpdated}</p>
+                <h3 className="text-sm font-medium text-gray-500 mb-1">
+                  Last Updated:
+                </h3>
+                <p className="text-gray-900">
+                  {selectedActivity.details?.lastUpdated}
+                </p>
               </div>
             </div>
 
@@ -621,6 +694,5 @@ export default function SuperAdminDashboard() {
         />
       )}
     </div>
-  )
+  );
 }
-

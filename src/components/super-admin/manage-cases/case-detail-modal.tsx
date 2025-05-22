@@ -12,6 +12,9 @@ interface Case {
   propertyTitle: string
   location: string
   status: CaseStatus
+  description_of_properties?: string
+  subject_matter?: string
+  name_of_parties?: string
 }
 
 interface CaseDetailsModalProps {
@@ -31,9 +34,12 @@ export function CaseDetailsModal({ caseData, onClose, onStatusChange }: CaseDeta
     titleNumber: "TN-12345",
     surveyPlanNumber: "SPN-67890",
     parties: "Plaintiff vs Defendant",
+    name_of_parties: caseData.name_of_parties || "Plaintiff vs Defendant",
     filingDate: "2023-05-15",
     courtReference: "CR-2023-001",
     description: "This case involves a property dispute regarding ownership and boundaries.",
+    description_of_properties: caseData.description_of_properties || "",
+    subject_matter: caseData.subject_matter || "",
   })
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -212,13 +218,14 @@ export function CaseDetailsModal({ caseData, onClose, onStatusChange }: CaseDeta
               {isEditing ? (
                 <input
                   type="text"
-                  name="parties"
-                  value={formData.parties}
+                  name="name_of_parties"
+                  value={formData.name_of_parties || formData.parties || ""}
                   onChange={handleInputChange}
                   className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-gray-200"
+                  required
                 />
               ) : (
-                <p className="text-gray-900">{formData.parties}</p>
+                <p className="text-gray-900">{formData.name_of_parties || formData.parties || "N/A"}</p>
               )}
             </div>
 
@@ -251,7 +258,39 @@ export function CaseDetailsModal({ caseData, onClose, onStatusChange }: CaseDeta
                 <p className="text-gray-900">{formData.courtReference}</p>
               )}
             </div>
+            
+            <div className="md:col-span-2">
+              <h3 className="text-sm font-medium text-gray-500 mb-1">Description of Properties</h3>
+              {isEditing ? (
+                <textarea
+                  name="description_of_properties"
+                  value={formData.description_of_properties}
+                  onChange={handleInputChange}
+                  rows={3}
+                  className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-gray-200"
+                />
+              ) : (
+                <p className="text-gray-900">{formData.description_of_properties || "No property description available"}</p>
+              )}
+            </div>
+            
+            <div className="md:col-span-2">
+              <h3 className="text-sm font-medium text-gray-500 mb-1">Subject Matter</h3>
+              {isEditing ? (
+                <textarea
+                  name="subject_matter"
+                  value={formData.subject_matter}
+                  onChange={handleInputChange}
+                  rows={3}
+                  className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-gray-200"
+                />
+              ) : (
+                <p className="text-gray-900">{formData.subject_matter || "No subject matter available"}</p>
+              )}
+            </div>
           </div>
+
+
 
           <div className="mt-6">
             <h3 className="text-sm font-medium text-gray-500 mb-1">Case Description</h3>

@@ -8,7 +8,7 @@ type HeaderProps = {
 
 const Header = ({ title, description }: HeaderProps) => {
   return (
-    <div className="  pt-7">
+    <div className="  pt-4">
     <div className=" lg:w-[98%]  w-full  rounded-2xl  border-[#23A863] shadow-sm flex justify-between items-center  h-full  lg:h-[100px]">
       <div className="pl-5">
       <h1 className="   lg:text-[38px]  text-[28px] sm:text-[10px]   font-semibold">{title}  </h1>

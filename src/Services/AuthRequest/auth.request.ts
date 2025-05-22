@@ -11,10 +11,7 @@ interface SignUpIndividualBody {
   // Add other fields as needed
 }
 
-// interface signupType {
-//   individual: string;
-//   company: string;
-// }
+
 
 interface SignUpBusinessBody {
   type: string; // Always "company"
@@ -77,6 +74,24 @@ interface UpdateProfileParams {
   password?: string;
   password_confirmation?: string;
   name?: string;
+  dob?: string;
+}
+
+// Interface for court registrar settings update
+interface UpdateCourtRegistrarSettingsParams {
+  password?: string;
+  password_confirmation?: string;
+  court_info?: string;
+  court_number?: string;
+  judicial_division?: string;
+}
+
+// Interface for super admin settings update
+interface UpdateSuperAdminSettingsParams {
+  name?: string;
+  email?: string;
+  password?: string;
+  password_confirmation?: string;
   dob?: string;
 }
 
@@ -939,6 +954,296 @@ export const GetAllCases = async () => {
   }
 };
 
+// UPDATE CASE
+export const UpdateCase = async (caseId: string, caseData: any) => {
+  try {
+    console.log('Updating case with ID:', caseId);
+    console.log('Case data to update:', caseData);
+    
+    // Get authentication token from session storage
+    let authToken = '';
+    
+    if (typeof window !== 'undefined') {
+      // Try multiple possible storage locations for the token
+      
+      // First try direct token storage
+      const directToken = sessionStorage.getItem('token');
+      if (directToken) {
+        console.log('Found token in direct storage');
+        authToken = directToken;
+      }
+      
+      // If not found, try the auth object
+      if (!authToken) {
+        const authData = sessionStorage.getItem('auth');
+        if (authData) {
+          try {
+            const parsedData = JSON.parse(authData);
+            if (parsedData.token) {
+              authToken = parsedData.token;
+            } else if (parsedData.accessToken) {
+              authToken = parsedData.accessToken;
+            } else if (parsedData.data && parsedData.data.token) {
+              authToken = parsedData.data.token;
+            }
+          } catch (error) {
+            console.error('Error parsing auth data:', error);
+          }
+        }
+      }
+    }
+    
+    if (!authToken) {
+      console.error('Authentication token not found');
+      return { success: false, error: 'Authentication token not found' };
+    }
+    
+    // Use the correct endpoint from Postman with POST method
+    const response = await axios.post(`${baseURL}/court-staff/cases/${caseId}/update`, caseData, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    console.log('API Response for case update:', response.data);
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Error in UpdateCase:', error);
+    return { success: false, error: (error as Error).message || 'Failed to update case' };
+  }
+};
+
+// DELETE CASE
+export const DeleteCase = async (caseId: string) => {
+  try {
+    console.log('Deleting case with ID:', caseId);
+    
+    // Get authentication token from session storage
+    let authToken = '';
+    
+    if (typeof window !== 'undefined') {
+      // Try multiple possible storage locations for the token
+      
+      // First try direct token storage
+      const directToken = sessionStorage.getItem('token');
+      if (directToken) {
+        console.log('Found token in direct storage');
+        authToken = directToken;
+      }
+      
+      // If not found, try the auth object
+      if (!authToken) {
+        const authData = sessionStorage.getItem('auth');
+        if (authData) {
+          try {
+            const parsedData = JSON.parse(authData);
+            if (parsedData.token) {
+              authToken = parsedData.token;
+            } else if (parsedData.accessToken) {
+              authToken = parsedData.accessToken;
+            } else if (parsedData.data && parsedData.data.token) {
+              authToken = parsedData.data.token;
+            }
+          } catch (error) {
+            console.error('Error parsing auth data:', error);
+          }
+        }
+      }
+    }
+    
+    if (!authToken) {
+      console.error('Authentication token not found');
+      return { success: false, error: 'Authentication token not found' };
+    }
+    
+    // Use the correct endpoint from Postman with DELETE method
+    const response = await axios.delete(`${baseURL}/court-staff/cases/${caseId}`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    console.log('API Response for case deletion:', response.data);
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Error in DeleteCase:', error);
+    return { success: false, error: (error as Error).message || 'Failed to delete case' };
+  }
+};
+
+// UPDATE COURT REGISTRAR SETTINGS
+// Update Super Admin Settings
+export const UpdateSuperAdminSettings = async (params: UpdateSuperAdminSettingsParams) => {
+  try {
+    console.log('Updating Super Admin settings with params:', params);
+    
+    // Get auth token for authenticated requests
+    let authToken = null;
+    const tokenStr = sessionStorage.getItem('token');
+    const authStr = sessionStorage.getItem('auth');
+    
+    if (tokenStr) {
+      authToken = tokenStr;
+    } else if (authStr) {
+      try {
+        const auth = JSON.parse(authStr);
+        if (auth.token) {
+          authToken = auth.token;
+        } else if (auth.data && auth.data.token) {
+          authToken = auth.data.token;
+        } else if (auth.accessToken) {
+          authToken = auth.accessToken;
+        }
+      } catch (error) {
+        console.error('Error parsing auth data:', error);
+      }
+    }
+    
+    if (!authToken) {
+      throw new Error('Authentication token not found');
+    }
+    
+    // Make API request to update Super Admin settings
+    const response = await axios.post(`${baseURL}/Super-admin/settings`, params, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    console.log('Super Admin settings update response:', response.data);
+    return {
+      success: true,
+      data: response.data,
+      message: response.data?.message || 'Settings updated successfully',
+    };
+  } catch (error: any) {
+    console.error('Error updating Super Admin settings:', error);
+    return {
+      success: false,
+      error: error.response?.data?.message || error.message || 'Failed to update settings',
+    };
+  }
+};
+
+export const UpdateCourtRegistrarSettings = async (params: UpdateCourtRegistrarSettingsParams) => {
+  try {
+    console.log('Updating court registrar settings with params:', params);
+    
+    // Get authentication token from session storage
+    let authToken = '';
+    
+    if (typeof window !== 'undefined') {
+      // Try multiple possible storage locations for the token
+      
+      // First try direct token storage
+      const directToken = sessionStorage.getItem('token');
+      if (directToken) {
+        console.log('Found token in direct storage');
+        authToken = directToken;
+      }
+      
+      // If not found, try the auth object
+      if (!authToken) {
+        const authData = sessionStorage.getItem('auth');
+        if (authData) {
+          try {
+            const parsedData = JSON.parse(authData);
+            if (parsedData.token) {
+              authToken = parsedData.token;
+            } else if (parsedData.accessToken) {
+              authToken = parsedData.accessToken;
+            } else if (parsedData.data && parsedData.data.token) {
+              authToken = parsedData.data.token;
+            }
+          } catch (error) {
+            console.error('Error parsing auth data:', error);
+          }
+        }
+      }
+    }
+    
+    if (!authToken) {
+      console.error('Authentication token not found');
+      return { success: false, error: 'Authentication token not found' };
+    }
+    
+    // Prepare data for API
+    const formData: Record<string, string> = {};
+    
+    // Add each parameter to form data if it exists
+    if (params.password) formData.password = params.password;
+    if (params.password_confirmation) formData.password_confirmation = params.password_confirmation;
+    if (params.court_info) formData.court_info = params.court_info;
+    if (params.court_number) formData.court_number = params.court_number;
+    if (params.judicial_division) formData.judicial_division = params.judicial_division;
+    
+    // Use the correct endpoint from Postman
+    const response = await axios.post(`${baseURL}/profile/update`, formData, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    console.log('API Response for court registrar settings update:', response.data);
+    
+    // Update session and local storage with the new settings
+    if (response.data && (response.data.success || response.data.status)) {
+      try {
+        // Create settings object with the updated values
+        const updatedSettings: Record<string, string> = {};
+        if (params.court_info) updatedSettings.court_info = params.court_info;
+        if (params.court_number) updatedSettings.court_number = params.court_number;
+        if (params.judicial_division) updatedSettings.judicial_division = params.judicial_division;
+        
+        // Save to localStorage for persistence across sessions
+        localStorage.setItem('court_registrar_settings', JSON.stringify(updatedSettings));
+        
+        // Update user data in sessionStorage if it exists
+        const userStr = sessionStorage.getItem('user');
+        if (userStr) {
+          const userData = JSON.parse(userStr);
+          const updatedUserData = { ...userData, ...updatedSettings };
+          sessionStorage.setItem('user', JSON.stringify(updatedUserData));
+        }
+        
+        // Update auth data in sessionStorage if it exists
+        const authStr = sessionStorage.getItem('auth');
+        if (authStr) {
+          const authData = JSON.parse(authStr);
+          if (authData.data) {
+            authData.data = { ...authData.data, ...updatedSettings };
+            sessionStorage.setItem('auth', JSON.stringify(authData));
+          }
+        }
+        
+        // Dispatch a custom event to notify components of the settings update
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('courtRegistrarSettingsUpdated', { 
+            detail: updatedSettings 
+          }));
+        }
+        
+        console.log('Updated court registrar settings in storage');
+      } catch (err) {
+        console.error('Error updating settings in storage:', err);
+      }
+    }
+    
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Error in UpdateCourtRegistrarSettings:', error);
+    return { success: false, error: (error as Error).message || 'Failed to update court registrar settings' };
+  }
+};
+
 // GET JUDICIAL DIVISIONS
 export const GetJudicialDivisions = async () => {
   try {
@@ -1287,3 +1592,322 @@ export const DeleteAccountRequest = async () => {
     throw error;
   }
 }
+
+// GET DASHBOARD SUMMARY
+export const GetDashboardSummary = async () => {
+  try {
+    console.log('Fetching dashboard summary...');
+    const baseURL = process.env.NEXT_PUBLIC_URL || '';
+    
+    // Get authentication token from session storage
+    let authToken = '';
+    
+    if (typeof window !== 'undefined') {
+      // Try multiple possible storage locations for the token
+      
+      // First try direct token storage
+      const directToken = sessionStorage.getItem('token');
+      if (directToken) {
+        console.log('Found token in direct storage');
+        authToken = directToken;
+      }
+      
+      // If not found, try the auth object
+      if (!authToken) {
+        const authData = sessionStorage.getItem('auth');
+        if (authData) {
+          try {
+            const parsedData = JSON.parse(authData);
+            if (parsedData.token) {
+              authToken = parsedData.token;
+            } else if (parsedData.accessToken) {
+              authToken = parsedData.accessToken;
+            } else if (parsedData.data && parsedData.data.token) {
+              authToken = parsedData.data.token;
+            }
+          } catch (error) {
+            console.error('Error parsing auth data:', error);
+          }
+        }
+      }
+      
+      // For testing purposes, use a mock token if no token is found
+      if (!authToken) {
+        console.warn('No auth token found, using mock token for development');
+        authToken = 'mock_token_for_development';
+      }
+    }
+    
+    if (!authToken) {
+      console.error('Authentication token not found');
+      return { success: false, error: 'Authentication token not found', data: null };
+    }
+    
+    // Use the correct endpoint based on the API pattern
+    const endpoint = '/court-staff/summary';
+    
+    console.log(`Making API request to: ${baseURL}${endpoint}`);
+    const response = await axios.get(`${baseURL}${endpoint}`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    console.log('Dashboard summary API Response:', response.data);
+    
+    // Process the response data
+    let summaryData = null;
+    
+    if (response.data && response.data.data) {
+      summaryData = response.data.data;
+    } else if (response.data && typeof response.data === 'object') {
+      // If the data is directly in the response
+      summaryData = response.data;
+    }
+    
+    return { success: true, data: summaryData };
+  } catch (error) {
+    console.error('Error in GetDashboardSummary:', error);
+    return { 
+      success: false, 
+      error: (error as Error).message || 'Failed to fetch dashboard summary', 
+      data: null 
+    };
+  }
+};
+
+// GET SUPER ADMIN ACTIVITY LOGS
+export const GetSuperAdminActivityLogs = async () => {
+  try {
+    console.log('Fetching super admin activity logs...');
+    
+    // Get auth token for authenticated requests
+    let authToken = null;
+    const tokenStr = sessionStorage.getItem('token');
+    const authStr = sessionStorage.getItem('auth');
+    
+    if (tokenStr) {
+      authToken = tokenStr;
+    } else if (authStr) {
+      try {
+        const auth = JSON.parse(authStr);
+        if (auth.token) {
+          authToken = auth.token;
+        } else if (auth.data && auth.data.token) {
+          authToken = auth.data.token;
+        } else if (auth.accessToken) {
+          authToken = auth.accessToken;
+        }
+      } catch (error) {
+        console.error('Error parsing auth data:', error);
+      }
+    }
+    
+    if (!authToken) {
+      throw new Error('Authentication token not found');
+    }
+    
+    // Make API request to get activity logs
+    const response = await axios.get(`${baseURL}/admin/activity/logs`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Accept': 'application/json',
+      },
+    });
+    
+    console.log('Super admin activity logs response:', response.data);
+    
+    // Format the response data to match the expected format in the UI
+    const logs = response.data.data || [];
+    
+    // Transform the API response to match the expected format in the UI
+    const formattedLogs = logs.map((log: any) => ({
+      id: log.id || String(Math.random()),
+      user: {
+        name: log.user_name || log.username || 'Unknown User',
+        email: log.user_email || log.email || '',
+        avatar: log.avatar || '/placeholder.svg?height=40&width=40',
+        initial: log.user_name ? log.user_name.charAt(0).toUpperCase() : 'U',
+      },
+      type: log.action_type || 'updated',
+      description: log.description || log.action || '',
+      timestamp: log.created_at || new Date().toISOString(),
+      date: formatDate(log.created_at) || 'Unknown Date',
+      time: formatTime(log.created_at) || 'Unknown Time',
+      caseTitle: log.case_title || log.title || '',
+      caseId: log.case_id || '',
+      details: log.details ? {
+        propertyTitle: log.details.property_title || log.details.title || '',
+        registeredTitleNumber: log.details.registered_title_number || log.details.title_number || '',
+        location: log.details.location || '',
+        surveyPlanNumber: log.details.survey_plan_number || '',
+        ownerName: log.details.owner_name || '',
+        caseStatus: log.details.case_status || 'Pending',
+        lastUpdated: formatDate(log.details.updated_at || log.updated_at) || 'Unknown Date',
+      } : undefined,
+    }));
+    
+    console.log('Formatted super admin activity logs:', formattedLogs);
+    return {
+      success: true,
+      data: formattedLogs,
+    };
+  } catch (error) {
+    console.error('Error in GetSuperAdminActivityLogs:', error);
+    return {
+      success: false,
+      data: [],
+      error: (error as Error).message || 'Failed to fetch activity logs',
+    };
+  }
+};
+
+// Helper functions for date formatting
+function formatDate(dateString: string): string {
+  if (!dateString) return '';
+  
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return dateString;
+  }
+}
+
+function formatTime(dateString: string): string {
+  if (!dateString) return '';
+  
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  } catch (error) {
+    console.error('Error formatting time:', error);
+    return dateString;
+  }
+}
+
+// GET COURT REGISTRAR ACTIVITY LOGS
+export const GetCourtRegistrarActivityLogs = async () => {
+  try {
+    console.log('Fetching court registrar activity logs...');
+    const baseURL = process.env.NEXT_PUBLIC_URL || '';
+    
+    // Get authentication token from session storage
+    let authToken = '';
+    
+    if (typeof window !== 'undefined') {
+      // Try multiple possible storage locations for the token
+      
+      // First try direct token storage
+      const directToken = sessionStorage.getItem('token');
+      if (directToken) {
+        console.log('Found token in direct storage');
+        authToken = directToken;
+      }
+      
+      // If not found, try the auth object
+      if (!authToken) {
+        const authData = sessionStorage.getItem('auth');
+        if (authData) {
+          try {
+            const parsedData = JSON.parse(authData);
+            if (parsedData.token) {
+              authToken = parsedData.token;
+            } else if (parsedData.accessToken) {
+              authToken = parsedData.accessToken;
+            } else if (parsedData.data && parsedData.data.token) {
+              authToken = parsedData.data.token;
+            }
+          } catch (error) {
+            console.error('Error parsing auth data:', error);
+          }
+        }
+      }
+      
+      // For testing purposes, use a mock token if no token is found
+      if (!authToken) {
+        console.warn('No auth token found, using mock token for development');
+        authToken = 'mock_token_for_development';
+      }
+    }
+    
+    if (!authToken) {
+      console.error('Authentication token not found');
+      return { success: false, error: 'Authentication token not found', data: [] };
+    }
+    
+    // Use the correct endpoint
+    const endpoint = '/court-staff/activity/logs';
+    
+    console.log(`Making API request to: ${baseURL}${endpoint}`);
+    const response = await axios.get(`${baseURL}${endpoint}`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    console.log('API Response:', response.data);
+    
+    // Process the response data to ensure it matches our expected format
+    let logsData = [];
+    
+    if (response.data && Array.isArray(response.data)) {
+      logsData = response.data;
+    } else if (response.data && response.data.data && Array.isArray(response.data.data)) {
+      logsData = response.data.data;
+    } else if (response.data && typeof response.data === 'object') {
+      // If it's a single log object, wrap it in an array
+      logsData = [response.data];
+    }
+    
+    // Map the API response to our expected format
+    const formattedLogs = logsData.map((log: any) => ({
+      id: log.id || String(Math.random()),
+      user: {
+        name: log.user?.name || log.user_name || 'Unknown User',
+        email: log.user?.email || log.user_email || '',
+        avatar: log.user?.avatar || '/placeholder.svg?height=40&width=40',
+        initial: log.user?.initial || log.user_name?.charAt(0) || 'U',
+      },
+      type: (log.type || 'updated').toLowerCase(),
+      description: log.description || '',
+      timestamp: log.timestamp || log.created_at || new Date().toISOString(),
+      date: log.date || new Date().toLocaleDateString(),
+      time: log.time || new Date().toLocaleTimeString(),
+      caseTitle: log.case_title || log.caseTitle || '',
+      caseId: log.case_id || log.caseId || '',
+      details: log.details || {
+        propertyTitle: log.property_title || '',
+        registeredTitleNumber: log.registered_title_number || '',
+        location: log.location || '',
+        surveyPlanNumber: log.survey_plan_number || '',
+        ownerName: log.owner_name || '',
+        caseStatus: log.case_status || 'Pending',
+        lastUpdated: log.last_updated || log.updated_at || '',
+      },
+    }));
+    
+    console.log('Formatted activity logs data:', formattedLogs);
+    return { success: true, data: formattedLogs };
+  } catch (error) {
+    console.error('Error in GetCourtRegistrarActivityLogs:', error);
+    return { 
+      success: false, 
+      error: (error as Error).message || 'Failed to fetch activity logs', 
+      data: [] 
+    };
+  }
+};
