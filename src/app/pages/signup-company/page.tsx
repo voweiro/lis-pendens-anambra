@@ -53,22 +53,24 @@ const SignUpCompany = () => {
       phone_number: data?.phoneNumber || undefined, // Use phone_number instead of phoneNumber
       dob: data?.dob || undefined, // Include date of establishment
     };
-    
-    console.log('Company signup request body:', body);
-    
+
+    console.log("Company signup request body:", body);
+
     try {
       const response = await SignUpRequestForBusiness(body);
-      console.log('Company signup response:', response);
+      console.log("Company signup response:", response);
       toast.success("SignUp Successful");
-      
+
       // Redirect to the verify-token page with email parameter
       setTimeout(() => {
         // Construct the URL with query parameters
-        const verifyTokenUrl = `/pages/verify-token?email=${encodeURIComponent(data.email)}&type=REGISTER`;
+        const verifyTokenUrl = `/pages/verify-token?email=${encodeURIComponent(
+          data.email
+        )}&type=REGISTER`;
         router.push(verifyTokenUrl);
       }, 2000);
     } catch (error: any) {
-      console.error('Company signup error:', error);
+      console.error("Company signup error:", error);
       toast.error(error?.response?.data?.message || "Sign up failed");
     }
   };
@@ -88,17 +90,20 @@ const SignUpCompany = () => {
         {/* Logo */}
         <div className="pt-6 pl-4">
           <Link href="/" className="flex items-center">
-            <Image src={Logo} alt="LisPendens brand logo" width={160} height={50} />
+            <Image
+              src={Logo}
+              alt="LisPendens brand logo"
+              width={160}
+              height={50}
+            />
           </Link>
 
-
-
           <Link
-          href="/"
-          className="inline-flex items-center mt-4 text-black bg-white border border-black px-4 py-2 rounded-xl hover:bg-black hover:text-white transition-all duration-300"
-        >
-          ← Back to Home
-        </Link>
+            href="/"
+            className="inline-flex items-center mt-4 text-black bg-white border border-black px-4 py-2 rounded-xl hover:bg-black hover:text-white transition-all duration-300"
+          >
+            ← Back to Home
+          </Link>
         </div>
 
         {/* Form container */}
@@ -190,11 +195,7 @@ const SignUpCompany = () => {
               {/* Terms */}
               <div className="text-sm mb-4 text-[#818181]">
                 By selecting Agree and continue, I agree to LisPendes’
-                <span className="text-[#524A4C]"> Terms of Service,</span>
-                <span className="text-[#524A4C]"> Information Terms of Service,</span>
-                and
-                <span className="text-[#524A4C] ml-1"> Nondiscrimination Policy </span>
-                and acknowledge the{" "}
+                <span className="text-[#524A4C]"> Terms of Service, And</span>
                 <span className="text-[#524A4C]">Privacy Policy.</span>
               </div>
 

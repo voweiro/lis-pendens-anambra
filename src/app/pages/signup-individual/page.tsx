@@ -1,25 +1,31 @@
-"use client"
-import Image from "next/image"
-import Link from "next/link"
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs"
-import { useForm } from "react-hook-form"
-import * as yup from "yup"
-import { yupResolver } from "@hookform/resolvers/yup"
-import { ToastContainer, toast } from "react-toastify"
-import "react-toastify/dist/ReactToastify.css"
-import { SignUpRequestForIndividual } from "@/Services/AuthRequest/auth.request"
+"use client";
+import Image from "next/image";
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { SignUpRequestForIndividual } from "@/Services/AuthRequest/auth.request";
 
 // Import images
-import authBgImage from "@/asserts/auth-bg.png"
-import logoImage from "@/asserts/lis-pendens-logo-white.png"
+import authBgImage from "@/asserts/auth-bg.png";
+import logoImage from "@/asserts/lis-pendens-logo-white.png";
 
 // Schema validation with Yup
 const schema = yup.object().shape({
   type: yup.string().required("User type is required"),
-  name: yup.string().required("First Name is required").min(3, "First Name must be greater than 3 letters"),
-  email: yup.string().required("Email is required").email("Invalid Email format"),
+  name: yup
+    .string()
+    .required("First Name is required")
+    .min(3, "First Name must be greater than 3 letters"),
+  email: yup
+    .string()
+    .required("Email is required")
+    .email("Invalid Email format"),
   phone_number: yup.string(),
   dob: yup.string(),
   password: yup
@@ -27,44 +33,44 @@ const schema = yup.object().shape({
     .required("Password is required")
     .min(8, "Password must be at least 6 characters")
     .max(20, "Password must not exceed 20 characters"),
-})
+});
 
 interface ApiError {
   response?: {
     data?: {
-      message?: string
-    }
-  }
+      message?: string;
+    };
+  };
 }
 
 const SignUpIndividual = () => {
-  const [showPassword, setShowPassword] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const router = useRouter()
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
     watch,
-  } = useForm({ resolver: yupResolver(schema) })
+  } = useForm({ resolver: yupResolver(schema) });
 
   // Watch the email field to access its value
-  const email = watch("email")
+  const email = watch("email");
 
   useEffect(() => {
-    setValue("type", "individual")
-  }, [setValue])
+    setValue("type", "individual");
+  }, [setValue]);
 
   const onSubmitHandler = async (data: {
-    name: string
-    email: string
-    password: string
-    phone_number?: string
-    dob?: string
-    type: string
+    name: string;
+    email: string;
+    password: string;
+    phone_number?: string;
+    dob?: string;
+    type: string;
   }) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     const body = {
       name: data.name,
@@ -73,27 +79,31 @@ const SignUpIndividual = () => {
       phone_number: data?.phone_number || undefined,
       dob: data?.dob || undefined,
       type: data.type,
-    }
+    };
 
     try {
-      await SignUpRequestForIndividual(body)
-      toast.success("SignUp Successful")
+      await SignUpRequestForIndividual(body);
+      toast.success("SignUp Successful");
 
       // Store email in localStorage for the verification page
-      localStorage.setItem("userEmail", data.email)
+      localStorage.setItem("userEmail", data.email);
 
       // Navigate to verification page with email as query parameter
       setTimeout(() => {
-        router.push(`/pages/verify-token?email=${encodeURIComponent(data.email)}&type=REGISTER`)
-      }, 2000)
+        router.push(
+          `/pages/verify-token?email=${encodeURIComponent(
+            data.email
+          )}&type=REGISTER`
+        );
+      }, 2000);
     } catch (error: unknown) {
-      const apiError = error as ApiError
-      console.log(apiError?.response?.data?.message)
-      toast.error(apiError?.response?.data?.message)
+      const apiError = error as ApiError;
+      console.log(apiError?.response?.data?.message);
+      toast.error(apiError?.response?.data?.message);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <>
@@ -133,7 +143,9 @@ const SignUpIndividual = () => {
                   className="w-full mt-2 outline-none focus:out-none border-[1.2px] border-slate-300 rounded-lg p-2"
                   {...register("name")}
                 />
-                <p className="text-red-500 text-[0.75rem] text-right">{errors.name?.message}</p>
+                <p className="text-red-500 text-[0.75rem] text-right">
+                  {errors.name?.message}
+                </p>
               </div>
 
               {/* EMAIL */}
@@ -144,7 +156,9 @@ const SignUpIndividual = () => {
                   className="w-full mt-2 outline-none focus:out-none border-[1.2px] border-slate-300 rounded-lg p-2"
                   {...register("email")}
                 />
-                <p className="text-red-500 text-[0.75rem] text-right">{errors.email?.message}</p>
+                <p className="text-red-500 text-[0.75rem] text-right">
+                  {errors.email?.message}
+                </p>
               </div>
 
               {/* PHONE NUMBER */}
@@ -191,17 +205,18 @@ const SignUpIndividual = () => {
                     />
                   )}
                 </div>
-                <p className="text-red-500 text-[0.75rem] text-right">{errors.password?.message}</p>
+                <p className="text-red-500 text-[0.75rem] text-right">
+                  {errors.password?.message}
+                </p>
               </div>
 
               {/* TERMS AND CONDITIONS */}
               <div className="w-full mb-4 pt-1 text-[14px]">
                 <p className="text-[#818181]">
                   By selecting Agree and continue, I agree to LisPendes'{" "}
-                  <span className="text-[#524A4C]">Terms of Service, Information Terms of Service, </span>
-                  and
-                  <span className="text-[#524A4C] ml-1">Nondiscrimination Policy </span>
-                  and acknowledge the <span className="text-[#524A4C]">Privacy Policy.</span>
+                  <span className="text-[#524A4C]">Terms of Use, And </span>
+                  and acknowledge the{" "}
+                  <span className="text-[#524A4C]">Privacy Policy.</span>
                 </p>
               </div>
 
@@ -217,7 +232,10 @@ const SignUpIndividual = () => {
               {/* LOGIN LINK */}
               <p className="text-center text-[14px]">
                 Already have an account?{" "}
-                <a href="/pages/signin" className="text-[#E37C42] cursor-pointer">
+                <a
+                  href="/pages/signin"
+                  className="text-[#E37C42] cursor-pointer"
+                >
                   Login
                 </a>
               </p>
@@ -227,7 +245,7 @@ const SignUpIndividual = () => {
       </div>
       <ToastContainer />
     </>
-  )
-}
+  );
+};
 
-export default SignUpIndividual
+export default SignUpIndividual;
