@@ -172,6 +172,7 @@ const SignUpIndividual = () => {
               </div>
 
               <div className="max-w-[400px] mb-2">
+                <p className="text-[0.75rem] text-[#818181]">Date of Birth</p>
                 <input
                   type="date"
                   placeholder="date of birth"
@@ -215,7 +216,6 @@ const SignUpIndividual = () => {
                 <p className="text-[#818181]">
                   By selecting Agree and continue, I agree to LisPendes'{" "}
                   <span className="text-[#524A4C]">Terms of Use, And </span>
-                  and acknowledge the{" "}
                   <span className="text-[#524A4C]">Privacy Policy.</span>
                 </p>
               </div>

@@ -153,6 +153,9 @@ const SignUpCompany = () => {
 
               {/* Date of Establishment */}
               <div className="max-w-[400px] mb-2">
+                <p className="text-[0.75rem] text-[#818181]">
+                  Date of Birth (optional)
+                </p>
                 <input
                   type="date"
                   placeholder="Date of Establishment (optional)"
