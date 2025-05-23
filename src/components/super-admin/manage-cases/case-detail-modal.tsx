@@ -3,7 +3,9 @@
 import type React from "react"
 
 import { useState } from "react"
-import { ChevronDown, X } from "lucide-react"
+import { ChevronDown, X, Loader2 } from "lucide-react"
+import { toast } from "react-toastify"
+import { updateCase } from "@/components/utils/api"
 
 type CaseStatus = "On appeal" | "Disposed" | "Pending"
 
@@ -14,6 +16,7 @@ interface Case {
   status: CaseStatus
   description_of_properties?: string
   subject_matter?: string
+  parties?: string
   name_of_parties?: string
 }
 
@@ -26,6 +29,8 @@ interface CaseDetailsModalProps {
 export function CaseDetailsModal({ caseData, onClose, onStatusChange }: CaseDetailsModalProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [showStatusDropdown, setShowStatusDropdown] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     propertyTitle: caseData.propertyTitle,
     location: caseData.location,
@@ -33,7 +38,7 @@ export function CaseDetailsModal({ caseData, onClose, onStatusChange }: CaseDeta
     owner: "John Doe", // Example additional data
     titleNumber: "TN-12345",
     surveyPlanNumber: "SPN-67890",
-    parties: "Plaintiff vs Defendant",
+    parties: caseData.parties || "",
     name_of_parties: caseData.name_of_parties || "Plaintiff vs Defendant",
     filingDate: "2023-05-15",
     courtReference: "CR-2023-001",
@@ -59,9 +64,45 @@ export function CaseDetailsModal({ caseData, onClose, onStatusChange }: CaseDeta
     setShowStatusDropdown(false)
   }
 
-  const handleSave = () => {
-    // Here you would typically save the data to your backend
-    setIsEditing(false)
+  const handleSave = async () => {
+    setLoading(true)
+    setError(null)
+    
+    try {
+      // Prepare the data for the API
+      const apiData = {
+        tile: formData.propertyTitle,
+        address: formData.location,
+        status: formData.status,
+        owner_name: formData.owner,
+        title_number: formData.titleNumber,
+        survey_plan_number: formData.surveyPlanNumber,
+        parties: formData.parties,
+        name_of_parties: formData.name_of_parties,
+        suit_number: formData.courtReference,
+        date_of_commencement: formData.filingDate,
+        description_of_properties: formData.description_of_properties,
+        subject_matter: formData.subject_matter
+      }
+      
+      // Call the API to update the case
+      const response = await updateCase(caseData.id, apiData)
+      console.log('Case updated successfully:', response)
+      toast.success('Case updated successfully')
+      
+      // Update the status if it changed
+      if (formData.status !== caseData.status) {
+        onStatusChange(formData.status)
+      }
+      
+      setIsEditing(false)
+    } catch (error: any) {
+      console.error('Error updating case:', error)
+      setError(error.message || 'Failed to update case. Please try again.')
+      toast.error(error.message || 'Failed to update case')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -80,9 +121,17 @@ export function CaseDetailsModal({ caseData, onClose, onStatusChange }: CaseDeta
             ) : (
               <button
                 onClick={handleSave}
-                className="px-4 py-1.5 bg-gray-700 text-white rounded-md text-sm hover:bg-gray-800"
+                className="px-4 py-1.5 bg-gray-700 text-white rounded-md text-sm hover:bg-gray-800 flex items-center justify-center min-w-[120px]"
+                disabled={loading}
               >
-                Save Changes
+                {loading ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin mr-2" />
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <span>Save Changes</span>
+                )}
               </button>
             )}
             <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
@@ -92,6 +141,11 @@ export function CaseDetailsModal({ caseData, onClose, onStatusChange }: CaseDeta
         </div>
 
         <div className="p-6">
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md">
+              {error}
+            </div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="text-sm font-medium text-gray-500 mb-1">Property Title</h3>
@@ -218,14 +272,14 @@ export function CaseDetailsModal({ caseData, onClose, onStatusChange }: CaseDeta
               {isEditing ? (
                 <input
                   type="text"
-                  name="name_of_parties"
-                  value={formData.name_of_parties || formData.parties || ""}
+                  name="parties"
+                  value={formData.parties || ""}
                   onChange={handleInputChange}
                   className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-gray-200"
                   required
                 />
               ) : (
-                <p className="text-gray-900">{formData.name_of_parties || formData.parties || "N/A"}</p>
+                <p className="text-gray-900">{formData.parties || "N/A"}</p>
               )}
             </div>
 

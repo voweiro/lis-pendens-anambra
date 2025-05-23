@@ -35,6 +35,7 @@ interface CaseFormData {
   owner_name?: string;
   address?: string;
   parties?: string;
+  name_of_parties?: string;
   suit_number?: string;
   court_details?: string;
   date_of_commencement?: string;
@@ -476,6 +477,7 @@ export default function UploadCaseForm() {
         owner_name: formData.owner_name || "",
         address: formData.address || "",
         parties: formData.parties || "",
+        name_of_parties: formData.name_of_parties || "",
         description_of_properties: formData.description_of_properties || "",
         subject_matter: formData.subject_matter || "",
         suit_number: formData.suit_number || "",
@@ -854,6 +856,28 @@ export default function UploadCaseForm() {
                             setFormData(prev => ({
                               ...prev,
                               parties: e.target.value
+                            }));
+                          }}
+                          required
+                        />
+                      </div>
+                      
+                      <div className="space-y-1">
+                        <label
+                          htmlFor="name_of_parties"
+                          className="text-sm font-medium text-gray-700"
+                        >
+                          Name of Parties <span className="text-red-500">*</span>
+                        </label>
+                        <Input
+                          id="name_of_parties"
+                          name="name_of_parties"
+                          placeholder="e.g. John Doe, Jane Smith"
+                          value={formData.name_of_parties || ""}
+                          onChange={(e) => {
+                            setFormData(prev => ({
+                              ...prev,
+                              name_of_parties: e.target.value
                             }));
                           }}
                           required

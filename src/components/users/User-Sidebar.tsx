@@ -1,100 +1,111 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import useAuth from "../../hooks/useAuth"
-import { cn } from "@/lib/utils"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import useAuth from "../../hooks/useAuth";
+import { cn } from "@/lib/utils";
 import {
   HomeIcon,
   ClockIcon,
   Cog6ToothIcon,
   ArrowLeftOnRectangleIcon,
-  Bars3Icon,
   XMarkIcon,
-} from "@heroicons/react/24/outline"
+} from "@heroicons/react/24/outline";
 
-const Sidebar = () => {
-  const { logout } = useAuth()
-  const [isOpen, setIsOpen] = useState(false)
-  const pathname = usePathname()
-  const [isMobile, setIsMobile] = useState(false)
+type SidebarProps = {
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
+  const { logout } = useAuth();
+  const pathname = usePathname();
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Debug logs
+  console.log("Sidebar render - isOpen:", isOpen, "pathname:", pathname);
 
   // Check if we're on mobile
   useEffect(() => {
     const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      console.log(
+        "Mobile check - width:",
+        window.innerWidth,
+        "isMobile:",
+        mobile
+      );
+    };
 
-    // Initial check
-    checkIfMobile()
-
-    // Add event listener
-    window.addEventListener("resize", checkIfMobile)
+    checkIfMobile();
+    window.addEventListener("resize", checkIfMobile);
 
     // Close sidebar when clicking outside on mobile
     const handleOutsideClick = (event: MouseEvent) => {
       if (isOpen && window.innerWidth < 768) {
-        const sidebar = document.getElementById("sidebar")
+        const sidebar = document.getElementById("sidebar");
         if (sidebar && !sidebar.contains(event.target as Node)) {
-          setIsOpen(false)
+          console.log("Outside click detected, closing sidebar");
+          onClose();
         }
       }
-    }
+    };
 
-    document.addEventListener("mousedown", handleOutsideClick)
+    document.addEventListener("mousedown", handleOutsideClick);
 
-    // Cleanup
     return () => {
-      window.removeEventListener("resize", checkIfMobile)
-      document.removeEventListener("mousedown", handleOutsideClick)
-    }
-  }, [isOpen])
+      window.removeEventListener("resize", checkIfMobile);
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [isOpen, onClose]);
 
-  // Close sidebar when route changes on mobile
-  useEffect(() => {
-    if (window.innerWidth < 768) {
-      setIsOpen(false)
-    }
-  }, [pathname])
+  // REMOVED the auto-close on route change for mobile - this was causing issues
+  // useEffect(() => {
+  //   if (window.innerWidth < 768) {
+  //     onClose();
+  //   }
+  // }, [pathname, onClose]);
 
   // Navigation items
   const navItems = [
     { href: "/users", label: "Dashboard", icon: HomeIcon },
-    { href: "/users/user-search-history", label: "Search History", icon: ClockIcon },
+    {
+      href: "/users/user-search-history",
+      label: "Search History",
+      icon: ClockIcon,
+    },
     { href: "/users/user-setting", label: "Settings", icon: Cog6ToothIcon },
-  ]
+  ];
 
   return (
     <>
-      {/* Mobile Toggle Button - only show when sidebar is closed */}
-      {!isOpen && (
-        <button
-          className="md:hidden fixed top-2 -left-2 z-50 bg-white border border-gray-300 rounded-md p-2 shadow-md"
-          onClick={() => setIsOpen(true)}
-          aria-label="Open sidebar"
-        >
-          <Bars3Icon className="w-5 h-5 text-black" />
-        </button>
-      )}
-
       {/* Sidebar */}
       <aside
         id="sidebar"
         className={cn(
-          "fixed md:sticky top-0 left-0 h-screen w-64 z-40 bg-white shadow-lg border-r border-gray-200",
+          "fixed md:static top-0 left-0 h-screen w-64 z-40 bg-white shadow-lg border-r border-gray-200",
           "transition-transform duration-300 ease-in-out",
           "flex flex-col",
-          isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
+          // FIXED: Better responsive behavior
+          isOpen
+            ? "translate-x-0"
+            : isMobile
+            ? "-translate-x-full"
+            : "translate-x-0" // Always show on desktop
         )}
       >
         {/* Header with Close Button */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <h1 className="text-xl text-[#00AD20] font-bold">Lis Pendens Enugu</h1> 
-          {isOpen && (
+          <h1 className="text-xl text-[#00AD20] font-bold">
+            Lis Pendens Enugu
+          </h1>
+          {/* FIXED: Show close button when open on mobile */}
+          {isMobile && (
             <button
-              onClick={() => setIsOpen(false)}
-              className="md:hidden p-1 rounded-md hover:bg-gray-100"
+              onClick={onClose}
+              className="p-1 rounded-md hover:bg-gray-100"
               aria-label="Close sidebar"
             >
               <XMarkIcon className="w-5 h-5 text-black" />
@@ -110,27 +121,43 @@ const Sidebar = () => {
                 item.href === "/users"
                   ? pathname === "/users" ||
                     (pathname?.startsWith("/users/") &&
-                      !navItems.some((ni) => ni.href !== "/users" && pathname?.startsWith(ni.href)))
-                  : pathname?.startsWith(item.href)
-              const Icon = item.icon
+                      !navItems.some(
+                        (ni) =>
+                          ni.href !== "/users" && pathname?.startsWith(ni.href)
+                      ))
+                  : pathname?.startsWith(item.href);
+              const Icon = item.icon;
 
               return (
                 <li key={item.href}>
-                  <Link href={item.href}>
+                  <Link
+                    href={item.href}
+                    onClick={() => {
+                      // Close sidebar on mobile when navigating
+                      if (isMobile) {
+                        onClose();
+                      }
+                    }}
+                  >
                     <div
                       className={cn(
                         "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors",
                         isActive
                           ? "bg-[#23A863]/10 text-[#00AD20] font-semibold border border-[#00AD20]"
-                          : "text-gray-700 hover:bg-[#00AD20]",
+                          : "text-gray-700 hover:bg-[#00AD20] hover:text-white"
                       )}
                     >
-                      <Icon className={cn("w-5 h-5", isActive ? "text-[#00AD20]" : "")} />
+                      <Icon
+                        className={cn(
+                          "w-5 h-5",
+                          isActive ? "text-[#00AD20]" : ""
+                        )}
+                      />
                       <span>{item.label}</span>
                     </div>
                   </Link>
                 </li>
-              )
+              );
             })}
           </ul>
         </nav>
@@ -148,15 +175,15 @@ const Sidebar = () => {
       </aside>
 
       {/* Overlay for mobile */}
-      {isOpen && (
+      {isOpen && isMobile && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
-          onClick={() => setIsOpen(false)}
+          className="fixed inset-0 bg-black bg-opacity-50 z-30"
+          onClick={onClose}
           aria-hidden="true"
         />
       )}
     </>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;

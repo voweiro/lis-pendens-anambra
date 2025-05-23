@@ -1,22 +1,36 @@
+import { Bell, Search } from "lucide-react";
+import Image from "next/image";
+import usericon from "@/asserts/user-avatar.png";
+
 type HeaderProps = {
-    title: string
-  }
-  
-  const Header = ({ title }: HeaderProps) => {
-    return (
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">{title}</h1>
-        <div className="flex items-center gap-4">
-          <input
-            type="text"
-            placeholder="Search"
-            className="px-4 py-2 rounded-full border"
+  title: string;
+  description: string;
+};
+
+const Header = ({ title, description }: HeaderProps) => {
+  return (
+    <div>
+      <div className="lg:w-[98%]  w-full  rounded-2xl  border-[#23A863] shadow-sm flex justify-between items-center  h-full  lg:h-[100px]">
+        <div className="pl-5 ">
+          <h1 className="lg:text-[38px]  text-[28px] sm:text-[10px]   font-semibold">
+            {title}
+          </h1>
+          <p className="text-[#4D4D4D] text-[14px] font-medium">
+            {description}
+          </p>
+        </div>
+        <div className="flex items-center gap-10">
+          <Search className="text-gray-500 cursor-pointer" />
+          <Bell className="text-gray-500 cursor-pointer" />
+          <Image
+            src={usericon}
+            alt="User"
+            className="w-15 h-15 cursor-pointer rounded-full"
           />
-          <img src="/user-avatar.jpg" alt="User" className="w-10 h-10 rounded-full" />
         </div>
       </div>
-    )
-  }
-  
-  export default Header
-  
+    </div>
+  );
+};
+
+export default Header;

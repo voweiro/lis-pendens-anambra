@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { X } from "lucide-react"
-import { CaseData } from "@/components/utils/api"
+import { X } from "lucide-react";
+import { CaseData } from "@/components/utils/api";
 
 interface CaseDetailsViewProps {
   caseData: any;
@@ -11,17 +11,17 @@ interface CaseDetailsViewProps {
 export function CaseDetailsView({ caseData, onClose }: CaseDetailsViewProps) {
   // Format date for display
   const formatDate = (dateString?: string) => {
-    if (!dateString) return "N/A"
-    return new Date(dateString).toLocaleDateString()
-  }
+    if (!dateString) return "N/A";
+    return new Date(dateString).toLocaleDateString();
+  };
 
   // Helper function to format a field label
   const formatLabel = (label: string) => {
     return label
-      .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ')
-  }
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -46,19 +46,27 @@ export function CaseDetailsView({ caseData, onClose }: CaseDetailsViewProps) {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Property Title</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    Property Title
+                  </p>
                   <p className="mt-1">{caseData.tile || "N/A"}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Title Number</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    Title Number
+                  </p>
                   <p className="mt-1">{caseData.title_number || "N/A"}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Survey Plan Number</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    Survey Plan Number
+                  </p>
                   <p className="mt-1">{caseData.survey_plan_number || "N/A"}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Property Owner</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    Property Owner
+                  </p>
                   <p className="mt-1">{caseData.owner_name || "N/A"}</p>
                 </div>
                 <div className="md:col-span-2">
@@ -67,19 +75,27 @@ export function CaseDetailsView({ caseData, onClose }: CaseDetailsViewProps) {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-500">State</p>
-                  <p className="mt-1">{caseData.state || caseData.state_name || "N/A"}</p>
+                  <p className="mt-1">
+                    {caseData.state || caseData.state_id || "N/A"}
+                  </p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-500">LGA</p>
-                  <p className="mt-1">{caseData.lga || caseData.lga_name || "N/A"}</p>
+                  <p className="mt-1">{caseData.lga_id || "N/A"}</p>
                 </div>
                 <div className="md:col-span-2">
-                  <p className="text-sm font-medium text-gray-500">Parties Involved</p>
-                  <p className="mt-1">{caseData.name_of_parties || caseData.parties || "N/A"}</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    Parties Involved
+                  </p>
+                  <p className="mt-1">{caseData.parties || "N/A"}</p>
                 </div>
                 <div className="md:col-span-2">
-                  <p className="text-sm font-medium text-gray-500">Description of Properties</p>
-                  <p className="mt-1">{caseData.description_of_properties || "N/A"}</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    Description of Properties
+                  </p>
+                  <p className="mt-1">
+                    {caseData.description_of_properties || "N/A"}
+                  </p>
                 </div>
               </div>
             </div>
@@ -91,44 +107,72 @@ export function CaseDetailsView({ caseData, onClose }: CaseDetailsViewProps) {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Suit Number</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    Suit Number
+                  </p>
                   <p className="mt-1">{caseData.suit_number || "N/A"}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Nature of Dispute</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    Nature of Dispute
+                  </p>
                   <p className="mt-1">{caseData.nature_of_case || "N/A"}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Court Details</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    Court Details
+                  </p>
                   <p className="mt-1">{caseData.court_details || "N/A"}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Judicial Division</p>
-                  <p className="mt-1">{caseData.judicial_division || caseData.judicial_division_name || caseData.division || "N/A"}</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    Judicial Division
+                  </p>
+                  <p className="mt-1">
+                    {caseData.judicial_division_id || "N/A"}
+                  </p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-500">Status</p>
                   <p className="mt-1">
-                    <span className={`px-2 py-1 text-xs rounded-full 
-                      ${caseData.status?.toLowerCase() === "ongoing" ? "bg-yellow-100 text-yellow-800" : 
-                        caseData.status?.toLowerCase() === "concluded" ? "bg-green-100 text-green-800" : 
-                        caseData.status?.toLowerCase() === "disposed" ? "bg-green-100 text-green-800" :
-                        caseData.status?.toLowerCase() === "on appeal" ? "bg-red-100 text-red-800" :
-                        "bg-blue-100 text-blue-800"}`}>
+                    <span
+                      className={`px-2 py-1 text-xs rounded-full 
+                      ${
+                        caseData.status?.toLowerCase() === "ongoing"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : caseData.status?.toLowerCase() === "concluded"
+                          ? "bg-green-100 text-green-800"
+                          : caseData.status?.toLowerCase() === "disposed"
+                          ? "bg-green-100 text-green-800"
+                          : caseData.status?.toLowerCase() === "on appeal"
+                          ? "bg-red-100 text-red-800"
+                          : "bg-blue-100 text-blue-800"
+                      }`}
+                    >
                       {caseData.status || "N/A"}
                     </span>
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Date of Commencement</p>
-                  <p className="mt-1">{formatDate(caseData.date_of_commencement)}</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    Date of Commencement
+                  </p>
+                  <p className="mt-1">
+                    {formatDate(caseData.date_of_commencement)}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Date of Disposal</p>
-                  <p className="mt-1">{formatDate(caseData.date_of_disposal)}</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    Date of Disposal
+                  </p>
+                  <p className="mt-1">
+                    {formatDate(caseData.date_of_disposal)}
+                  </p>
                 </div>
                 <div className="md:col-span-2">
-                  <p className="text-sm font-medium text-gray-500">Subject Matter</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    Subject Matter
+                  </p>
                   <p className="mt-1">{caseData.subject_matter || "N/A"}</p>
                 </div>
               </div>
@@ -145,11 +189,15 @@ export function CaseDetailsView({ caseData, onClose }: CaseDetailsViewProps) {
                   <p className="mt-1">{caseData.id || "N/A"}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Created At</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    Created At
+                  </p>
                   <p className="mt-1">{formatDate(caseData.created_at)}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Last Updated</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    Last Updated
+                  </p>
                   <p className="mt-1">{formatDate(caseData.updated_at)}</p>
                 </div>
               </div>
@@ -167,5 +215,5 @@ export function CaseDetailsView({ caseData, onClose }: CaseDetailsViewProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

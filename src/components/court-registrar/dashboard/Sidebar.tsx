@@ -67,11 +67,6 @@ const Sidebar: React.FC = () => {
       icon: <BarChart className="w-5 h-5" />,
     },
     {
-      path: "/court-registrar/flagged-case",
-      label: "Flagged Cases",
-      icon: <FlagIcon className="w-5 h-5" />,
-    },
-    {
       path: "/court-registrar/setting",
       label: "Settings",
       icon: <Settings className="w-5 h-5" />,
@@ -99,18 +94,19 @@ const Sidebar: React.FC = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-40 h-full bg-white shadow-lg border-r border-gray-200 transition-all duration-300 ease-in-out
+        className={`fixed top-0 left-0 z-40 h-screen bg-white shadow-lg border-r border-gray-200 transition-all duration-300 ease-in-out
         ${
           open
             ? "w-64 translate-x-0"
-            : "w-0 -translate-x-full md:w-64 md:translate-x-0"
-        }
-        md:sticky md:top-0 md:h-screen overflow-hidden`}
+            : "-translate-x-full md:translate-x-0 w-64"
+        }`}
       >
         <div className="flex flex-col h-full py-6 px-4 overflow-y-auto">
           {/* Logo or Brand */}
           <div className="mb-8 flex justify-center">
-            <h1 className="text-xl font-bold text-green-600">Court Registry</h1>
+            <h1 className="text-xl font-bold text-green-600">
+              Court Registrar
+            </h1>
           </div>
 
           {/* Navigation */}

@@ -31,11 +31,11 @@ const StatsBar: React.FC = () => {
         if (response.success && response.data) {
           setSummaryData(response.data);
         } else {
-          setError(response.error || 'Failed to fetch dashboard summary');
+          setError(response.error || "Failed to fetch dashboard summary");
         }
       } catch (err) {
-        console.error('Error fetching dashboard summary:', err);
-        setError('An error occurred while fetching dashboard data');
+        console.error("Error fetching dashboard summary:", err);
+        setError("An error occurred while fetching dashboard data");
       } finally {
         setIsLoading(false);
       }
@@ -191,7 +191,7 @@ const StatsBar: React.FC = () => {
   // Combine default stats with API data
   const displayStats = stats.map((stat, index) => {
     let value = stat.value; // Default value
-    
+
     // Update values with real data if available
     if (summaryData) {
       if (index === 0) value = summaryData.total_searches || 0;
@@ -199,10 +199,10 @@ const StatsBar: React.FC = () => {
       if (index === 2) value = summaryData.total_on_appeal || 0;
       if (index === 3) value = summaryData.total_concluded || 0;
     }
-    
+
     return {
       ...stat,
-      value
+      value,
     };
   });
 

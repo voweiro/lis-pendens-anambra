@@ -1,35 +1,37 @@
-// components/layout/NormalUserLayout.tsx
-
-import React, { ReactNode } from 'react';
-import Sidebar from '@/components/court-registrar/dashboard/Sidebar';
-import Topbar from '@/components/court-registrar/dashboard/Header';
+import React, { ReactNode } from "react";
+import Sidebar from "@/components/court-registrar/dashboard/Sidebar";
+import Header from "@/components/court-registrar/dashboard/Header";
 
 type CourtRegistrarLayoutProps = {
   title: string;
-  description : string // Page title to pass to the topbar
+  description: string;
   children: ReactNode;
-  className?: string; // Allow className prop
+  className?: string;
 };
 
-const CourtRegistrarLayout = ({ title, description, children, className }: CourtRegistrarLayoutProps) => {
+const CourtRegistrarLayout = ({
+  title,
+  description,
+  children,
+  className,
+}: CourtRegistrarLayoutProps) => {
   return (
-    <div className={`flex h-screen bg-[#F6F6F6] ${className || ''}`}>
+    <div className={`flex min-h-screen bg-gray-50 ${className || ""}`}>
       {/* Sidebar */}
-      
-        <Sidebar />
-      
+      <Sidebar />
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col overflow-hidden">
-        {/* Topbar */}
-        <div className="mt-4 ml-4">
-          <Topbar title={title} description={description} />
-        </div>
+      <main className="flex-1 flex flex-col md:ml-64">
+        {/* Header */}
+        <Header
+          title={title}
+          description={description}
+          showTitleOnMobile={false}
+          showDescriptionOnMobile={false}
+        />
 
         {/* Page Content */}
-        <div className="p-6 overflow-auto h-full">
-          {children}
-        </div>
+        <div className="flex-1 p-4 md:p-6 overflow-auto">{children}</div>
       </main>
     </div>
   );

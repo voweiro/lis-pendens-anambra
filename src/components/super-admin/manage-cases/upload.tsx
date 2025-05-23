@@ -1,200 +1,211 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import { X, Check, ChevronDown, AlertCircle, Loader2 } from "lucide-react"
-import { toast } from "react-toastify"
-import { createCase, type CaseData } from "@/components/utils/api"
-import { GetStates, GetLGAs, GetJudicialDivisions } from "@/Services/AuthRequest/auth.request"
+import { useState, useEffect } from "react";
+import { X, Check, ChevronDown, AlertCircle, Loader2 } from "lucide-react";
+import { toast } from "react-toastify";
+import { createCase, type CaseData } from "@/components/utils/api";
+import {
+  GetStates,
+  GetLGAs,
+  GetJudicialDivisions,
+} from "@/Services/AuthRequest/auth.request";
 
 interface UploadModalProps {
-  onClose: () => void
-  onSuccess?: () => void
+  onClose: () => void;
+  onSuccess?: () => void;
 }
 
 interface StateOption {
-  id: string
-  label: string
-  active: boolean
+  id: string;
+  label: string;
+  active: boolean;
 }
 
 interface LgaOption {
-  id: string
-  label: string
-  active: boolean
+  id: string;
+  label: string;
+  active: boolean;
 }
 
 interface JudicialDivisionOption {
-  id: string
-  label: string
-  active: boolean
+  id: string;
+  label: string;
+  active: boolean;
 }
 
 export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
-  const [step, setStep] = useState<"options" | "form" | "success">("options")
-  const [formStep, setFormStep] = useState(1) // Track form steps: 1 for property details, 2 for case details
-  const [formData, setFormData] = useState<CaseData>({})
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [step, setStep] = useState<"options" | "form" | "success">("options");
+  const [formStep, setFormStep] = useState(1); // Track form steps: 1 for property details, 2 for case details
+  const [formData, setFormData] = useState<CaseData>({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // State, LGA, and Judicial Division management
-  const [states, setStates] = useState<StateOption[]>([])
-  const [lgas, setLgas] = useState<LgaOption[]>([])
-  const [judicialDivisions, setJudicialDivisions] = useState<JudicialDivisionOption[]>([])
-  const [loadingStates, setLoadingStates] = useState(false)
-  const [loadingLgas, setLoadingLgas] = useState(false)
-  const [loadingJudicialDivisions, setLoadingJudicialDivisions] = useState(false)
-  const [stateDropdownOpen, setStateDropdownOpen] = useState(false)
-  const [lgaDropdownOpen, setLgaDropdownOpen] = useState(false)
-  const [judicialDivisionDropdownOpen, setJudicialDivisionDropdownOpen] = useState(false)
+  const [states, setStates] = useState<StateOption[]>([]);
+  const [lgas, setLgas] = useState<LgaOption[]>([]);
+  const [judicialDivisions, setJudicialDivisions] = useState<
+    JudicialDivisionOption[]
+  >([]);
+  const [loadingStates, setLoadingStates] = useState(false);
+  const [loadingLgas, setLoadingLgas] = useState(false);
+  const [loadingJudicialDivisions, setLoadingJudicialDivisions] =
+    useState(false);
+  const [stateDropdownOpen, setStateDropdownOpen] = useState(false);
+  const [lgaDropdownOpen, setLgaDropdownOpen] = useState(false);
+  const [judicialDivisionDropdownOpen, setJudicialDivisionDropdownOpen] =
+    useState(false);
 
   // Fetch states, LGAs, and judicial divisions on component mount
   useEffect(() => {
-    fetchStates()
-    fetchJudicialDivisions()
-  }, [])
+    fetchStates();
+    fetchJudicialDivisions();
+  }, []);
 
   // Fetch states
   const fetchStates = async () => {
     try {
-      setLoadingStates(true)
-      const statesData = await GetStates()
+      setLoadingStates(true);
+      const statesData = await GetStates();
       if (Array.isArray(statesData) && statesData.length > 0) {
-        setStates(statesData)
+        setStates(statesData);
       } else {
         // Fallback to default states
         const defaultStates = [
           { id: "1", label: "Lagos", active: true },
           { id: "2", label: "Abuja", active: true },
           { id: "3", label: "Rivers", active: true },
-        ]
-        setStates(defaultStates)
+        ];
+        setStates(defaultStates);
       }
     } catch (error) {
-      console.error("Error fetching states:", error)
+      console.error("Error fetching states:", error);
       // Set default states on error
       const defaultStates = [
         { id: "1", label: "Lagos", active: true },
         { id: "2", label: "Abuja", active: true },
         { id: "3", label: "Rivers", active: true },
-      ]
-      setStates(defaultStates)
+      ];
+      setStates(defaultStates);
     } finally {
-      setLoadingStates(false)
+      setLoadingStates(false);
     }
-  }
+  };
 
   // Fetch LGAs based on selected state
   const fetchLgas = async (stateId: string) => {
     try {
-      setLoadingLgas(true)
-      const lgasData = await GetLGAs(stateId)
+      setLoadingLgas(true);
+      const lgasData = await GetLGAs(stateId);
       if (Array.isArray(lgasData) && lgasData.length > 0) {
-        setLgas(lgasData)
+        setLgas(lgasData);
       } else {
         // Fallback to default LGAs
         const defaultLgas = [
           { id: "1", label: "LGA 1", active: true },
           { id: "2", label: "LGA 2", active: true },
           { id: "3", label: "LGA 3", active: true },
-        ]
-        setLgas(defaultLgas)
+        ];
+        setLgas(defaultLgas);
       }
     } catch (error) {
-      console.error("Error fetching LGAs:", error)
+      console.error("Error fetching LGAs:", error);
       // Set default LGAs on error
       const defaultLgas = [
         { id: "1", label: "LGA 1", active: true },
         { id: "2", label: "LGA 2", active: true },
         { id: "3", label: "LGA 3", active: true },
-      ]
-      setLgas(defaultLgas)
+      ];
+      setLgas(defaultLgas);
     } finally {
-      setLoadingLgas(false)
+      setLoadingLgas(false);
     }
-  }
+  };
 
   // Fetch judicial divisions
   const fetchJudicialDivisions = async () => {
     try {
-      setLoadingJudicialDivisions(true)
-      const divisionsData = await GetJudicialDivisions()
+      setLoadingJudicialDivisions(true);
+      const divisionsData = await GetJudicialDivisions();
       if (Array.isArray(divisionsData) && divisionsData.length > 0) {
-        setJudicialDivisions(divisionsData)
+        setJudicialDivisions(divisionsData);
       } else {
         // Fallback to default judicial divisions
         const defaultDivisions = [
           { id: "1", label: "Division 1", active: true },
           { id: "2", label: "Division 2", active: true },
           { id: "3", label: "Division 3", active: true },
-        ]
-        setJudicialDivisions(defaultDivisions)
+        ];
+        setJudicialDivisions(defaultDivisions);
       }
     } catch (error) {
-      console.error("Error fetching judicial divisions:", error)
+      console.error("Error fetching judicial divisions:", error);
       // Set default judicial divisions on error
       const defaultDivisions = [
         { id: "1", label: "Division 1", active: true },
         { id: "2", label: "Division 2", active: true },
         { id: "3", label: "Division 3", active: true },
-      ]
-      setJudicialDivisions(defaultDivisions)
+      ];
+      setJudicialDivisions(defaultDivisions);
     } finally {
-      setLoadingJudicialDivisions(false)
+      setLoadingJudicialDivisions(false);
     }
-  }
+  };
 
   // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target
-    let fieldName = id
+    const { id, value } = e.target;
+    let fieldName = id;
 
     // Map the input IDs to the correct field names
     switch (id) {
       // Step 1: Property Details
       case "propertyTitle":
-        fieldName = "tile"
-        break
+        fieldName = "tile";
+        break;
       case "titleNumber":
-        fieldName = "title_number"
-        break
+        fieldName = "title_number";
+        break;
       case "surveyNumber":
-        fieldName = "survey_plan_number"
-        break
+        fieldName = "survey_plan_number";
+        break;
       case "ownerName":
-        fieldName = "owner_name"
-        break
+        fieldName = "owner_name";
+        break;
       case "location":
-        fieldName = "address"
-        break
+        fieldName = "address";
+        break;
       case "parties":
-        fieldName = "parties"
-        break
+        fieldName = "parties";
+        break;
+      case "name_of_parties":
+        fieldName = "name_of_parties";
+        break;
 
       // Step 2: Case Details
       case "suitNumber":
-        fieldName = "suit_number"
-        break
+        fieldName = "suit_number";
+        break;
       case "court":
-        fieldName = "court_details"
-        break
+        fieldName = "court_details";
+        break;
       case "commencementDate":
-        fieldName = "date_of_commencement"
-        break
+        fieldName = "date_of_commencement";
+        break;
       case "disposalDate":
-        fieldName = "date_of_disposal"
-        break
+        fieldName = "date_of_disposal";
+        break;
       case "natureDispute":
-        fieldName = "nature_of_case"
-        break
+        fieldName = "nature_of_case";
+        break;
       case "status":
-        fieldName = "status"
-        break
+        fieldName = "status";
+        break;
     }
 
-    setFormData((prev) => ({ ...prev, [fieldName]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [fieldName]: value }));
+  };
 
   // Handle state selection
   const handleStateSelect = (state: StateOption) => {
@@ -202,10 +213,10 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
       ...prev,
       state_id: state.id,
       state: state.label,
-    }))
-    setStateDropdownOpen(false)
-    fetchLgas(state.id)
-  }
+    }));
+    setStateDropdownOpen(false);
+    fetchLgas(state.id);
+  };
 
   // Handle LGA selection
   const handleLgaSelect = (lga: LgaOption) => {
@@ -213,9 +224,9 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
       ...prev,
       lga_id: lga.id,
       lga: lga.label,
-    }))
-    setLgaDropdownOpen(false)
-  }
+    }));
+    setLgaDropdownOpen(false);
+  };
 
   // Handle judicial division selection
   const handleJudicialDivisionSelect = (division: JudicialDivisionOption) => {
@@ -223,9 +234,9 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
       ...prev,
       judicial_division_id: division.id,
       judicial_division: division.label,
-    }))
-    setJudicialDivisionDropdownOpen(false)
-  }
+    }));
+    setJudicialDivisionDropdownOpen(false);
+  };
 
   // Handle next step in form
   const handleNextStep = () => {
@@ -238,26 +249,26 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
         { field: "state_id", label: "State" },
         { field: "lga_id", label: "Local Government Area" },
         { field: "judicial_division_id", label: "Judicial Division" },
-      ]
+      ];
 
       for (const { field, label } of requiredStep1Fields) {
         if (!formData[field as keyof CaseData]) {
-          setError(`${label} is required`)
-          return
+          setError(`${label} is required`);
+          return;
         }
       }
 
       // If validation passes, move to step 2
-      setError(null)
-      setFormStep(2)
+      setError(null);
+      setFormStep(2);
     }
-  }
+  };
 
   // Handle previous step in form
   const handlePreviousStep = () => {
-    setFormStep(1)
-    setError(null)
-  }
+    setFormStep(1);
+    setError(null);
+  };
 
   // Handle form submission
   const handleSubmit = async () => {
@@ -268,36 +279,39 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
       { field: "court_details", label: "Court and Judicial Division" },
       { field: "status", label: "Status of Dispute" },
       { field: "date_of_commencement", label: "Date of Commencement" },
-    ]
+    ];
 
     for (const { field, label } of requiredStep2Fields) {
       if (!formData[field as keyof CaseData]) {
-        setError(`${label} is required`)
-        return
+        setError(`${label} is required`);
+        return;
       }
     }
 
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
 
     try {
-      const response = await createCase(formData)
-      console.log("Case created successfully:", response)
-      toast.success("Case created successfully")
-      setStep("success")
-      
+      // Use the form data directly since we now have both fields
+      const apiData = formData;
+
+      const response = await createCase(apiData);
+      console.log("Case created successfully:", response);
+      toast.success("Case created successfully");
+      setStep("success");
+
       // Call the onSuccess callback if provided
       if (onSuccess) {
-        onSuccess()
+        onSuccess();
       }
     } catch (error: any) {
-      console.error("Error creating case:", error)
-      setError(error.message || "Failed to create case. Please try again.")
-      toast.error(error.message || "Failed to create case")
+      console.error("Error creating case:", error);
+      setError(error.message || "Failed to create case. Please try again.");
+      toast.error(error.message || "Failed to create case");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
@@ -325,7 +339,9 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
 
               <button
                 className="w-full max-w-xs border border-gray-300 px-4 py-3 rounded text-gray-700 hover:bg-gray-50 transition-colors"
-                onClick={() => toast.info("CSV upload functionality coming soon")}
+                onClick={() =>
+                  toast.info("CSV upload functionality coming soon")
+                }
               >
                 Upload by CSV
               </button>
@@ -344,7 +360,9 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
           <>
             <div className="p-4 border-b border-gray-200 flex justify-center relative sticky top-0 bg-white z-10">
               <h2 className="text-lg font-semibold">
-                {formStep === 1 ? "Upload Case - Property Details" : "Upload Case - Case Details"}
+                {formStep === 1
+                  ? "Upload Case - Property Details"
+                  : "Upload Case - Case Details"}
               </h2>
               <button
                 onClick={onClose}
@@ -368,7 +386,10 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                   // Step 1: Property Details
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label htmlFor="propertyTitle" className="block text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor="propertyTitle"
+                        className="block text-sm font-medium text-gray-700"
+                      >
                         Property Title <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -382,7 +403,10 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label htmlFor="titleNumber" className="block text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor="titleNumber"
+                        className="block text-sm font-medium text-gray-700"
+                      >
                         Title Number
                       </label>
                       <input
@@ -395,8 +419,12 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label htmlFor="location" className="text-sm font-medium text-gray-700">
-                        Location of Property <span className="text-red-500">*</span>
+                      <label
+                        htmlFor="location"
+                        className="text-sm font-medium text-gray-700"
+                      >
+                        Location of Property{" "}
+                        <span className="text-red-500">*</span>
                       </label>
                       <input
                         id="location"
@@ -409,7 +437,10 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label htmlFor="surveyNumber" className="text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor="surveyNumber"
+                        className="text-sm font-medium text-gray-700"
+                      >
                         Survey Plan Number
                       </label>
                       <input
@@ -422,8 +453,12 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label htmlFor="ownerName" className="text-sm font-medium text-gray-700">
-                        Property Owner Name <span className="text-red-500">*</span>
+                      <label
+                        htmlFor="ownerName"
+                        className="text-sm font-medium text-gray-700"
+                      >
+                        Property Owner Name{" "}
+                        <span className="text-red-500">*</span>
                       </label>
                       <input
                         id="ownerName"
@@ -436,13 +471,35 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label htmlFor="name_of_parties" className="text-sm font-medium text-gray-700">
-                        Parties to the Suit/Claim <span className="text-red-500">*</span>
+                      <label
+                        htmlFor="parties"
+                        className="text-sm font-medium text-gray-700"
+                      >
+                        Parties to the Suit/Claim{" "}
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        id="parties"
+                        type="text"
+                        placeholder="e.g. Party A vs Party B"
+                        value={formData.parties || ""}
+                        onChange={handleInputChange}
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label
+                        htmlFor="name_of_parties"
+                        className="text-sm font-medium text-gray-700"
+                      >
+                        Name of Parties <span className="text-red-500">*</span>
                       </label>
                       <input
                         id="name_of_parties"
                         type="text"
-                        placeholder="e.g. Party A vs Party B"
+                        placeholder="e.g. John Doe, Jane Smith"
                         value={formData.name_of_parties || ""}
                         onChange={handleInputChange}
                         className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -459,10 +516,17 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                         <button
                           type="button"
                           className="w-full flex items-center justify-between px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm text-gray-700 hover:bg-gray-50"
-                          onClick={() => setStateDropdownOpen(!stateDropdownOpen)}
+                          onClick={() =>
+                            setStateDropdownOpen(!stateDropdownOpen)
+                          }
                           disabled={loadingStates}
                         >
-                          <span>{formData.state || (loadingStates ? "Loading states..." : "Select state")}</span>
+                          <span>
+                            {formData.state ||
+                              (loadingStates
+                                ? "Loading states..."
+                                : "Select state")}
+                          </span>
                           <ChevronDown className="h-4 w-4" />
                         </button>
 
@@ -478,7 +542,9 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                               </div>
                             ))}
                             {states.length === 0 && !loadingStates && (
-                              <div className="py-2 px-3 text-gray-500">No states available</div>
+                              <div className="py-2 px-3 text-gray-500">
+                                No states available
+                              </div>
                             )}
                           </div>
                         )}
@@ -488,7 +554,8 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                     {/* LGA Dropdown */}
                     <div className="space-y-1">
                       <label className="block text-sm font-medium text-gray-700">
-                        Local Government Area <span className="text-red-500">*</span>
+                        Local Government Area{" "}
+                        <span className="text-red-500">*</span>
                       </label>
                       <div className="relative">
                         <button
@@ -502,8 +569,8 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                               (loadingLgas
                                 ? "Loading local governments..."
                                 : !formData.state_id
-                                  ? "Select state first"
-                                  : "Select local government")}
+                                ? "Select state first"
+                                : "Select local government")}
                           </span>
                           <ChevronDown className="h-4 w-4" />
                         </button>
@@ -519,9 +586,13 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                                 {lga.label}
                               </div>
                             ))}
-                            {lgas.length === 0 && !loadingLgas && formData.state_id && (
-                              <div className="py-2 px-3 text-gray-500">No local governments available</div>
-                            )}
+                            {lgas.length === 0 &&
+                              !loadingLgas &&
+                              formData.state_id && (
+                                <div className="py-2 px-3 text-gray-500">
+                                  No local governments available
+                                </div>
+                              )}
                           </div>
                         )}
                       </div>
@@ -530,18 +601,25 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                     {/* Judicial Division Dropdown */}
                     <div className="space-y-1 md:col-span-2">
                       <label className="block text-sm font-medium text-gray-700">
-                        Judicial Division <span className="text-red-500">*</span>
+                        Judicial Division{" "}
+                        <span className="text-red-500">*</span>
                       </label>
                       <div className="relative">
                         <button
                           type="button"
                           className="w-full flex items-center justify-between px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm text-gray-700 hover:bg-gray-50"
-                          onClick={() => setJudicialDivisionDropdownOpen(!judicialDivisionDropdownOpen)}
+                          onClick={() =>
+                            setJudicialDivisionDropdownOpen(
+                              !judicialDivisionDropdownOpen
+                            )
+                          }
                           disabled={loadingJudicialDivisions}
                         >
                           <span>
                             {formData.judicial_division ||
-                              (loadingJudicialDivisions ? "Loading judicial divisions..." : "Select judicial division")}
+                              (loadingJudicialDivisions
+                                ? "Loading judicial divisions..."
+                                : "Select judicial division")}
                           </span>
                           <ChevronDown className="h-4 w-4" />
                         </button>
@@ -552,14 +630,19 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                               <div
                                 key={division.id}
                                 className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
-                                onClick={() => handleJudicialDivisionSelect(division)}
+                                onClick={() =>
+                                  handleJudicialDivisionSelect(division)
+                                }
                               >
                                 {division.label}
                               </div>
                             ))}
-                            {judicialDivisions.length === 0 && !loadingJudicialDivisions && (
-                              <div className="py-2 px-3 text-gray-500">No judicial divisions available</div>
-                            )}
+                            {judicialDivisions.length === 0 &&
+                              !loadingJudicialDivisions && (
+                                <div className="py-2 px-3 text-gray-500">
+                                  No judicial divisions available
+                                </div>
+                              )}
                           </div>
                         )}
                       </div>
@@ -567,14 +650,22 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
 
                     {/* Description of Properties */}
                     <div className="space-y-1 md:col-span-2">
-                      <label htmlFor="descriptionOfProperties" className="block text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor="descriptionOfProperties"
+                        className="block text-sm font-medium text-gray-700"
+                      >
                         Description of Properties
                       </label>
                       <textarea
                         id="descriptionOfProperties"
                         placeholder="Enter detailed description of the properties involved"
                         value={formData.description_of_properties || ""}
-                        onChange={(e) => setFormData({ ...formData, description_of_properties: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            description_of_properties: e.target.value,
+                          })
+                        }
                         className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         rows={3}
                       />
@@ -584,7 +675,10 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                   // Step 2: Case Details
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label htmlFor="suitNumber" className="text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor="suitNumber"
+                        className="text-sm font-medium text-gray-700"
+                      >
                         Suit Number <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -598,8 +692,12 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label htmlFor="natureDispute" className="text-sm font-medium text-gray-700">
-                        Nature of Dispute <span className="text-red-500">*</span>
+                      <label
+                        htmlFor="natureDispute"
+                        className="text-sm font-medium text-gray-700"
+                      >
+                        Nature of Dispute{" "}
+                        <span className="text-red-500">*</span>
                       </label>
                       <input
                         id="natureDispute"
@@ -612,8 +710,12 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label htmlFor="court" className="text-sm font-medium text-gray-700">
-                        Court and Judicial Division <span className="text-red-500">*</span>
+                      <label
+                        htmlFor="court"
+                        className="text-sm font-medium text-gray-700"
+                      >
+                        Court and Judicial Division{" "}
+                        <span className="text-red-500">*</span>
                       </label>
                       <input
                         id="court"
@@ -626,8 +728,12 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label htmlFor="status" className="text-sm font-medium text-gray-700">
-                        Status of Dispute <span className="text-red-500">*</span>
+                      <label
+                        htmlFor="status"
+                        className="text-sm font-medium text-gray-700"
+                      >
+                        Status of Dispute{" "}
+                        <span className="text-red-500">*</span>
                       </label>
                       <input
                         id="status"
@@ -640,8 +746,12 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label htmlFor="commencementDate" className="text-sm font-medium text-gray-700">
-                        Date of Commencement <span className="text-red-500">*</span>
+                      <label
+                        htmlFor="commencementDate"
+                        className="text-sm font-medium text-gray-700"
+                      >
+                        Date of Commencement{" "}
+                        <span className="text-red-500">*</span>
                       </label>
                       <input
                         id="commencementDate"
@@ -653,7 +763,10 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label htmlFor="disposalDate" className="text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor="disposalDate"
+                        className="text-sm font-medium text-gray-700"
+                      >
                         Date of Disposal
                       </label>
                       <input
@@ -664,16 +777,24 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                         className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       />
                     </div>
-                    
+
                     <div className="space-y-1 md:col-span-2">
-                      <label htmlFor="subjectMatter" className="text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor="subjectMatter"
+                        className="text-sm font-medium text-gray-700"
+                      >
                         Subject Matter <span className="text-red-500">*</span>
                       </label>
                       <textarea
                         id="subjectMatter"
                         placeholder="Enter the subject matter of the case"
                         value={formData.subject_matter || ""}
-                        onChange={(e) => setFormData({ ...formData, subject_matter: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            subject_matter: e.target.value,
+                          })
+                        }
                         className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         rows={3}
                         required
@@ -750,9 +871,12 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                 <Check className="h-8 w-8 text-green-600" />
               </div>
 
-              <h3 className="text-xl font-semibold mb-2">Case Created Successfully</h3>
+              <h3 className="text-xl font-semibold mb-2">
+                Case Created Successfully
+              </h3>
               <p className="text-gray-600 mb-6 max-w-md">
-                The case has been successfully added to the system and is now available for viewing and management.
+                The case has been successfully added to the system and is now
+                available for viewing and management.
               </p>
 
               <div className="flex gap-3">
@@ -764,9 +888,9 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                 </button>
                 <button
                   onClick={() => {
-                    setFormData({})
-                    setFormStep(1)
-                    setStep("form")
+                    setFormData({});
+                    setFormStep(1);
+                    setStep("form");
                   }}
                   className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                 >
@@ -778,5 +902,5 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
         )}
       </div>
     </div>
-  )
+  );
 }

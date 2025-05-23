@@ -60,15 +60,17 @@ export default function ActivityLogsPage() {
 
   // Get current date for the date selector
   const currentDate = new Date();
-  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
   // Generate dates for the date selector (3 days before and 3 days after today)
   const dates = Array.from({ length: 7 }, (_, i) => {
     const date = new Date(currentDate);
     date.setDate(currentDate.getDate() - 3 + i);
-    return { 
-      day: `${date.getDate()} ${date.toLocaleString('default', { month: 'short' })}`, 
-      weekday: days[date.getDay()]
+    return {
+      day: `${date.getDate()} ${date.toLocaleString("default", {
+        month: "short",
+      })}`,
+      weekday: days[date.getDay()],
     };
   });
 
@@ -82,11 +84,11 @@ export default function ActivityLogsPage() {
         if (response.success) {
           setActivityLogs(response.data);
         } else {
-          setError(response.error || 'Failed to fetch activity logs');
+          setError(response.error || "Failed to fetch activity logs");
         }
       } catch (err) {
-        setError('An error occurred while fetching activity logs');
-        console.error('Error fetching activity logs:', err);
+        setError("An error occurred while fetching activity logs");
+        console.error("Error fetching activity logs:", err);
       } finally {
         setIsLoading(false);
       }
@@ -97,7 +99,7 @@ export default function ActivityLogsPage() {
 
   // Group logs by time for the summary view
   const todayLogs = activityLogs
-    .filter(log => {
+    .filter((log) => {
       const logDate = new Date(log.timestamp);
       const today = new Date();
       return (
@@ -108,22 +110,22 @@ export default function ActivityLogsPage() {
     })
     .reduce((groups, log) => {
       const time = log.time;
-      if (!groups.find(group => group.time === time)) {
+      if (!groups.find((group) => group.time === time)) {
         groups.push({
           time,
-          activities: []
+          activities: [],
         });
       }
-      
-      const group = groups.find(group => group.time === time);
+
+      const group = groups.find((group) => group.time === time);
       if (group) {
         group.activities.push({
           type: log.type.toUpperCase(),
           user: log.user.name || log.user.email,
-          description: log.description
+          description: log.description,
         });
       }
-      
+
       return groups;
     }, [] as { time: string; activities: { type: string; user: string; description: string }[] }[]);
 
@@ -175,29 +177,6 @@ export default function ActivityLogsPage() {
       description="Track your searches and manage overall activities"
     >
       <div className="p-6" onClick={handleClickOutside}>
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Activity logs</h1>
-  
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search"
-                className="pl-3 pr-10 py-2 border border-gray-300 rounded-full w-[200px] focus:outline-none focus:ring-2 focus:ring-gray-200"
-              />
-              <Search className="absolute right-3 top-2.5 h-4 w-4 text-gray-400" />
-            </div>
-  
-            <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-              <img
-                src="/placeholder.svg?height=40&width=40"
-                alt="User avatar"
-                className="h-10 w-10 rounded-full"
-              />
-            </div>
-          </div>
-        </div>
-  
         {view === "summary" && (
           <>
             <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -212,7 +191,7 @@ export default function ActivityLogsPage() {
                       Total upload
                     </div>
                   </div>
-  
+
                   <div className="relative">
                     <div className="w-32 h-32 rounded-full bg-gray-700 flex items-center justify-center text-white">
                       <span className="text-2xl font-bold">185</span>
@@ -223,13 +202,13 @@ export default function ActivityLogsPage() {
                   </div>
                 </div>
               </div>
-  
+
               <div className="bg-white rounded-lg shadow-sm md:col-span-2">
                 <div className="flex items-center justify-between p-4 border-b border-gray-100">
                   <button className="p-1 rounded-md hover:bg-gray-100">
                     <ChevronLeft className="h-5 w-5" />
                   </button>
-  
+
                   <div className="flex items-center gap-2">
                     {dates.map((date) => (
                       <button
@@ -248,12 +227,12 @@ export default function ActivityLogsPage() {
                       </button>
                     ))}
                   </div>
-  
+
                   <button className="p-1 rounded-md hover:bg-gray-100">
                     <ChevronRight className="h-5 w-5" />
                   </button>
                 </div>
-  
+
                 <div className="p-4">
                   {isLoading ? (
                     <div className="flex flex-col items-center justify-center py-12">
@@ -264,8 +243,8 @@ export default function ActivityLogsPage() {
                     <div className="flex flex-col items-center justify-center py-12">
                       <AlertCircle className="h-8 w-8 text-red-500 mb-2" />
                       <p className="text-red-500">{error}</p>
-                      <button 
-                        onClick={() => window.location.reload()} 
+                      <button
+                        onClick={() => window.location.reload()}
                         className="mt-4 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
                       >
                         Retry
@@ -287,7 +266,9 @@ export default function ActivityLogsPage() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1">
-                              <span className="font-medium">{log.user.name}</span>
+                              <span className="font-medium">
+                                {log.user.name}
+                              </span>
                               <span className="text-gray-500 text-sm">
                                 {log.description}
                               </span>
@@ -307,7 +288,7 @@ export default function ActivityLogsPage() {
                               >
                                 <MoreHorizontal className="h-5 w-5" />
                               </button>
-  
+
                               {openMenuId === log.id && (
                                 <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-10">
                                   <div className="py-1">
@@ -343,7 +324,7 @@ export default function ActivityLogsPage() {
                 </div>
               </div>
             </div>
-  
+
             <div className="mt-6 bg-white rounded-lg p-6 shadow-sm">
               <div className="flex justify-between items-center mb-6">
                 <div className="relative">
@@ -356,7 +337,7 @@ export default function ActivityLogsPage() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-  
+
                 <button
                   onClick={() => setView("list")}
                   className="flex items-center gap-1 text-gray-600 hover:text-gray-900"
@@ -365,7 +346,7 @@ export default function ActivityLogsPage() {
                   <ChevronRight className="h-4 w-4" />
                 </button>
               </div>
-  
+
               <div className="space-y-4">
                 {filteredLogs.slice(0, 3).map((log) => (
                   <div
@@ -397,7 +378,7 @@ export default function ActivityLogsPage() {
                         >
                           <MoreHorizontal className="h-5 w-5" />
                         </button>
-  
+
                         {openMenuId === log.id && (
                           <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-10">
                             <div className="py-1">
@@ -432,7 +413,7 @@ export default function ActivityLogsPage() {
             </div>
           </>
         )}
-  
+
         {view === "list" && (
           <div className="mt-6 bg-white rounded-lg p-6 shadow-sm">
             <div className="flex justify-between items-center mb-6">
@@ -443,7 +424,7 @@ export default function ActivityLogsPage() {
                 <ChevronLeft className="h-4 w-4" />
                 <span>Back</span>
               </button>
-  
+
               <div className="relative">
                 <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                 <input
@@ -455,7 +436,7 @@ export default function ActivityLogsPage() {
                 />
               </div>
             </div>
-  
+
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-12">
                 <Loader2 className="h-8 w-8 text-gray-500 animate-spin mb-2" />
@@ -465,8 +446,8 @@ export default function ActivityLogsPage() {
               <div className="flex flex-col items-center justify-center py-12">
                 <AlertCircle className="h-8 w-8 text-red-500 mb-2" />
                 <p className="text-red-500">{error}</p>
-                <button 
-                  onClick={() => window.location.reload()} 
+                <button
+                  onClick={() => window.location.reload()}
                   className="mt-4 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
                 >
                   Retry
@@ -508,7 +489,7 @@ export default function ActivityLogsPage() {
                         >
                           <MoreHorizontal className="h-5 w-5" />
                         </button>
-  
+
                         {openMenuId === log.id && (
                           <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-10">
                             <div className="py-1">
@@ -543,7 +524,7 @@ export default function ActivityLogsPage() {
             )}
           </div>
         )}
-  
+
         {showDeleteModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg w-full max-w-md p-6">
@@ -556,13 +537,13 @@ export default function ActivityLogsPage() {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-  
+
               <div className="flex flex-col items-center justify-center py-6">
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                   <Trash2 className="h-8 w-8 text-gray-500" />
                 </div>
                 <p className="text-center text-gray-700 mb-6">Confirm Delete</p>
-  
+
                 <div className="flex gap-4 w-full">
                   <button
                     onClick={() => setShowDeleteModal(false)}
@@ -581,11 +562,11 @@ export default function ActivityLogsPage() {
             </div>
           </div>
         )}
-  
+
         {reviewLog && (
-          <ReviewModal 
-            log={reviewLog} 
-            onClose={() => setReviewLog(null)} 
+          <ReviewModal
+            log={reviewLog}
+            onClose={() => setReviewLog(null)}
             onDelete={() => {
               // Handle delete logic here
               setReviewLog(null);

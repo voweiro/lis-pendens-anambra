@@ -61,40 +61,62 @@ export function CaseDetailsModal({
   onCaseDeleted,
 }: CaseDetailsModalProps) {
   // Log the received case data for debugging
-  console.log('CaseDetailsModal received data:', caseData);
-  console.log('Case data structure:', JSON.stringify(caseData, null, 2));
-  console.log('Case ID type:', typeof caseData?.id);
-  
+  console.log("CaseDetailsModal received data:", caseData);
+  console.log("Case data structure:", JSON.stringify(caseData, null, 2));
+  console.log("Case ID type:", typeof caseData?.id);
+
   // Log specific fields that are showing as N/A
-  console.log('title_number:', caseData?.title_number, typeof caseData?.title_number);
-  console.log('survey_plan_number:', caseData?.survey_plan_number, typeof caseData?.survey_plan_number);
-  console.log('parties:', caseData?.parties, typeof caseData?.parties);
-  console.log('description_of_properties:', caseData?.description_of_properties, typeof caseData?.description_of_properties);
-  console.log('subject_matter:', caseData?.subject_matter, typeof caseData?.subject_matter);
-  
+  console.log(
+    "title_number:",
+    caseData?.title_number,
+    typeof caseData?.title_number
+  );
+  console.log(
+    "survey_plan_number:",
+    caseData?.survey_plan_number,
+    typeof caseData?.survey_plan_number
+  );
+  console.log("parties:", caseData?.parties, typeof caseData?.parties);
+  console.log(
+    "description_of_properties:",
+    caseData?.description_of_properties,
+    typeof caseData?.description_of_properties
+  );
+  console.log(
+    "subject_matter:",
+    caseData?.subject_matter,
+    typeof caseData?.subject_matter
+  );
+
   // Force a refresh of the browser console to ensure we see the latest logs
   setTimeout(() => {
-    console.log('---REFRESHED LOGS---');
-    console.log('Checking case data again after delay:');
-    console.log('parties:', caseData?.parties);
-    console.log('description_of_properties:', caseData?.description_of_properties);
-    console.log('subject_matter:', caseData?.subject_matter);
+    console.log("---REFRESHED LOGS---");
+    console.log("Checking case data again after delay:");
+    console.log("parties:", caseData?.parties);
+    console.log(
+      "description_of_properties:",
+      caseData?.description_of_properties
+    );
+    console.log("subject_matter:", caseData?.subject_matter);
   }, 1000);
   const [isEditing, setIsEditing] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   // Force direct access to the case data to avoid any issues
-  console.log('Direct access to case data fields:');
-  console.log('parties direct:', caseData?.parties);
-  console.log('description_of_properties direct:', caseData?.description_of_properties);
-  console.log('subject_matter direct:', caseData?.subject_matter);
-  
+  console.log("Direct access to case data fields:");
+  console.log("parties direct:", caseData?.parties);
+  console.log(
+    "description_of_properties direct:",
+    caseData?.description_of_properties
+  );
+  console.log("subject_matter direct:", caseData?.subject_matter);
+
   // Create initial form data from case data - ensuring we directly access the fields
   const initialFormData = {
     title: caseData?.tile || caseData?.title || "", // Handle both 'tile' (API typo) and 'title'
     address: caseData?.address || "",
     status: caseData?.status || "ongoing",
     owner_name: caseData?.owner_name || "",
-    title_number: caseData?.title_number?.toString() || "",
+    title_number: caseData?.title_number || "",
     survey_plan_number: caseData?.survey_plan_number?.toString() || "",
     parties: caseData?.parties || "",
     // Force direct access to the fields from the API response
@@ -109,13 +131,16 @@ export function CaseDetailsModal({
     lga_id: caseData?.lga_id || "",
     judicial_division_id: caseData?.judicial_division_id || "",
   };
-  
+
   // Log the initial form data to debug
-  console.log('Initial form data:', initialFormData);
-  console.log('parties in form data:', initialFormData.parties);
-  console.log('description_of_properties in form data:', initialFormData.description_of_properties);
-  console.log('subject_matter in form data:', initialFormData.subject_matter);
-  
+  console.log("Initial form data:", initialFormData);
+  console.log("parties in form data:", initialFormData.parties);
+  console.log(
+    "description_of_properties in form data:",
+    initialFormData.description_of_properties
+  );
+  console.log("subject_matter in form data:", initialFormData.subject_matter);
+
   const [formData, setFormData] = useState(initialFormData);
 
   const handleInputChange = (
@@ -157,7 +182,7 @@ export function CaseDetailsModal({
         suit_number: formData.suit_number || "",
         court_details: formData.court_details || "",
         parties: formData.parties || "", // Keep for backward compatibility
-         // Use parties as fallback
+        // Use parties as fallback
         description_of_properties: formData.description_of_properties || "",
         subject_matter: formData.subject_matter || "",
         date_of_commencement: formData.date_of_commencement || "",
@@ -177,7 +202,7 @@ export function CaseDetailsModal({
 
       if (response && response.success) {
         toast.success("Case details updated successfully");
-        if (typeof formData.status === 'string') {
+        if (typeof formData.status === "string") {
           onStatusChange(caseData.id, formData.status as CaseStatus);
         }
         setIsEditing(false);
@@ -200,7 +225,7 @@ export function CaseDetailsModal({
         setIsDeleting(false);
         return;
       }
-      
+
       setIsDeleting(true);
       toast.info("Deleting case...");
 
@@ -273,16 +298,17 @@ export function CaseDetailsModal({
                     : "bg-green-100 text-green-800"
                 }`}
               >
-                {formData.status && typeof formData.status === 'string' 
-                  ? formData.status.charAt(0).toUpperCase() + formData.status.slice(1)
+                {formData.status && typeof formData.status === "string"
+                  ? formData.status.charAt(0).toUpperCase() +
+                    formData.status.slice(1)
                   : "Unknown"}
               </span>
               <span className="ml-3 text-gray-500 text-sm">
                 ID:{" "}
-                {caseData && caseData.id ? 
-                  (typeof caseData.id === "string"
+                {caseData && caseData.id
+                  ? typeof caseData.id === "string"
                     ? `${caseData.id.substring(0, 8)}...`
-                    : caseData.id)
+                    : caseData.id
                   : "N/A"}
               </span>
             </div>
@@ -492,9 +518,7 @@ export function CaseDetailsModal({
                   className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-gray-200"
                 />
               ) : (
-                <p className="text-gray-900">
-                  {formData.title_number !== "" ? formData.title_number : "N/A"}
-                </p>
+                <p className="text-gray-900">{formData.title_number}</p>
               )}
             </div>
 
@@ -513,7 +537,9 @@ export function CaseDetailsModal({
                 />
               ) : (
                 <p className="text-gray-900">
-                  {formData.survey_plan_number !== "" ? formData.survey_plan_number : "N/A"}
+                  {formData.survey_plan_number !== ""
+                    ? formData.survey_plan_number
+                    : "N/A"}
                 </p>
               )}
             </div>
@@ -586,7 +612,9 @@ export function CaseDetailsModal({
                   className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-gray-200"
                 />
               ) : (
-                <p className="text-gray-900">{formData.parties !== "" ? formData.parties : "N/A"}</p>
+                <p className="text-gray-900">
+                  {formData.parties !== "" ? formData.parties : "N/A"}
+                </p>
               )}
             </div>
 
@@ -710,7 +738,9 @@ export function CaseDetailsModal({
                   <FileText className="h-4 w-4 mr-1 text-gray-400" />
                   Description of Properties
                   {!isEditing && !caseData?.description_of_properties && (
-                    <span className="ml-2 text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">New field</span>
+                    <span className="ml-2 text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                      New field
+                    </span>
                   )}
                 </h3>
                 {isEditing ? (
@@ -727,23 +757,27 @@ export function CaseDetailsModal({
                     {/* Direct rendering from API response */}
                     <div className="bg-green-50 p-3 rounded-lg mb-2">
                       <p className="text-gray-900 font-medium">
-                        {typeof caseData?.description_of_properties === 'string' ? caseData.description_of_properties : 'N/A'}
+                        {typeof caseData?.description_of_properties === "string"
+                          ? caseData.description_of_properties
+                          : "N/A"}
                       </p>
                     </div>
-                    
+
                     {/* Fallback to form data if needed */}
-                    {!caseData?.description_of_properties && formData.description_of_properties && (
-                      <p className="text-gray-900 font-medium py-1.5">
-                        {formData.description_of_properties}
-                      </p>
-                    )}
-                    
+                    {!caseData?.description_of_properties &&
+                      formData.description_of_properties && (
+                        <p className="text-gray-900 font-medium py-1.5">
+                          {formData.description_of_properties}
+                        </p>
+                      )}
+
                     {/* Show helper text if both are empty */}
-                    {!caseData?.description_of_properties && !formData.description_of_properties && (
-                      <p className="text-gray-500 italic">
-                        (Edit to add this information)
-                      </p>
-                    )}
+                    {!caseData?.description_of_properties &&
+                      !formData.description_of_properties && (
+                        <p className="text-gray-500 italic">
+                          (Edit to add this information)
+                        </p>
+                      )}
                   </div>
                 )}
               </div>
@@ -754,7 +788,9 @@ export function CaseDetailsModal({
                   <Briefcase className="h-4 w-4 mr-1 text-gray-400" />
                   Subject Matter
                   {!isEditing && !caseData?.subject_matter && (
-                    <span className="ml-2 text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">New field</span>
+                    <span className="ml-2 text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                      New field
+                    </span>
                   )}
                 </h3>
                 {isEditing ? (
@@ -771,17 +807,19 @@ export function CaseDetailsModal({
                     {/* Direct rendering from API response */}
                     <div className="bg-green-50 p-3 rounded-lg mb-2">
                       <p className="text-gray-900 font-medium">
-                        {typeof caseData?.subject_matter === 'string' ? caseData.subject_matter : 'N/A'}
+                        {typeof caseData?.subject_matter === "string"
+                          ? caseData.subject_matter
+                          : "N/A"}
                       </p>
                     </div>
-                    
+
                     {/* Fallback to form data if needed */}
                     {!caseData?.subject_matter && formData.subject_matter && (
                       <p className="text-gray-900 font-medium py-1.5">
                         {formData.subject_matter}
                       </p>
                     )}
-                    
+
                     {/* Show helper text if both are empty */}
                     {!caseData?.subject_matter && !formData.subject_matter && (
                       <p className="text-gray-500 italic">
@@ -919,8 +957,9 @@ export function CaseDetailsModal({
             >
               <span className="font-medium">
                 Status:{" "}
-                {formData.status && typeof formData.status === 'string' 
-                  ? formData.status.charAt(0).toUpperCase() + formData.status.slice(1)
+                {formData.status && typeof formData.status === "string"
+                  ? formData.status.charAt(0).toUpperCase() +
+                    formData.status.slice(1)
                   : "Unknown"}
               </span>
               <ChevronDown className="h-4 w-4" />

@@ -286,7 +286,14 @@ export function EditCaseModal({ caseData: initialCaseData, caseId, onClose, onSu
     setError(null)
 
     try {
-      const response = await updateCase(caseId, formData)
+      // Create a modified version of formData that includes name_of_parties
+      const apiData = {
+        ...formData,
+        // Include name_of_parties for API compatibility (the API still requires this field)
+        name_of_parties: formData.parties
+      };
+      
+      const response = await updateCase(caseId, apiData)
       console.log("Case updated successfully:", response)
       toast.success("Case updated successfully")
       
