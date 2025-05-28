@@ -51,9 +51,9 @@ export const Footer = () => {
             <div>
               <p className="font-bold mb-4 text-[18px]">Address</p>
               <ul className="cursor-pointer font-light text-md">
-                <li>Aguleri Street, Independence Layout, Enugu </li>
-                <li>08032453748, 08023243984</li>
-                <li>info@judiciary.en.gov.ng</li>
+                <li> Anambra State judiciary headquarters, Awka </li>
+                <li>+234 8065897854</li>
+                <li> info@anambrajudiciary.an.gov.ng</li>
               </ul>
             </div>
           </div>

@@ -22,13 +22,20 @@ const ContactUs = () => {
       return;
     }
     emailjs
-      .sendForm("service_j9ymt04", "template_9b7t84i", form.current, "b85Jl3R5SfRDirFR-")
+      .sendForm(
+        "service_j9ymt04",
+        "template_9b7t84i",
+        form.current,
+        "b85Jl3R5SfRDirFR-"
+      )
       .then(
         () => {
           toast.success("Message sent successfully!");
         },
         (err) => {
-          toast.error(err?.response?.data?.message || "Failed to send message.");
+          toast.error(
+            err?.response?.data?.message || "Failed to send message."
+          );
         }
       );
   }
@@ -55,28 +62,33 @@ const ContactUs = () => {
                   <div className="w-[1.7rem] h-[1.7rem] sm:w-[3rem] sm:h-[3rem] rounded-full bg-white flex items-center justify-center">
                     <MdLocationOn size={22} />
                   </div>
-                  <p className="max-w-[90%] sm:max-w-[65%]"> Aguleri Street, Independence Layout, Enugu                  </p>
-</div>
+                  <p className="max-w-[90%] sm:max-w-[65%]">
+                    {" "}
+                    Anambra State judiciary headquarters, Awkau{" "}
+                  </p>
+                </div>
 
                 <div className="flex items-center bg-[#ebeef5] gap-2 sm:gap-6 sm:p-2 sm:rounded-md my-2 sm:my-14 max-w-[90%]">
                   <div className="w-[1.7rem] h-[1.7rem] sm:w-[3rem] sm:h-[3rem] rounded-full bg-white flex items-center justify-center">
                     <FaPhone />
                   </div>
-                  <p>08032453748, 08023243984</p>
+                  <p>+234 8065897854</p>
                 </div>
 
                 <div className="flex items-center bg-[#ebeef5] gap-2 sm:gap-6 sm:p-2 sm:rounded-md max-w-[90%]">
                   <div className="w-[1.7rem] h-[1.7rem] sm:w-[3rem] sm:h-[3rem] rounded-full bg-white flex items-center justify-center">
                     <MdOutlineMailOutline size={22} />
                   </div>
-                  <p>info@judiciary.en.gov.ng</p>
+                  <p> info@anambrajudiciary.an.gov.ng</p>
                 </div>
               </div>
 
               {/* ====== Contact form ====== */}
               <form ref={form} onSubmit={sendEmail}>
                 <div className="bg-[#ebeef5] px-6 py-4 max-w-[480px] rounded-2xl shadow-2xl mb-2 md:mt-4 md:mb-8 lg:w-[24rem]">
-                  <p className="text-lg md:text-xl font-semibold mb-4">Send message</p>
+                  <p className="text-lg md:text-xl font-semibold mb-4">
+                    Send message
+                  </p>
 
                   <div className="space-y-4">
                     <div className="mt-4">
