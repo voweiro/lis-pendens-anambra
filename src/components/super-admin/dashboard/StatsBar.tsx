@@ -171,7 +171,7 @@ const StatsBar: React.FC = () => {
               <span className="text-xl sm:text-2xl font-bold leading-none">
                 {stat.value}
               </span>
-              <span className="text-xs text-gray-300 mt-1">{stat.label}</span>
+              <span className="text-xs text-white mt-1">{stat.label}</span>
             </div>
 
             {/* Divider line */}
