@@ -104,7 +104,7 @@ const Sidebar: React.FC = () => {
         <div className="flex flex-col h-full py-6 px-4 overflow-y-auto">
           {/* Logo or Brand */}
           <div className="mb-8 flex justify-center">
-            <h1 className="text-xl font-bold text-green-600">
+            <h1 className="text-xl font-bold text-[#ffbb10]">
               Court Registrar
             </h1>
           </div>
@@ -118,7 +118,7 @@ const Sidebar: React.FC = () => {
                     <div
                       className={`w-full flex items-center gap-2 px-4 py-3 rounded-lg transition-all duration-200 ${
                         isActive(item.path)
-                          ? "bg-green-600 text-white font-medium"
+                          ? "bg-[#ffbb10] text-white font-medium"
                           : "text-gray-700 hover:bg-green-100"
                       }`}
                     >
@@ -146,7 +146,7 @@ const Sidebar: React.FC = () => {
           {/* Logout Button */}
           <div className="mt-auto pt-6">
             <button
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium text-sm md:text-base transition-colors duration-200"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-yellow-300 hover:bg-yellow-500 text-white font-medium text-sm md:text-base transition-colors duration-200"
               onClick={handleLogout}
             >
               <LogOut className="w-5 h-5" />
