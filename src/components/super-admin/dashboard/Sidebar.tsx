@@ -123,12 +123,12 @@ export function Sidebar() {
         {/* Header */}
         <div className="mb-6 pt-2">
           <div className="flex justify-center">
-            <h1 className="text-[26px] font-bold text-green-600">
-              Super-Admin
+            <h1 className="text-[26px] font-bold text-[]ffbb10]">
+              Lis Pendens Anambra
             </h1>
           </div>
         </div>
-        <hr className="w-full border-t border-green-600" />
+        <hr className="w-full border-t border-[#ffbb10]" />
 
         <nav className="space-y-1 sm:space-y-2 flex-1">
           <SidebarItem
@@ -189,7 +189,7 @@ export function Sidebar() {
               handleLogout();
               closeSidebar();
             }}
-            className="w-full flex items-center justify-center gap-2 bg-gray-700 text-white rounded-md py-2.5 sm:py-2 px-4 hover:bg-gray-800 transition-colors text-sm sm:text-base"
+            className="w-full flex items-center justify-center gap-2 bg-yellow-300 text-white rounded-md py-2.5 sm:py-2 px-4 hover:bg-gray-800 transition-colors text-sm sm:text-base"
           >
             <LogOut className="h-4 w-4 sm:h-5 sm:w-5" />
             <span>Log out</span>

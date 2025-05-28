@@ -156,7 +156,7 @@ const StatsBar: React.FC = () => {
     <div className="relative rounded-2xl overflow-hidden">
       {/* Blue border effect */}
       <div className="absolute inset-0 bg-blue-400 rounded-2xl p-[2px]">
-        <div className="absolute inset-0 bg-[#23A863] rounded-2xl"></div>
+        <div className="absolute inset-0 bg-[#ffbb10] rounded-2xl"></div>
       </div>
 
       {/* Stats content */}
