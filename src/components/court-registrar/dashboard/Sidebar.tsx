@@ -81,7 +81,7 @@ const Sidebar: React.FC = () => {
     <>
       {/* Mobile hamburger */}
       <button
-        className="md:hidden fixed top-4 left-4 z-50 bg-white border border-gray-300 rounded-md p-2 shadow-md transition-all hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+        className="md:hidden fixed top-4 left-4 z-50 bg-white border border-gray-300 rounded-md p-2 shadow-md transition-all hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#ffbb10]"
         onClick={() => setOpen(!open)}
         aria-label="Toggle sidebar"
       >

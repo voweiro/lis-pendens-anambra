@@ -123,7 +123,7 @@ export function Sidebar() {
         {/* Header */}
         <div className="mb-6 pt-2">
           <div className="flex justify-center">
-            <h1 className="text-[26px] font-bold text-[]ffbb10]">
+            <h1 className="text-[18px] font-bold text-[#ffbb10]">
               Lis Pendens Anambra
             </h1>
           </div>
@@ -221,8 +221,8 @@ function SidebarItem({
       onClick={onClick}
       className={`flex items-center gap-3 px-3 py-2.5 sm:py-2 rounded-md text-sm sm:text-base transition-colors ${
         isActive
-          ? "bg-green-500 text-white font-medium shadow-sm"
-          : "text-gray-700 hover:bg-gray-100"
+          ? "bg-[#ffbb10] text-white font-medium shadow-sm"
+          : "text-gray-700 hover:bg-[#f1dead]"
       }`}
     >
       <span className="flex-shrink-0">{icon}</span>
