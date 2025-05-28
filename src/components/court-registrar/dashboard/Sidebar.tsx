@@ -105,7 +105,7 @@ const Sidebar: React.FC = () => {
           {/* Logo or Brand */}
           <div className="mb-8 flex justify-center">
             <h1 className="text-xl font-bold text-[#ffbb10]">
-              Court Registrar
+              Lis Pendens Anambra
             </h1>
           </div>
 
