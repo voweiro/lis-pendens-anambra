@@ -124,6 +124,11 @@ const UsersSearchForm: React.FC<SearchFormProps> = ({
       const stateId = (e.target as any).state.value;
       const lgaId = (e.target as any).lga.value;
 
+      if (!stateId || !lgaId) {
+        toast.error("Please select both State and LGA");
+        return;
+      }
+
       // Find the state and LGA labels for display purposes
       const selectedState = states.find((state) => state.id === stateId);
       const selectedLGA = lgas.find((lga) => lga.id === lgaId);
@@ -131,12 +136,15 @@ const UsersSearchForm: React.FC<SearchFormProps> = ({
       console.log("Selected state:", selectedState);
       console.log("Selected LGA:", selectedLGA);
 
-      // Extract form data
+      // Extract form data with the required parameters for the new endpoint
       const formData = {
-        search_type: "search_report", // Always set for user dashboard search
+        // Required parameters for the new endpoint
+        lga_id: lgaId,
+        state_id: stateId,
+        payment_method: "paystack", // Using paystack as the payment method
+
+        // Additional parameters for search context
         title_type: (e.target as any).propertyTitle.value,
-        lga_id: lgaId, // Use the ID directly as lga_id
-        state_id: stateId, // Use the ID directly as state_id
         lga: selectedLGA?.label || lgaId, // Use label for display, fallback to ID
         state: selectedState?.label || stateId, // Use label for display, fallback to ID
         register_title: (e.target as any).registerTitle.value,
@@ -157,159 +165,89 @@ const UsersSearchForm: React.FC<SearchFormProps> = ({
 
         console.log("Search response:", result);
 
-        // Initialize an array to store property IDs
-        const caseIds: (string | number)[] = [];
+        // Check if the response contains a Paystack payment URL
+        if (
+          result.success === true &&
+          result.message?.includes("Paystack payment initiated")
+        ) {
+          // Store search parameters and reference for later use
+          sessionStorage.setItem(
+            "pendingSearchParams",
+            JSON.stringify(formData)
+          );
 
-        // Process the search results
+          if (result.data?.reference) {
+            sessionStorage.setItem("paymentReference", result.data.reference);
+          }
+
+          // Show message before redirect
+          toast.info("Redirecting to payment gateway...");
+
+          // If we have a payment URL, redirect the user to it
+          if (result.data?.url) {
+            console.log("Redirecting to payment URL:", result.data.url);
+
+            // Store the current search state so we can restore it after payment
+            const searchState = {
+              formData,
+              paymentReference: result.data.reference,
+              timestamp: new Date().toISOString(),
+            };
+            sessionStorage.setItem(
+              "currentSearchState",
+              JSON.stringify(searchState)
+            );
+
+            // Redirect to the payment URL
+            window.location.href = result.data.url;
+            return;
+          }
+        }
+
+        // Process the search results if not redirected to payment
         let searchId = null;
 
-        // Based on the screenshot, the search response contains the data directly
-        // The search_id is in the data object
-        if (result.success === true) {
-          // Extract search_id from the response
-          if (result.data && result.data.search_id) {
-            searchId = result.data.search_id;
-            console.log("Found search_id in response.data:", searchId);
-          } else if (result.search_id) {
-            searchId = result.search_id;
-            console.log("Found search_id in response root:", searchId);
-          }
-
-          // If we have a message about proceeding to payment but no search_id,
-          // look for the ID in the response data
-          if (
-            !searchId &&
-            result.message &&
-            result.message.includes("payment")
-          ) {
-            // Try to extract ID from the data
-            if (result.data && result.data.id) {
-              searchId = result.data.id;
-              console.log("Using data.id as search_id:", searchId);
-            } else if (result.id) {
-              searchId = result.id;
-              console.log("Using result.id as search_id:", searchId);
-            }
-          }
-
-          // Extract property ID and add to case_id array
-          if (result.data && result.data.id) {
-            caseIds.push(result.data.id);
-          }
-
-          // Format the results for display
-          const formattedResults = [
-            {
-              id: searchId || "pending",
-              title: formData.title_type || "Property Title",
-              owner: formData.property_owner || "Property Owner",
-              summary: `${formData.lga}, ${formData.state}`,
-              details: result.data || result,
-              case_id: result.data?.id || null,
-            },
-          ];
-
-          // Store the formatted results
-          sessionStorage.setItem(
-            "searchResults",
-            JSON.stringify(formattedResults)
-          );
-
-          // Store the case_id array separately
-          if (caseIds.length > 0) {
-            sessionStorage.setItem("case_ids", JSON.stringify(caseIds));
-            console.log("Stored case_ids in session storage:", caseIds);
-          }
-        } else if (Array.isArray(result.data) && result.data.length > 0) {
-          // Handle case where data is an array
-
-          // Extract all property IDs and add to case_id array
-          result.data.forEach((item: any) => {
-            const itemId = item.id || item._id || item.search_id;
-            if (itemId) {
-              caseIds.push(itemId);
-            }
-          });
-
-          const formattedResults = result.data.map((item: any) => ({
-            id: item.id || item._id || item.search_id || "pending",
-            title:
-              item.property_title ||
-              item.title_type ||
-              formData.title_type ||
-              "Property Title",
-            owner:
-              item.name_of_owner || formData.property_owner || "Property Owner",
-            summary: `${item.lga || formData.lga}, ${
-              item.state || formData.state
-            }`,
-            details: item,
-            case_id: item.id || item._id || item.search_id || null,
-          }));
-
-          // Get the search ID from the first result if available
-          if (result.data[0].search_id) {
-            searchId = result.data[0].search_id;
-          } else if (result.data[0].id) {
-            searchId = result.data[0].id;
-          } else if (result.data[0]._id) {
-            searchId = result.data[0]._id;
-          }
-
-          sessionStorage.setItem(
-            "searchResults",
-            JSON.stringify(formattedResults)
-          );
-
-          // Store the case_id array separately
-          if (caseIds.length > 0) {
-            sessionStorage.setItem("case_ids", JSON.stringify(caseIds));
-            console.log("Stored case_ids in session storage:", caseIds);
-          }
+        // Extract search_id from the response if available
+        if (result.data?.search_id) {
+          searchId = result.data.search_id;
+        } else if (result.search_id) {
+          searchId = result.search_id;
+        } else if (result.data?.id) {
+          searchId = result.data.id;
+        } else if (result.id) {
+          searchId = result.id;
+        } else if (result.data?.reference) {
+          // Use payment reference as a fallback ID
+          searchId = result.data.reference;
         }
 
-        // If we still don't have a search ID but need to proceed with payment
-        if (!searchId && result.message && result.message.includes("payment")) {
-          // Look for ID in the response data structure
-          const dataObj =
-            typeof result.data === "object" ? result.data : result;
-
-          // Try to find any ID field that might be the search ID
-          for (const key of Object.keys(dataObj)) {
-            if (
-              key.toLowerCase().includes("id") &&
-              typeof dataObj[key] === "string" &&
-              dataObj[key].length > 0
-            ) {
-              searchId = dataObj[key];
-              console.log(
-                `Found potential search ID in field ${key}:`,
-                searchId
-              );
-              break;
-            }
-          }
-        }
-
-        // Store the search ID separately for easy access
+        // Store the search ID for later use
         if (searchId) {
           console.log("Storing search ID in session storage:", searchId);
           sessionStorage.setItem("currentSearchId", searchId);
-        } else {
-          console.warn("No search ID found in the response");
-          // If there's no search ID but we need to proceed, use the user ID as a fallback
-          const userId = sessionStorage.getItem("user_id");
-          if (userId) {
-            searchId = userId;
-            console.log("Using user ID as fallback search ID:", searchId);
-            sessionStorage.setItem("currentSearchId", searchId);
-          }
         }
 
-        // Store the search parameters for the next page
+        // Format and store search results
+        const formattedResults = [
+          {
+            id: searchId || "pending",
+            title: formData.title_type || "Property Title",
+            owner: formData.property_owner || "Property Owner",
+            summary: `${formData.lga}, ${formData.state}`,
+            details: result.data || result,
+            reference: result.data?.reference,
+          },
+        ];
+
+        sessionStorage.setItem(
+          "searchResults",
+          JSON.stringify(formattedResults)
+        );
+
+        // Store the search parameters
         sessionStorage.setItem("pendingSearchParams", JSON.stringify(formData));
 
-        // Get user information from storage
+        // Get user information for payment
         let userName = "";
         let userEmail = "";
 
@@ -345,36 +283,34 @@ const UsersSearchForm: React.FC<SearchFormProps> = ({
           }
         }
 
-        // Store user payment info for the payment gateway
+        // Store payment info
         const paymentInfo = {
           userName,
           userEmail,
-          searchId:
-            result.data && result.data.length > 0
-              ? result.data[0].id || result.data[0]._id
-              : null,
-          case_ids: caseIds, // Add the case_ids array to payment info
-          amount: 5000, // Default amount, adjust as needed
+          searchId,
+          reference: result.data?.reference,
+          amount: 5000, // Default amount
           description: `Property Search - ${formData.lga}, ${formData.state}`,
         };
 
         sessionStorage.setItem("paymentInfo", JSON.stringify(paymentInfo));
 
         // Show success message
-        toast.success("Search completed successfully");
+        toast.success("Search initiated successfully");
 
-        // Redirect to the get-access page
-        router.push("/users/get-access");
+        // If we didn't redirect to payment URL, go to verify payment page
+        router.push("/users/verify-payment");
       } catch (searchError: any) {
         console.error("Search API error:", searchError);
 
-        // Show error message
-        toast.error(
+        // Show detailed error message
+        const errorMessage =
           searchError?.response?.data?.message ||
-            "Search failed. Please try again."
-        );
+          searchError?.message ||
+          "Search failed. Please try again.";
+        toast.error(errorMessage);
 
-        // Store the form data anyway so we can try again
+        // Store the form data so we can try again
         sessionStorage.setItem("pendingSearchParams", JSON.stringify(formData));
       }
     } catch (error) {

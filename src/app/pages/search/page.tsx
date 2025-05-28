@@ -1,21 +1,20 @@
-"use client"
+"use client";
 
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { toast, ToastContainer  } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import Button from "@/components/utils/Button"; // Unused
 import Link from "next/link"; // Unused
 import NavBar from "@/components/home/Navbar";
-import {Modal} from "@/components/utils/Modal";
-
+import { Modal } from "@/components/utils/Modal";
 
 import SearchForm from "@/components/search/SearchForm";
 
 interface PropertyItem {
-  id: string; 
+  id: string;
   property_title: string;
   name_of_owner: string;
   property_location: string;
@@ -31,23 +30,18 @@ const schema = yup.object().shape({
   matchedCriteria: yup.string(),
 });
 
-
-
-
-
-
 const SearchPage = () => {
-
   const [showSearchResultData, setShowSearchResultData] = useState<any>();
   const [showSearchResult, setShowSearchResult] = useState(false);
   const [showNoResults, setShowNoResults] = useState(false);
- 
+
   const [paymentResponse, setPaymentResponse] = useState(null);
   const [paymentResponseTwo, setPaymentResponseTwo] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
   const [caseData, setCaseData] = useState(null);
   const [showSearchResultThree, setShowSearchResultThree] = useState(false);
-  const [showCaseInformationThree, setShowCaseInformationThree] = useState(false);
+  const [showCaseInformationThree, setShowCaseInformationThree] =
+    useState(false);
   const [showPaymentDetailsThree, setShowPaymentDetailsThree] = useState(false);
   const [showPaymentSuccessThree, setShowPaymentSuccessThree] = useState(false);
   const [showSearchSuccessThree, setShowSearchSuccessThree] = useState(false);
@@ -57,7 +51,7 @@ const SearchPage = () => {
       setCaseData(showSearchResultData.data[0]._id);
     }
   }, [showSearchResultData]);
-  console.log("id", caseData)
+  console.log("id", caseData);
 
   // React Hook form for form validation
   const {
@@ -73,40 +67,41 @@ const SearchPage = () => {
     setIsSearching(true);
     try {
       // Make sure we're using HTTP for the API endpoint
-      const baseUrl = process.env.NEXT_PUBLIC_BASEURL || 'http://147.182.229.165/api';
+      const baseUrl =
+        process.env.NEXT_PUBLIC_BASEURL || "http://147.182.229.165/api";
       const form = new FormData();
-      form.append('title_type', data.propertyTitle || '');
-      form.append('lga', data.lga || '');
-      form.append('state', data.state || '');
-      
+      form.append("title_type", data.propertyTitle || "");
+      form.append("lga", data.lga || "");
+      form.append("state", data.state || "");
+
       // Get user ID from session storage if available
-      const userId = sessionStorage.getItem('user_id');
+      const userId = sessionStorage.getItem("user_id");
       if (userId) {
-        form.append('user_id', userId);
+        form.append("user_id", userId);
       }
-      
+
       // Make the search API call immediately
       const response = await fetch(`${baseUrl}/search-property-user`, {
-        method: 'POST',
+        method: "POST",
         body: form,
       });
-      
+
       if (!response.ok) {
         throw new Error(`Search failed with status: ${response.status}`);
       }
-      
+
       const result = await response.json();
-      console.log('Search API response:', result);
-      
+      console.log("Search API response:", result);
+
       // Extract the pendens_ids directly from the API response
       // The API returns them in the format shown in Postman: "pendens_ids": [1, 4, 8, 9]
       const pendensIdsArray = result.pendens_ids || [];
-      console.log('Raw pendens_ids from API:', pendensIdsArray);
-      
+      console.log("Raw pendens_ids from API:", pendensIdsArray);
+
       // Format as comma-separated string for the backend
-      const pendensIdsString = pendensIdsArray.join(',');
-      console.log('Formatted pendens_ids as string:', pendensIdsString);
-      
+      const pendensIdsString = pendensIdsArray.join(",");
+      console.log("Formatted pendens_ids as string:", pendensIdsString);
+
       // Store the search results for later display
       if (result.data && Array.isArray(result.data) && result.data.length > 0) {
         const mappedResults = result.data.map((item: any) => ({
@@ -114,67 +109,71 @@ const SearchPage = () => {
           title: item.property_title || item.title_type,
           owner: item.name_of_owner,
           summary: item.property_location,
-          details: item
+          details: item,
         }));
         sessionStorage.setItem("searchResults", JSON.stringify(mappedResults));
       }
-      
+
       // Store the search parameters and pendens_ids for payment processing
-      sessionStorage.setItem("pendingSearchParams", JSON.stringify({
-        propertyTitle: data.propertyTitle || '',
-        lga: data.lga || '',
-        state: data.state || '',
-        pendens_ids: pendensIdsArray, // Store the exact array from the API
-        pendens_id: pendensIdsString, // Store as comma-separated string for the API
-        has_results: result.found > 0 // Use the 'found' property from the API response
-      }));
-      
-      console.log('Stored search parameters with pendens_ids:', pendensIdsString);
+      sessionStorage.setItem(
+        "pendingSearchParams",
+        JSON.stringify({
+          propertyTitle: data.propertyTitle || "",
+          lga: data.lga || "",
+          state: data.state || "",
+          pendens_ids: pendensIdsArray, // Store the exact array from the API
+          pendens_id: pendensIdsString, // Store as comma-separated string for the API
+          has_results: result.found > 0, // Use the 'found' property from the API response
+        })
+      );
+
+      console.log(
+        "Stored search parameters with pendens_ids:",
+        pendensIdsString
+      );
 
       // Check if the API is reachable before redirecting
       try {
         // Simple ping to check if the API is available
-        const pingResponse = await fetch(`${baseUrl}/ping`, { 
-          method: 'GET',
-          mode: 'no-cors',
+        const pingResponse = await fetch(`${baseUrl}/ping`, {
+          method: "GET",
+          mode: "no-cors",
           // Short timeout to avoid long waits
-          signal: AbortSignal.timeout(3000)
+          signal: AbortSignal.timeout(3000),
         });
-        
-        // If we get here, the API is likely reachable
-        // Redirect user to get-access page before making the API call
+
         window.location.href = "/pages/get-access";
         return;
       } catch (pingError) {
-        console.error('API ping error:', pingError);
+        console.error("API ping error:", pingError);
         // API is not reachable, show error message
-        toast.error('Unable to connect to the search server. Please try again later.');
+        toast.error(
+          "Unable to connect to the search server. Please try again later."
+        );
         setTimeout(() => {
           window.location.href = "/pages/server-error";
         }, 2000);
         return;
       }
     } catch (error: any) {
-      console.error('Search error:', error);
-      toast.error(error.message || 'Search failed. Please try again.');
+      console.error("Search error:", error);
+      toast.error(error.message || "Search failed. Please try again.");
     } finally {
       setIsSearching(false);
     }
   };
 
- 
-
-  
   const handleShowPaymentDetailsThree = () => {
     if (!hasSearchResults) {
-      toast.error('No property found to make payment for. Please try a different search.');
+      toast.error(
+        "No property found to make payment for. Please try a different search."
+      );
       return;
     }
     setShowPaymentDetailsThree(true);
   };
 
   // Handler for payment success to update access state
-  
 
   // Reset search function
   const handleResetSearch = () => {
@@ -184,116 +183,90 @@ const SearchPage = () => {
   };
 
   // Helper to check if there are search results
-  const hasSearchResults = Array.isArray(showSearchResultData?.data) && showSearchResultData?.data.length > 0;
+  const hasSearchResults =
+    Array.isArray(showSearchResultData?.data) &&
+    showSearchResultData?.data.length > 0;
 
-  return(
+  return (
     <>
-    <div className="h-screen bg-red-80">
-      <div className="max-w-[1100px] mx-auto h-full flex flex-col">
-        {/* ====== Navbar component ======= */}
-        <section>
-          <NavBar bgColor="none" backdropBlur="blur(10px)" />
-        </section>
-
-        {/* ====== Main Content goes here ====== */}
-        <section className="pt-19 sm:pt-[6rem] md:pt-30 mx-2 md:mx-6 h-full font-Chillax">
-          <section className="md:grid md:grid-cols-2 w-full">
-            {/* ====== First Column ====== */}
-            <div className="mt-20 mb-10 flex flex-col items-center md:items-start md:mt-24 md:mb-0 w-full">
-              <h1 className="text-[#000] text-[1.5rem] font-medium sm:text-[2.4rem] md:text-[2.625rem] whitespace-pre-line">
-                Get a better search{"\n"}experience
-              </h1>
-              <p className="text-[#000] font-medium leading-[2.5rem] text-[0.8rem] sm:text-[0.98rem] sm:leading-[2.7rem] md:text-[1.25rem] md:leading-[3rem]">
-                Sign in for free
-              </p>
-              <div>
-                <Button>
-                  <Link href="/pages/signup">Sign Up</Link>
-                </Button>
-                <Button>
-                  <Link href="/pages/signin">Login</Link>
-                </Button>
-              </div>
-              <div>
-                {/* <Button>
-                  <Link href="/pages/signup">Sign Up</Link>
-                </Button>
-                <Button>
-                  <Link href="/pages/signin">Login</Link>
-                </Button> */}
-              </div>
-            </div>
-
-            {/* ====== Second Column ====== */}
-            <div className="w-full">
-              <form onSubmit={handleSubmit(onSubmitHandler)}>
-                <SearchForm
-                  register={register}
-                  errors={errors}
-                  watch={watch}
-                  isSearching={isSearching}
-                />
-              </form>
-              
-              {/* Test button - can be removed in production */}
-              
-            </div>
+      <div className="h-screen bg-red-80">
+        <div className="max-w-[1100px] mx-auto h-full flex flex-col">
+          {/* ====== Navbar component ======= */}
+          <section>
+            <NavBar bgColor="none" backdropBlur="blur(10px)" />
           </section>
-          
-          {/* === No Results Modal === */}
-          <Modal
-            show={showNoResults}
-            onClose={() => setShowNoResults(false)}
-          >
-            <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
-              <h3 className="text-xl font-semibold mb-4 text-gray-800">No Results Found</h3>
-              <p className="text-gray-600 mb-6">
-                We couldn't find any properties matching your search criteria. Please try again with different parameters.
-              </p>
-              <div className="flex justify-end">
-                <button
-                  onClick={handleResetSearch}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                >
-                  Try Another Search
-                </button>
+
+          {/* ====== Main Content goes here ====== */}
+          <section className="pt-19 sm:pt-[6rem] md:pt-30 mx-2 md:mx-6 h-full font-Chillax">
+            <section className="md:grid md:grid-cols-2 w-full">
+              {/* ====== First Column ====== */}
+              <div className="mt-20 mb-10 flex flex-col items-center md:items-start md:mt-24 md:mb-0 w-full">
+                <h1 className="text-[#000] text-[1.5rem] font-medium sm:text-[2.4rem] md:text-[2.625rem] whitespace-pre-line">
+                  Get a better search{"\n"}experience
+                </h1>
+                <p className="text-[#000] font-medium leading-[2.5rem] text-[0.8rem] sm:text-[0.98rem] sm:leading-[2.7rem] md:text-[1.25rem] md:leading-[3rem]">
+                  Sign in for free
+                </p>
+                <div className="flex gap-6">
+                  <Button>
+                    <Link href="/pages/signup">Sign Up</Link>
+                  </Button>
+                  <Button>
+                    <Link href="/pages/signin">Login</Link>
+                  </Button>
+                </div>
               </div>
-            </div>
-          </Modal>
-          
-          
-          
 
-          {/* Only show detailed search results after payment */}
-          
+              {/* ====== Second Column ====== */}
+              <div className="w-full">
+                <form onSubmit={handleSubmit(onSubmitHandler)}>
+                  <SearchForm
+                    register={register}
+                    errors={errors}
+                    watch={watch}
+                    isSearching={isSearching}
+                  />
+                </form>
 
-       
-          
+                {/* Test button - can be removed in production */}
+              </div>
+            </section>
 
-          {/* ===Success Search screen=== */}
-       
+            {/* === No Results Modal === */}
+            <Modal show={showNoResults} onClose={() => setShowNoResults(false)}>
+              <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
+                <h3 className="text-xl font-semibold mb-4 text-gray-800">
+                  No Results Found
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  We couldn't find any properties matching your search criteria.
+                  Please try again with different parameters.
+                </p>
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleResetSearch}
+                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  >
+                    Try Another Search
+                  </button>
+                </div>
+              </div>
+            </Modal>
 
-          {/* SEARCH AND REPORT LOGIC */}
-          {/* ===Payment details screen for search and report=== */}
-        
+            {/* Only show detailed search results after payment */}
 
-        
+            {/* ===Success Search screen=== */}
 
-          {/* search and report - only show after payment */}
-          
-          
-           
-         
-          
-         
-        </section>  
+            {/* SEARCH AND REPORT LOGIC */}
+            {/* ===Payment details screen for search and report=== */}
+
+            {/* search and report - only show after payment */}
+          </section>
+        </div>
       </div>
-    </div>
-    <ToastContainer />
-  </>
-
+      <ToastContainer />
+    </>
   );
-
 };
 
 export default SearchPage;
