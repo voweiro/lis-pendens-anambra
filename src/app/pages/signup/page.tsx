@@ -11,22 +11,12 @@ const SignUp = () => {
       style={{ backgroundImage: `url(${authimg.src})` }}
     >
       <div className="pt-6 pl-4">
-        <Link href="/" className="flex items-center">
-          <Image
-            src={lislogo}
-            alt="LisPendens brand logo"
-            width={160}
-            height={40}
-            className="object-cover"
-          />
-        </Link>
-
-        
-        <Link
-          href="/"
-          className="inline-flex items-center mt-4 text-black bg-white border border-black px-4 py-2 rounded-xl hover:bg-black hover:text-white transition-all duration-300"
-        >
-          ← Back to Home
+        <Link href="/" className="flex items-center space-x-4">
+          {/* <Image src={logo} alt="LisPendens brand logo" priority /> */}
+          <span className="text-[#FFBB10]  lg:text-[35px]  text-[15px] font-extrabold">
+            Lis Pendens Anambra{" "}
+          </span>
+          {/* <span className="text-[#00AD20] font-extrabold text-[35px]"> Enugu</span> */}
         </Link>
       </div>
 
@@ -46,14 +36,14 @@ const SignUp = () => {
 
           <Link
             href="/pages/signup-individual"
-            className="w-full mt-4 p-3 text-center bg-[#00AD20] rounded-2xl text-white border-1 border-[#00AD20] cursor-pointer transition duration-700 ease-in-out hover:bg-[rgba(45,80,51,0.16)] hover:text-white  hover:border-[#00AD20] border-[1.3px]"
+            className="w-full mt-4 p-3 text-center bg-[#FFBB10] rounded-2xl text-white border-1 border-[#FFBB10] cursor-pointer transition duration-700 ease-in-out hover:bg-[rgba(220,237,126,0.42)] hover:text-white  hover:border-[#FFBB10] border-[1.3px]"
           >
             <p>Individual</p>
           </Link>
 
           <Link
             href="/pages/signup-company"
-            className="w-full mt-4 mb-4 p-3 text-center bg-[rgba(110,221,130,0.39)] rounded-2xl text-black border-1 border-[#00AD20] cursor-pointer transition duration-700 ease-in-out hover:bg-[#00AD20] hover:text-white hover:border-[#E37C42] border-[1.3px]"
+            className="w-full mt-4 mb-4 p-3 text-center bg-[rgba(204,221,110,0.39)] rounded-2xl text-black border-1 border-[#FFBB10] cursor-pointer transition duration-700 ease-in-out hover:bg-[#FFBB10] hover:text-white hover:border-[#E37C42] border-[1.3px]"
           >
             <p>Company</p>
           </Link>

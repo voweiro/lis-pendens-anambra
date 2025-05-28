@@ -98,8 +98,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       >
         {/* Header with Close Button */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <h1 className="text-xl text-[#00AD20] font-bold">
-            Lis Pendens Enugu
+          <h1 className="text-xl text-[#ffbb10] font-bold">
+            Lis Pendens Anambra
           </h1>
           {/* FIXED: Show close button when open on mobile */}
           {isMobile && (
@@ -143,14 +143,14 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                       className={cn(
                         "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors",
                         isActive
-                          ? "bg-[#23A863]/10 text-[#00AD20] font-semibold border border-[#00AD20]"
-                          : "text-gray-700 hover:bg-[#00AD20] hover:text-white"
+                          ? "bg-[#23A863]/10 text-[#ffbb10] font-semibold border border-[#ffbb10]"
+                          : "text-gray-700 hover:bg-[#ffbb10] hover:text-white"
                       )}
                     >
                       <Icon
                         className={cn(
                           "w-5 h-5",
-                          isActive ? "text-[#00AD20]" : ""
+                          isActive ? "text-[#ffbb10]" : ""
                         )}
                       />
                       <span>{item.label}</span>
@@ -166,7 +166,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         <div className="p-4 border-t border-gray-200">
           <button
             onClick={logout}
-            className="w-full flex items-center justify-center gap-2 bg-[#8bddb3] text-black px-5 py-3 rounded-lg hover:bg-[#00AD20] hover:text-white transition-colors"
+            className="w-full flex items-center justify-center gap-2 bg-[#ddda8b] text-black px-5 py-3 rounded-lg hover:bg-[#ffbb10] hover:text-white transition-colors"
           >
             <ArrowLeftOnRectangleIcon className="w-5 h-5" />
             <span>Log out</span>

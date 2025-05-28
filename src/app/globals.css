@@ -1,11 +1,10 @@
 @import "tailwindcss";
 
 #root {
-  background:white;
+  background: white;
 }
 
 body {
-  
   /* background: linear-gradient(to left top, #23A863, #eef2ff); */
 }
 
@@ -13,17 +12,17 @@ body {
 
 @keyframes popping {
   0% {
-      transform: scale(0.8);
-      opacity: 1;
+    transform: scale(0.8);
+    opacity: 1;
   }
   50% {
-      transform: scale(1.8);
-      opacity: 1;
+    transform: scale(1.8);
+    opacity: 1;
   }
   100% {
-      transform: scale(1.3);
-      color: red;
-      opacity: 1;
+    transform: scale(1.3);
+    color: red;
+    opacity: 1;
   }
 }
 
@@ -34,10 +33,10 @@ body {
 /* ===== TABLE LOADER ==== */
 @keyframes ldio-offod95cov {
   0% {
-      transform: translate(-50%, -50%) rotate(0deg);
+    transform: translate(-50%, -50%) rotate(0deg);
   }
   100% {
-      transform: translate(-50%, -50%) rotate(360deg);
+    transform: translate(-50%, -50%) rotate(360deg);
   }
 }
 .ldio-offod95cov div {
@@ -74,13 +73,13 @@ body {
 
 @layer base {
   :root {
-      --color-text-base: #ffffff;
-      --color-text-muted: #221f1d;
-      --color-text-inverted: #707070;
-      --color-fill: #524a4c;
-      --color-button-accent: #ffffff;
-      --color-button-accent-hover: #eef2ff;
-      --color-button-muted: #6366f1;
+    --color-text-base: #ffffff;
+    --color-text-muted: #221f1d;
+    --color-text-inverted: #707070;
+    --color-fill: #524a4c;
+    --color-button-accent: #ffffff;
+    --color-button-accent-hover: #eef2ff;
+    --color-button-muted: #6366f1;
   }
   /* .theme-swiss {
   --color-text-base: #ffffff;
@@ -105,20 +104,20 @@ body {
 /* About Us page animation */
 @keyframes zoom-out {
   0% {
-      transform: scale(0);
+    transform: scale(0);
   }
   100% {
-      transform: scale(1.25);
-      opacity: 1;
+    transform: scale(1.25);
+    opacity: 1;
   }
 }
 
 @keyframes fade {
   from {
-      opacity: 0;
+    opacity: 0;
   }
   to {
-      opacity: 1;
+    opacity: 1;
   }
 }
 
@@ -131,23 +130,22 @@ body {
 }
 
 #about-us-page {
-  background: linear-gradient(to left top, #23A863, #eef2ff);
+  background: linear-gradient(to left top, #ffbb10, #eef2ff);
 }
 
 /* FAQ page */
 #faq-page {
-  background: linear-gradient(to left top, #23A863, #eef2ff);
+  background: linear-gradient(to left top, #ffbb10, #eef2ff);
 }
 
 #faq-item {
-  background: rgba(145, 254, 183, 0.575);
+  background: rgba(254, 252, 145, 0.813);
 }
 
 /* Contact page */
 #contact-page {
-  background: linear-gradient(to left top, #23A863, #eef2ff);
+  background: linear-gradient(to left top, #ffbb10, #eef2ff);
 }
-
 
 /* User dashboard progress bar */
 
@@ -169,44 +167,41 @@ to {
   background: white;
 }
 
-
 /* Home page SearchButton component  */
 .radial-gradient {
   background: radial-gradient(
       circle at 50% 0%,
       rgba(250, 250, 250, 0.05) 0%,
       transparent 60%
-  ), rgba(15, 15, 15, 1);
+    ),
+    rgba(15, 15, 15, 1);
 }
 
 .linear-mask {
   -webkit-mask-image: linear-gradient(
-      -75deg,
-      white calc(var(--x) + 20%),
-      transparent calc(var(--x) + 30%),
-      white calc(var(--x) + 100%)
+    -75deg,
+    white calc(var(--x) + 20%),
+    transparent calc(var(--x) + 30%),
+    white calc(var(--x) + 100%)
   );
   mask-image: linear-gradient(
-      -75deg,
-      white calc(var(--x) + 20%),
-      transparent calc(var(--x) + 30%),
-      white calc(var(--x) + 100%)
+    -75deg,
+    white calc(var(--x) + 20%),
+    transparent calc(var(--x) + 30%),
+    white calc(var(--x) + 100%)
   );
 }
 
 .linear-overlay {
   background-image: linear-gradient(
-      -75deg,
-      rgba(255, 255, 255, 0.1) calc(var(--x) + 20%),
-      rgba(255, 255, 255, 0.5) calc(var(--x) + 25%),
-      rgba(255, 255, 255, 0.1) calc(var(--x) + 100%)
+    -75deg,
+    rgba(255, 255, 255, 0.1) calc(var(--x) + 20%),
+    rgba(255, 255, 255, 0.5) calc(var(--x) + 25%),
+    rgba(255, 255, 255, 0.1) calc(var(--x) + 100%)
   );
-  mask:
-      linear-gradient(black, black) content-box,
-      linear-gradient(black, black);
-  -webkit-mask:
-      linear-gradient(black, black) content-box,
-      linear-gradient(black, black);
+  mask: linear-gradient(black, black) content-box, linear-gradient(black, black);
+  -webkit-mask: linear-gradient(black, black) content-box,
+    linear-gradient(black, black);
   mask-composite: exclude;
   -webkit-mask-composite: exclude;
 }

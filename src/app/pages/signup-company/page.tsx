@@ -89,20 +89,12 @@ const SignUpCompany = () => {
 
         {/* Logo */}
         <div className="pt-6 pl-4">
-          <Link href="/" className="flex items-center">
-            <Image
-              src={Logo}
-              alt="LisPendens brand logo"
-              width={160}
-              height={50}
-            />
-          </Link>
-
-          <Link
-            href="/"
-            className="inline-flex items-center mt-4 text-black bg-white border border-black px-4 py-2 rounded-xl hover:bg-black hover:text-white transition-all duration-300"
-          >
-            ← Back to Home
+          <Link href="/" className="flex items-center space-x-4">
+            {/* <Image src={logo} alt="LisPendens brand logo" priority /> */}
+            <span className="text-[#FFBB10]  lg:text-[35px]  text-[15px] font-extrabold">
+              Lis Pendens Anambra{" "}
+            </span>
+            {/* <span className="text-[#00AD20] font-extrabold text-[35px]"> Enugu</span> */}
           </Link>
         </div>
 
@@ -197,13 +189,13 @@ const SignUpCompany = () => {
 
               {/* Terms */}
               <div className="text-sm mb-4 text-[#818181]">
-                By selecting Agree and continue, I agree to LisPendes’
+                By selecting Agree and continue, I agree to LisPendes’ Anambra
                 <span className="text-[#524A4C]"> Terms of Service, And</span>
                 <span className="text-[#524A4C]">Privacy Policy.</span>
               </div>
 
               {/* Submit Button */}
-              <button className="w-full mb-4 p-3 text-center bg-[#524A4C] rounded-2xl text-white border border-[#A1A1A1] transition hover:bg-white hover:text-[#E37C42] hover:border-[#E37C42]">
+              <button className="w-full mb-4 p-3 text-center bg-[#FFBB10] rounded-2xl text-white border border-[#a1a1a1] transition hover:bg-[#d0bd8d] hover:text-[#e0e342] hover:border-[#FFBB10] disabled:opacity-70">
                 Agree and continue
               </button>
 

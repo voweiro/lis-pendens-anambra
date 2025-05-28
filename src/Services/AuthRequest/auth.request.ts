@@ -95,10 +95,10 @@ interface UpdateSuperAdminSettingsParams {
 
 // Interface for search request
 interface SearchRequestParams {
-  search_type?: string;
+  lga_id: string;
+  state_id: string;
+  payment_method: string;
   title_type?: string;
-  lga_id?: string;
-  state_id?: string;
   lga?: string;
   state?: string;
   register_title?: string;
@@ -107,7 +107,14 @@ interface SearchRequestParams {
   city?: string;
   survey_plan_number?: string;
   property_owner?: string;
-  user_id?: string;
+}
+
+// Interface for the new search request
+export interface NewSearchRequestParams extends SearchRequestParams {
+  // Additional fields for the new search API
+  property_address?: string;
+  property_description?: string;
+  search_reference?: string;
 }
 
 interface VerifyTokenRequestParams {
@@ -603,17 +610,10 @@ export const UpdateProfileRequest = async (params: UpdateProfileParams) => {
   }
 };
 
-// SEARCH REQUEST
+// SEARCH REQUEST - INITIATE SEARCH
 export const SearchRequest = async (params: SearchRequestParams) => {
   try {
-    console.log("Performing search with params:", params);
-
-    // Get the user ID from session storage for authentication
-    const userId = sessionStorage.getItem("user_id");
-
-    if (!userId) {
-      throw new Error("User ID not found. Please login again.");
-    }
+    console.log("Initiating search with params:", params);
 
     // Get authentication token from session storage
     let authToken = null;
@@ -649,12 +649,12 @@ export const SearchRequest = async (params: SearchRequestParams) => {
       throw new Error("Authentication token not found. Please login again.");
     }
 
-    // Create a regular object for axios
+    // Create search data object with required parameters
     const searchData = {
-      search_type: params.search_type || "search_report",
+      lga_id: params.lga_id,
+      state_id: params.state_id,
+      payment_method: params.payment_method || "paystack",
       title_type: params.title_type || "",
-      lga_id: params.lga_id || "",
-      state_id: params.state_id || "",
       lga: params.lga || "",
       state: params.state || "",
       register_title: params.register_title || "",
@@ -663,30 +663,117 @@ export const SearchRequest = async (params: SearchRequestParams) => {
       city: params.city || "",
       survey_plan_number: params.survey_plan_number || "",
       property_owner: params.property_owner || "",
-      user_id: userId,
     };
 
-    // Make the API call using axios
-    const response = await axios.post(`${baseURL}/user/search`, searchData, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-        Accept: "application/vnd.connect.v1+json",
-        "Content-Type": "application/json",
-      },
-    });
+    // Make the API call using axios to the new endpoint
+    const response = await axios.post(
+      `${baseURL}/user/search/initiate`,
+      searchData,
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     const data = response.data;
-    console.log("Search response:", data);
+    console.log("Search initiate response:", data);
+
+    // Extract search ID from the response
+    const searchId = data.data?.search_id || data.search_id || data.id;
+
+    if (searchId) {
+      console.log("Search initiated successfully with ID:", searchId);
+      // Store search ID in session storage for later use
+      sessionStorage.setItem("currentSearchId", searchId.toString());
+    }
 
     return data;
   } catch (error) {
-    console.error("Error performing search:", error);
+    console.error("Error initiating search:", error);
+    throw error;
+  }
+};
+
+// This function has been replaced by the updated SearchRequest function above
+
+// FINALIZE SEARCH
+export const finalizeSearch = async (
+  reference: string,
+  caseId: string | number
+) => {
+  try {
+    console.log(
+      "Finalizing search with reference:",
+      reference,
+      "and case ID:",
+      caseId
+    );
+
+    // Get authentication token from session storage
+    let authToken = null;
+
+    // Try getting the token directly from the token storage
+    const tokenStr = sessionStorage.getItem("token");
+    if (tokenStr) {
+      console.log("Found token in session storage:", tokenStr);
+      authToken = tokenStr;
+    }
+
+    // If that fails, try getting it from the auth object
+    if (!authToken) {
+      const authStr = sessionStorage.getItem("auth");
+      if (authStr) {
+        try {
+          const auth = JSON.parse(authStr);
+
+          if (auth.accessToken) {
+            authToken = auth.accessToken;
+          } else if (auth.data && auth.data.token) {
+            authToken = auth.data.token;
+          } else if (auth.token) {
+            authToken = auth.token;
+          }
+        } catch (error) {
+          console.error("Error parsing auth data:", error);
+        }
+      }
+    }
+
+    if (!authToken) {
+      throw new Error("Authentication token not found. Please login again.");
+    }
+
+    // Make the API call using axios to the finalize search endpoint shown in Postman
+    const response = await axios.post(
+      `${baseURL}/user/search/finalize`,
+      {
+        reference: reference,
+        case_id: caseId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const data = response.data;
+    console.log("Finalize search response:", data);
+
+    return data;
+  } catch (error) {
+    console.error("Error finalizing search:", error);
     throw error;
   }
 };
 
 // GET SEARCH HISTORY
-export const GetSearchHistory = async () => {
+export const GetSearchHistory = async (id?: string) => {
   try {
     // Get the user ID from session storage for authentication
     const userId = sessionStorage.getItem("user_id");
@@ -729,11 +816,17 @@ export const GetSearchHistory = async () => {
       throw new Error("Authentication token not found. Please login again.");
     }
 
-    // Make the API call using axios
-    const response = await axios.get(`${baseURL}/user/search/history`, {
+    // Make the API call using axios with the correct endpoint
+    console.log(
+      `Fetching search history with token: ${authToken.substring(0, 10)}...`
+    );
+    const endpoint = "/user/search";
+    const url = id ? `${baseURL}${endpoint}?id=${id}` : `${baseURL}${endpoint}`;
+    console.log(`Making API request to: ${url}`);
+    const response = await axios.get(url, {
       headers: {
         Authorization: `Bearer ${authToken}`,
-        Accept: "application/vnd.connect.v1+json",
+        Accept: "application/json",
         "Content-Type": "application/json",
       },
     });
@@ -744,6 +837,68 @@ export const GetSearchHistory = async () => {
     return data;
   } catch (error) {
     console.error("Error getting search history:", error);
+    throw error;
+  }
+};
+
+// GET SEARCH HISTORY BY ID
+export const GetSearchHistoryById = async (searchId: string) => {
+  try {
+    console.log(`Fetching search history by ID: ${searchId}`);
+    const baseURL = process.env.NEXT_PUBLIC_URL || "";
+
+    // Get authentication token from session storage
+    let authToken = null;
+
+    // Try getting the token directly from the token storage
+    const tokenStr = sessionStorage.getItem("token");
+    if (tokenStr) {
+      console.log("Found token in session storage:", tokenStr);
+      authToken = tokenStr;
+    }
+
+    // If that fails, try getting it from the auth object
+    if (!authToken) {
+      const authStr = sessionStorage.getItem("auth");
+      if (authStr) {
+        try {
+          const auth = JSON.parse(authStr);
+
+          if (auth.accessToken) {
+            authToken = auth.accessToken;
+          } else if (auth.data && auth.data.token) {
+            authToken = auth.data.token;
+          } else if (auth.token) {
+            authToken = auth.token;
+          }
+        } catch (error) {
+          console.error("Error parsing auth data:", error);
+        }
+      }
+    }
+
+    if (!authToken) {
+      throw new Error("Authentication token not found. Please login again.");
+    }
+
+    // Use the exact endpoint from the screenshot
+    const endpoint = `/api/search/history/by/id?id=${searchId}`;
+
+    console.log(`Making API request to: ${baseURL}${endpoint}`);
+    const response = await axios.get(`${baseURL}${endpoint}`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = response.data;
+    console.log("Search history by ID response:", data);
+
+    return data;
+  } catch (error) {
+    console.error("Error getting search history by ID:", error);
     throw error;
   }
 };
@@ -792,14 +947,42 @@ export const GetSearchById = async (searchId: string) => {
       throw new Error("Authentication token not found. Please login again.");
     }
 
-    // Make the API call using axios
-    const response = await axios.get(`${baseURL}/user/search/${searchId}`, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-        Accept: "application/vnd.connect.v1+json",
-        "Content-Type": "application/json",
-      },
-    });
+    // Make the API call using axios to the correct endpoint
+    console.log(`Fetching search by ID: ${searchId}`);
+
+    // Try multiple endpoints based on the screenshot
+    const endpoints = [
+      `/api/search/history/by/id?id=${searchId}`,
+      `/user/search/history/by/id?id=${searchId}`,
+      `/user/search/${searchId}`,
+    ];
+
+    let response = null;
+    let lastError = null;
+
+    // Try each endpoint until one works
+    for (const endpoint of endpoints) {
+      try {
+        console.log(`Trying endpoint: ${baseURL}${endpoint}`);
+        response = await axios.get(`${baseURL}${endpoint}`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        });
+        console.log(`Success with endpoint: ${endpoint}`);
+        break; // Exit loop if successful
+      } catch (error) {
+        console.log(`Failed with endpoint: ${endpoint}`, error);
+        lastError = error;
+      }
+    }
+
+    // If all attempts failed, throw the last error
+    if (!response) {
+      throw lastError || new Error("All search by ID API endpoints failed");
+    }
 
     const data = response.data;
     console.log("Search by ID response:", data);
@@ -1609,9 +1792,103 @@ export const GetLGAs = async (stateId: string) => {
   }
 };
 
+// SHOW SEARCH
+export const showSearch = async (reference: string) => {
+  try {
+    console.log("Showing search with reference:", reference);
+
+    // Get authentication token from session storage
+    let authToken = null;
+
+    // Try getting the token directly from the token storage
+    const tokenStr = sessionStorage.getItem("token");
+    if (tokenStr) {
+      console.log("Found token in session storage:", tokenStr);
+      authToken = tokenStr;
+    }
+
+    // If that fails, try getting it from the auth object
+    if (!authToken) {
+      const authStr = sessionStorage.getItem("auth");
+      if (authStr) {
+        try {
+          const auth = JSON.parse(authStr);
+          console.log("Auth object from session storage:", auth);
+
+          if (auth.accessToken) {
+            authToken = auth.accessToken;
+          } else if (auth.data && auth.data.token) {
+            authToken = auth.data.token;
+          } else if (auth.token) {
+            authToken = auth.token;
+          }
+        } catch (error) {
+          console.error("Error parsing auth data:", error);
+        }
+      }
+    }
+
+    if (!authToken) {
+      throw new Error("Authentication token not found. Please login again.");
+    }
+
+    console.log("Using auth token:", authToken.substring(0, 10) + "...");
+    console.log("API URL:", `${baseURL}/user/search/show`);
+
+    // Make the API call using axios to the show search endpoint as shown in Postman
+    const response = await axios.post(
+      `${baseURL}/user/search/show`,
+      { reference: reference },
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("Raw API response:", response);
+
+    // Check if we have a valid response
+    if (!response || !response.data) {
+      throw new Error("Empty response from API");
+    }
+
+    const data = response.data;
+    console.log("Show search response data:", data);
+
+    // If the API returns an error message but with a 200 status code
+    if (data.error || (data.message && !data.status)) {
+      throw new Error(data.message || data.error || "API returned an error");
+    }
+
+    // If we have search results in the response, log them
+    if (data.data) {
+      console.log("Search results found:", data.data);
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error showing search:", error);
+    // Add more context to the error
+    if (axios.isAxiosError(error)) {
+      console.error("Axios error details:", {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        headers: error.response?.headers,
+      });
+    }
+    throw error;
+  }
+};
+
 // VERIFY PAYMENT
 export const VerifyPayment = async (reference: string) => {
   try {
+    console.log("Verifying payment with reference:", reference);
+
     // Get authentication token from session storage
     let authToken = null;
 
@@ -1646,18 +1923,15 @@ export const VerifyPayment = async (reference: string) => {
       throw new Error("Authentication token not found. Please login again.");
     }
 
-    // Create form data for the API request
-    const formData = new FormData();
-    formData.append("reference", reference);
-
-    // Make the API call using axios
+    // Make the API call using axios to the verify endpoint shown in Postman
     const response = await axios.post(
-      `${baseURL}/user/payment/verify`,
-      formData,
+      `${baseURL}/user/search/verify`,
+      { reference },
       {
         headers: {
           Authorization: `Bearer ${authToken}`,
-          // Don't set Content-Type for FormData - browser will set it with boundary
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
       }
     );
@@ -1738,7 +2012,129 @@ export const DeleteAccountRequest = async () => {
   }
 };
 
-// GET DASHBOARD SUMMARY
+// GET USER DASHBOARD SUMMARY
+export const GetUserDashboardSummary = async () => {
+  try {
+    console.log("Fetching user dashboard summary...");
+    const baseURL = process.env.NEXT_PUBLIC_URL || "";
+
+    // Get authentication token from session storage
+    let authToken = "";
+
+    if (typeof window !== "undefined") {
+      // Try multiple possible storage locations for the token
+      // First try direct token storage
+      const directToken = sessionStorage.getItem("token");
+      if (directToken) {
+        console.log("Found token in direct storage");
+        authToken = directToken;
+      }
+
+      // If not found, try the auth object
+      if (!authToken) {
+        const authData = sessionStorage.getItem("auth");
+        if (authData) {
+          try {
+            const parsedData = JSON.parse(authData);
+            if (parsedData.token) {
+              authToken = parsedData.token;
+            } else if (parsedData.accessToken) {
+              authToken = parsedData.accessToken;
+            } else if (parsedData.data && parsedData.data.token) {
+              authToken = parsedData.data.token;
+            }
+          } catch (error) {
+            console.error("Error parsing auth data:", error);
+          }
+        }
+      }
+    }
+
+    if (!authToken) {
+      console.error("Authentication token not found");
+      return {
+        success: false,
+        error: "Authentication token not found",
+        data: null,
+      };
+    }
+
+    // Use the user dashboard endpoint
+    const endpoint = "/user/search/total";
+
+    console.log(`Making API request to: ${baseURL}${endpoint}`);
+    const response = await axios.get(`${baseURL}${endpoint}`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+
+    console.log("User dashboard summary API Response:", response.data);
+
+    // Process the response data
+    let summaryData = null;
+
+    if (response.data && response.data.data) {
+      summaryData = response.data.data;
+    } else if (response.data && typeof response.data === "object") {
+      // If the data is directly in the response
+      summaryData = response.data;
+    }
+
+    // If the API doesn't return search counts, try to get them from search history
+    if (!summaryData?.total_searches && !summaryData?.searches_count) {
+      try {
+        // Try to get search count from search history
+        const searchHistoryResponse = await axios.get(
+          `${baseURL}/user/search/history`,
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        console.log("Search history for count:", searchHistoryResponse.data);
+
+        // Count the search history items
+        let searchCount = 0;
+        if (
+          searchHistoryResponse.data &&
+          searchHistoryResponse.data.data &&
+          Array.isArray(searchHistoryResponse.data.data)
+        ) {
+          searchCount = searchHistoryResponse.data.data.length;
+        } else if (Array.isArray(searchHistoryResponse.data)) {
+          searchCount = searchHistoryResponse.data.length;
+        }
+
+        // Add the search count to the summary data
+        if (!summaryData) {
+          summaryData = {};
+        }
+        summaryData.total_searches = searchCount;
+      } catch (error) {
+        console.error("Error fetching search history for count:", error);
+      }
+    }
+
+    return { success: true, data: summaryData };
+  } catch (error) {
+    console.error("Error in GetUserDashboardSummary:", error);
+    return {
+      success: false,
+      error:
+        (error as Error).message || "Failed to fetch user dashboard summary",
+      data: null,
+    };
+  }
+};
+
+// GET DASHBOARD SUMMARY (for court staff/admin)
 export const GetDashboardSummary = async () => {
   try {
     console.log("Fetching dashboard summary...");

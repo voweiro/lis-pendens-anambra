@@ -231,52 +231,60 @@ export const filterReportData = [
 export const faqData = [
   {
     id: 1,
-    question: "What is Enugu e-Lis Pendens?",
-    answer: "Enugu e-Lis Pendens is a service that provides information on properties in Enugu State, Nigeria that may be subject to a lawsuit (lis pendens) or have other encumbrances. We help you make informed decisions about real estate by highlighting potential legal issues associated with a property.",
+    question: "What is Anambra e-Lis Pendens?",
+    answer:
+      "Anambra e-Lis Pendens is a service that provides information on properties in Enugu State, Nigeria that may be subject to a lawsuit (lis pendens) or have other encumbrances. We help you make informed decisions about real estate by highlighting potential legal issues associated with a property.",
   },
   {
     id: 2,
-    question: "What are the benefits of using Enugu e-Lis Pendens?",
-    answer: "By searching our database, you can avoid unknowingly purchasing a property with legal issues, protect yourself from financial loss and future litigation and make informed choices about property investments.",
+    question: "What are the benefits of using Anambra e-Lis Pendens?",
+    answer:
+      "By searching our database, you can avoid unknowingly purchasing a property with legal issues, protect yourself from financial loss and future litigation and make informed choices about property investments.",
   },
   {
     id: 3,
     question: 'What does "lis pendens" mean?',
-    answer: 'Lis pendens is a Latin term meaning "suit pending." It refers to a lawsuit involving the ownership or rights to a specific property. A lis pendens notice is filed in the land registry to alert potential buyers of the ongoing legal dispute.',
+    answer:
+      'Lis pendens is a Latin term meaning "suit pending." It refers to a lawsuit involving the ownership or rights to a specific property. A lis pendens notice is filed in the land registry to alert potential buyers of the ongoing legal dispute.',
   },
   {
     id: 4,
-    question: "How do I search for properties on Enugu e-Lis Pendens?",
-    answer: "You can search our database using various criteria, such as property address, certificate of occupancy number, or owner's name.",
+    question: "How do I search for properties on Anambra e-Lis Pendens?",
+    answer:
+      "You can search our database using various criteria, such as property address, certificate of occupancy number, or owner's name.",
   },
   {
     id: 5,
     question: "What information do the search results provide?",
-    answer: "The search results will indicate if a property has a lis pendens or other encumbrances registered against it. It may also provide brief details about the nature of the lawsuit or encumbrance.",
+    answer:
+      "The search results will indicate if a property has a lis pendens or other encumbrances registered against it. It may also provide brief details about the nature of the lawsuit or encumbrance.",
   },
   {
     id: 6,
-    question: "What if the search results show a lis pendens on a property I'm interested in?",
-    answer: "If a property has a lis pendens, it's advisable to consult with a lawyer to understand the potential risks involved before proceeding with the purchase.",
+    question:
+      "What if the search results show a lis pendens on a property I'm interested in?",
+    answer:
+      "If a property has a lis pendens, it's advisable to consult with a lawyer to understand the potential risks involved before proceeding with the purchase.",
   },
   {
     id: 7,
     question: "How do your Services work?",
-    answer: "For sustainability, we are a paid service. For a fee we allow you to search our database for properties you might be interested in to find out if they may be the subject of a suit. Where there's a match, we provide you with the suit details or nature of known encumbrance on the property.",
+    answer:
+      "For sustainability, we are a paid service. For a fee we allow you to search our database for properties you might be interested in to find out if they may be the subject of a suit. Where there's a match, we provide you with the suit details or nature of known encumbrance on the property.",
   },
   {
     id: 8,
     question: "Do you offer any legal advice?",
-    answer: "Enugu e-Lis Pendens is an informational service and does not provide legal advice. We recommend consulting with a qualified lawyer for legal guidance on specific property issues.",
+    answer:
+      "Anambra e-Lis Pendens is an informational service and does not provide legal advice. We recommend consulting with a qualified lawyer for legal guidance on specific property issues.",
   },
   {
     id: 9,
     question: "Do you help with filing lis pendens notices?",
-    answer: "Our core function is searching for existing lis pendens filings. We may be able to provide information on the process of filing a lis pendens notice, but it's always best to consult with a lawyer for this purpose.",
+    answer:
+      "Our core function is searching for existing lis pendens filings. We may be able to provide information on the process of filing a lis pendens notice, but it's always best to consult with a lawyer for this purpose.",
   },
 ];
-
-
 
 export const roleData = [
   { id: 1, name: "superadmin" },

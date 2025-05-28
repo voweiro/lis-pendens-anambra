@@ -9,7 +9,10 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { LoginRequest, getUserRedirectPath } from "@/Services/AuthRequest/auth.request";
+import {
+  LoginRequest,
+  getUserRedirectPath,
+} from "@/Services/AuthRequest/auth.request";
 import useAuth from "@/hooks/useAuth";
 import BounceLoader from "react-spinners/BounceLoader";
 import logoWhite from "@/asserts/lis-pendens-logo-white.png";
@@ -44,135 +47,151 @@ const SignIn = () => {
   const onSubmitHandler = async (data: any) => {
     // Set login loading state to true when the login button is clicked
     setLoginLoading(true);
-    
+
     try {
       // Only pass email and password to match LoginBody type
       const response = await LoginRequest({
         email: data.email,
-        password: data.password
+        password: data.password,
       });
-      console.log('Login response:', response);
-      
+      console.log("Login response:", response);
+
       if (!response) {
         toast.error("Login failed: No response from server");
         return;
       }
-      
+
       // Extract data from the API response structure
-      let userType = '';
+      let userType = "";
       let token = null;
-      
+
       // Use type assertion to handle the response type
       const typedResponse = response as any;
-      
+
       // Try to get user type from different possible locations in the response
       if (typedResponse.data && typedResponse.data.type) {
         // Based on the Postman example, the type is in data.type
         userType = typedResponse.data.type;
-        console.log('Found user type in data.type:', userType);
+        console.log("Found user type in data.type:", userType);
       } else if (typedResponse.data && typedResponse.data.user_type) {
         userType = typedResponse.data.user_type;
-        console.log('Found user type in data.user_type:', userType);
+        console.log("Found user type in data.user_type:", userType);
       } else if (typedResponse.role) {
         userType = typedResponse.role;
-        console.log('Found user type in role:', userType);
+        console.log("Found user type in role:", userType);
       } else if (typedResponse.type) {
         userType = typedResponse.type;
-        console.log('Found user type in type:', userType);
+        console.log("Found user type in type:", userType);
       }
-      
+
       // Try to get token from different possible locations in the response
       if (typedResponse.token) {
         token = typedResponse.token;
       } else if (typedResponse.data && typedResponse.data.token) {
         token = typedResponse.data.token;
       }
-      
-      console.log('Extracted user type:', userType);
-      console.log('Extracted token:', token);
-      
+
+      console.log("Extracted user type:", userType);
+      console.log("Extracted token:", token);
+
       // Set user data in localStorage for backward compatibility
       const user = typedResponse.data;
-      const userId = (typedResponse.user_id || (typedResponse.data && typedResponse.data.id))?.toString();
-      
+      const userId = (
+        typedResponse.user_id ||
+        (typedResponse.data && typedResponse.data.id)
+      )?.toString();
+
       if (user) {
-        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem("user", JSON.stringify(user));
       }
-      
+
       if (userId) {
-        localStorage.setItem('session_id', userId);
-        sessionStorage.setItem('user_id', userId); // For search history auth
+        localStorage.setItem("session_id", userId);
+        sessionStorage.setItem("user_id", userId); // For search history auth
       }
-      
+
       // Create auth object with all necessary data
-      const authData = { 
-        role: userType || null, 
-        accessToken: token || null, 
-        email: typedResponse.data?.email || undefined, 
-        firstName: typedResponse.data?.first_name || undefined, 
-        user_id: userId || undefined
+      const authData = {
+        role: userType || null,
+        accessToken: token || null,
+        email: typedResponse.data?.email || undefined,
+        firstName: typedResponse.data?.first_name || undefined,
+        user_id: userId || undefined,
       };
-      
+
       // Check if the user's email is verified
       const isEmailVerified = typedResponse.data?.email_verified_at || false;
-      console.log('Email verification status:', isEmailVerified);
-      
+      console.log("Email verification status:", isEmailVerified);
+
       // Set auth state
       setAuth(authData);
 
       // If email is not verified, redirect to verification page
       if (!isEmailVerified) {
         toast.warning("Please verify your email address to continue");
-        console.log('Email not verified, redirecting to verification page');
-        
+        console.log("Email not verified, redirecting to verification page");
+
         // Store the email in localStorage for the verification page
         if (typedResponse.data?.email) {
-          localStorage.setItem('userEmail', typedResponse.data.email);
+          localStorage.setItem("userEmail", typedResponse.data.email);
         }
-        
+
         // Redirect to verify-token page
-        router.push(`/pages/verify-token?email=${encodeURIComponent(typedResponse.data?.email || '')}&type=REGISTER`);
+        router.push(
+          `/pages/verify-token?email=${encodeURIComponent(
+            typedResponse.data?.email || ""
+          )}&type=REGISTER`
+        );
       } else {
         toast.success("Login Successful");
-        
+
         // Get the appropriate redirect path based on user type
         const redirectPath = getUserRedirectPath(userType);
-        console.log('Redirecting to:', redirectPath);
-        
+        console.log("Redirecting to:", redirectPath);
+
         // Navigate to the appropriate page
         router.push(redirectPath);
       }
-
     } catch (error: any) {
-      console.error('Login error:', error);
-      
+      console.error("Login error:", error);
+
       // Check if the error is related to email verification
-      const errorMessage = error?.response?.data?.message || error?.message || 'Login failed';
-      console.log('Error message:', errorMessage);
-      
+      const errorMessage =
+        error?.response?.data?.message || error?.message || "Login failed";
+      console.log("Error message:", errorMessage);
+
       // Check if the error message contains verification related text
-      if (errorMessage.toLowerCase().includes('verified') || 
-          errorMessage.toLowerCase().includes('verify') || 
-          errorMessage.toLowerCase().includes('verification') ||
-          errorMessage.toLowerCase().includes('account hasn\'t been verified')) {
-        
+      if (
+        errorMessage.toLowerCase().includes("verified") ||
+        errorMessage.toLowerCase().includes("verify") ||
+        errorMessage.toLowerCase().includes("verification") ||
+        errorMessage.toLowerCase().includes("account hasn't been verified")
+      ) {
         toast.warning("Please verify your email address to continue");
-        console.log('Email verification required, redirecting to verification page');
-        
+        console.log(
+          "Email verification required, redirecting to verification page"
+        );
+
         // Try to get the email from the form data that was submitted
-        const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
-        const email = emailInput?.value || '';
+        const emailInput = document.querySelector(
+          'input[type="email"]'
+        ) as HTMLInputElement;
+        const email = emailInput?.value || "";
         if (email) {
-          localStorage.setItem('userEmail', email);
+          localStorage.setItem("userEmail", email);
         }
-        
+
         // Redirect to verify-token page
-        router.push(`/pages/verify-token?email=${encodeURIComponent(email || '')}&type=REGISTER`);
+        router.push(
+          `/pages/verify-token?email=${encodeURIComponent(
+            email || ""
+          )}&type=REGISTER`
+        );
       } else {
         // For other errors, show the error message
         toast.error(errorMessage);
       }
-      
+
       // Set login loading state to false when there's an error
       setLoginLoading(false);
     }
@@ -200,25 +219,16 @@ const SignIn = () => {
         style={{ backgroundImage: `url(${authimg.src})` }}
       >
         <div className="pt-6 pl-4">
-          <Link href="/">
-            {/* <Image
-              src={logoWhite}
-              alt="LisPendens brand logo"
-              className="object-cover"
-              priority
-            /> */} 
-            <span className="text-white  text-[35px] font-extrabold">Lis Pendens  </span>
-            <span className="text-green-600 font-extrabold text-[35px]"> Enugu</span>
+          <Link href="/" className="flex items-center space-x-4">
+            {/* <Image src={logo} alt="LisPendens brand logo" priority /> */}
+            <span className="text-[#FFBB10]  lg:text-[35px]  text-[15px] font-extrabold">
+              Lis Pendens Anambra{" "}
+            </span>
+            {/* <span className="text-[#00AD20] font-extrabold text-[35px]"> Enugu</span> */}
           </Link>
           <br />
 
           {/* Back to Home Button */}
-          <Link
-            href="/"
-            className="inline-flex items-center mt-4 text-black bg-white border border-black px-4 py-2 rounded-xl hover:bg-black hover:text-white transition-all duration-300"
-          >
-            ← Back to Home
-          </Link>
         </div>
 
         <div className="max-w-[650px] mx-auto mt-12 lg:mt-24">
@@ -284,14 +294,30 @@ const SignIn = () => {
               >
                 {loginLoading ? (
                   <>
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
                     </svg>
                     Logging in...
                   </>
                 ) : (
-                  'Login'
+                  "Login"
                 )}
               </button>
 

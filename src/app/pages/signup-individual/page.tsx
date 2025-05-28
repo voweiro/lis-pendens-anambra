@@ -55,7 +55,6 @@ const SignUpIndividual = () => {
     watch,
   } = useForm({ resolver: yupResolver(schema) });
 
-  // Watch the email field to access its value
   const email = watch("email");
 
   useEffect(() => {
@@ -85,7 +84,6 @@ const SignUpIndividual = () => {
       await SignUpRequestForIndividual(body);
       toast.success("SignUp Successful");
 
-      // Store email in localStorage for the verification page
       localStorage.setItem("userEmail", data.email);
 
       // Navigate to verification page with email as query parameter
@@ -116,20 +114,14 @@ const SignUpIndividual = () => {
           priority
           className="object-cover -z-10"
         />
-        <a href="/" className="flex items-center pt-6 pl-4">
-          <img
-            src={logoImage.src || "/placeholder.svg"}
-            alt="LisPendens brand logo"
-            className="text-white object-cover"
-          />
-        </a>
-
-        <Link
-          href="/"
-          className="inline-flex items-center mt-4 ml-4 text-black bg-white border border-black px-4 py-2 rounded-xl hover:bg-black hover:text-white transition-all duration-300"
-        >
-          ← Back to Home
+        <Link href="/" className="flex items-center space-x-4">
+          {/* <Image src={logo} alt="LisPendens brand logo" priority /> */}
+          <span className="text-[#FFBB10]  lg:text-[35px]  text-[15px] font-extrabold">
+            Lis Pendens Anambra{" "}
+          </span>
+          {/* <span className="text-[#00AD20] font-extrabold text-[35px]"> Enugu</span> */}
         </Link>
+
         <div className="backdrop-blur-md p-6 rounded-lg shadow-xl mx-auto w-full max-w-md h-[80vh] overflow-y-auto">
           <section className="py-4 m-2 px-4 md:m-6 md:px-12 bg-white rounded-[30px]">
             <form onSubmit={handleSubmit(onSubmitHandler)} className="w-full">
@@ -224,7 +216,7 @@ const SignUpIndividual = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full mb-4 p-3 text-center bg-[#00AD20] rounded-2xl text-white border-1 border-[#00AD20] cursor-pointer transition duration-700 ease-in-out hover:bg-[#00ad204f] hover:text-black hover:border-[#00AD20] border-[1.3px] disabled:opacity-70"
+                className="w-full mb-4 p-3 text-center bg-[#FFBB10] rounded-2xl text-white border-1 border-[#cfc3a4] cursor-pointer transition duration-700 ease-in-out hover:bg-[#f4e5bf] hover:text-black hover:border-[#FFBB10] border-[1.3px] disabled:opacity-70"
               >
                 {isSubmitting ? "Processing..." : "Agree and continue"}
               </button>

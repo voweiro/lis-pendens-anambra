@@ -50,8 +50,14 @@ const Faq = () => {
                     onClick={() => toggleFaq(faq.id)}
                   >
                     <div className="w-full flex justify-between">
-                      <p className="max-w-[85%] font-semibold">{faq.question}</p>
-                      {activeFaq === faq.id ? <FaMinusCircle /> : <FaPlusCircle />}
+                      <p className="max-w-[85%] font-semibold">
+                        {faq.question}
+                      </p>
+                      {activeFaq === faq.id ? (
+                        <FaMinusCircle />
+                      ) : (
+                        <FaPlusCircle />
+                      )}
                     </div>
                     {activeFaq === faq.id && (
                       <motion.div
@@ -74,9 +80,9 @@ const Faq = () => {
                 Disclaimer:
               </h3>
               <p className="text-[#FFF] italic text-[0.65rem] sm:text-[0.7rem] md:text-[0.75rem]">
-                The information provided by Enugu e-Lis Pendens is for informational
-                purposes only and should not be considered a substitute for legal
-                advice.
+                The information provided by Anambra e-Lis Pendens Anambra is for
+                informational purposes only and should not be considered a
+                substitute for legal advice.
               </p>
             </div>
           </section>

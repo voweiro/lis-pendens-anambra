@@ -1,5 +1,5 @@
 // components/about-us/AboutUsContent.tsx
-"use client"
+"use client";
 import { useSearchParams } from "next/navigation";
 import NavBar from "@/components/home/Navbar";
 import { motion } from "framer-motion";
@@ -50,36 +50,41 @@ const AboutUsContent = () => {
             {/* ====== Body Content ====== */}
             <section className="w-full text-[0.7rem] sm:text-[0.85rem] md:text-[1.125rem]">
               <p className="font-medium">
-                e-Lis Pendens Enugu is a platform that helps you find out if a property you are interested in has any encumbrance or ongoing lawsuit on it...
+                e-Lis Pendens Anambra is a platform that helps you find out if a
+                property you are interested in has any encumbrance or ongoing
+                lawsuit on it...
               </p>
 
               <p className="font-black my-3 sm:my-4 md:my-6">
-                Why do you need e-Lis Pendens Enugu?
+                Why do you need e-Lis Pendens Anambra?
               </p>
               <p className="font-medium">
-                Buying or selling a property is a major decision that involves a lot of money and risk...
+                Buying or selling a property is a major decision that involves a
+                lot of money and risk...
               </p>
 
               <p className="font-black my-3 sm:my-4 md:my-6">
-                How does e-Lis Pendens Enugu work?
+                How does e-Lis Pendens Anambra work?
               </p>
               <p className="font-medium">
-                e-Lis Pendens  Enugu is a simple and convenient way to access the information of any lawsuit-encumbered property...
+                e-Lis Pendens Anambra is a simple and convenient way to access
+                the information of any lawsuit-encumbered property...
               </p>
               <ul className="font-black my-3 sm:my-4 md:my-6 list-disc pl-4">
                 <li>
-                  The encumbrances and the lawsuits that affect the property, along with their details and status
+                  The encumbrances and the lawsuits that affect the property,
+                  along with their details and status
                 </li>
               </ul>
               <p className="font-medium">
-                e-Lis Pendens  Enugu is powered by a reliable and updated database...
+                e-Lis Pendens Anambra is powered by a reliable and updated
+                database...
               </p>
 
-              <p className="font-black my-3 sm:my-4 md:my-6">
-                Who are we?
-              </p>
+              <p className="font-black my-3 sm:my-4 md:my-6">Who are we?</p>
               <p className="font-medium mb-2">
-                e-Lis Pendens Enugu is supported by a team of professionals passionate about real estate and technology...
+                e-Lis Pendens Anambra is supported by a team of professionals
+                passionate about real estate and technology...
               </p>
             </section>
 

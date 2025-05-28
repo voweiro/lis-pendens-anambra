@@ -4,51 +4,51 @@ import NavBar from "@/components/home/Navbar";
 import Button from "@/components/utils/Button";
 import Link from "next/link";
 import { FiInfo } from "react-icons/fi";
-import { BsCheckCircle, } from "react-icons/bs";
-import { HiArrowNarrowRight } from 'react-icons/hi';
+import { BsCheckCircle } from "react-icons/bs";
+import { HiArrowNarrowRight } from "react-icons/hi";
 import SearchButton from "@/components/utils/SearchButton";
 import { Footer } from "@/components/home/Footer";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import Tour from 'reactour';
-import home3 from "@/asserts/home-img-3.png"
+import Tour from "reactour";
+import home3 from "@/asserts/home-img-3.png";
 import Image from "next/image";
-import home12 from "@/asserts/home-img-12.jpg"
+import home12 from "@/asserts/home-img-12.jpg";
 
 const LandingPage = () => {
   const [isTourOpen, setIsTourOpen] = useState(true);
   const steps = [
     {
-      selector: '.tour-0',
-      content: 'This is the first tour step!'
+      selector: ".tour-0",
+      content: "This is the first tour step!",
     },
     {
-      selector: '.tour-1',
-      content: 'This is the second tour step!'
+      selector: ".tour-1",
+      content: "This is the second tour step!",
     },
     {
-      selector: '.tour-2',
-      content: 'This is the third tour step!'
+      selector: ".tour-2",
+      content: "This is the third tour step!",
     },
     {
-      selector: '.tour-3',
-      content: 'This is the fourth tour step!'
+      selector: ".tour-3",
+      content: "This is the fourth tour step!",
     },
     {
-      selector: '.tour-4',
-      content: 'This is the fifth tour step!'
+      selector: ".tour-4",
+      content: "This is the fifth tour step!",
     },
     {
-      selector: '.tour-5',
-      content: 'This is the sixth tour step!'
+      selector: ".tour-5",
+      content: "This is the sixth tour step!",
     },
     {
-      selector: '.tour-6',
-      content: 'This is the seventh tour step!'
+      selector: ".tour-6",
+      content: "This is the seventh tour step!",
     },
     {
-      selector: '.tour-7',
-      content: 'This is the eighth tour step!'
+      selector: ".tour-7",
+      content: "This is the eighth tour step!",
     },
   ];
 
@@ -80,15 +80,17 @@ const LandingPage = () => {
                 className=" tour-0 bg-white/[0.6] w-[100%] sm:w-[75%] max-w-[45.375rem] mx-auto sm:mx-0 p-[1rem] rounded-lg sm:rounded-[1.125rem] sm:absolute z-10 sm:top-[1.938rem]"
               >
                 <h1 className="font-extrabold text-[1rem] sm:text-[1.75rem] md:text-[2.375rem] whitespace-pre-line">
-                  Ensure your <span className="text-[#00AD20]">property</span> {"\n"}is <span className="text-[#00AD20]">litigation-free.</span> 
+                  Ensure your <span className="text-[#FFBB10]">property</span>{" "}
+                  {"\n"}is{" "}
+                  <span className="text-[#FFBB10]">litigation-free.</span>
                 </h1>
                 <p className="border-l-2 border-[#000] pl-[0.4rem] sm:pl-[0.625rem] py-[0.4rem] sm:py-[0.625rem] font-normal text-[0.65rem] sm:text-[1.25rem] mt-[0.75rem] sm:mt-[1.125rem] mb-[2rem] sm:mb-[3.9rem]">
                   Get an official Search Report.
                 </p>
                 <div className="cursor-pointer">
-                <Link href="/pages/search ">
-                  <SearchButton   />
-                </Link>
+                  <Link href="/pages/search ">
+                    <SearchButton />
+                  </Link>
                 </div>
               </motion.div>
 
@@ -144,8 +146,6 @@ const LandingPage = () => {
               </motion.div>
             </div>
 
-
-
             {/* ====== Section 2 ====== */}
             <div className="w-full flex flex-col justify-center mt-[5rem] sm:mt-[10rem] md:mt-[13.688rem] mb-[4rem] sm:mb-[7rem] md:mb-[9.563rem]">
               <motion.p
@@ -159,12 +159,11 @@ const LandingPage = () => {
               </motion.p>
 
               <Link href="/pages/about-us">
-                <button className="tour-3  mx-auto mt-4 bg-[#00AD20] text-white py-2 px-6 rounded-md hover:bg-gray-800 transition-all flex items-center gap-2">
+                <button className="tour-3  mx-auto mt-4 bg-[#FFBB10] text-white py-2 px-6 rounded-md hover:bg-gray-800 transition-all flex items-center gap-2">
                   <FiInfo className="text-lg" />
                   Learn More
                 </button>
               </Link>
-
 
               <div>
                 <Image
@@ -183,7 +182,7 @@ const LandingPage = () => {
                 </div>
 
                 <div className="tour-5 flex items-center">
-                  <BsCheckCircle  size={35} />
+                  <BsCheckCircle size={35} />
                   <p className="tour-5 font-medium text-[0.75rem] sm:text-[1rem] md:text-[1.25rem] ml-1 sm:ml-[0.938rem]">
                     Timely & Efficient
                   </p>
@@ -224,34 +223,30 @@ const LandingPage = () => {
               </div>
 
               <div className="sm:flex sm:justify-end">
-              <MotionImage
-  initial={{ x: "100vw" }}
-  animate={{ x: 0 }}
-  transition={{ type: "spring", duration: 5, delay: 0 }}
-  src={home3}
-  alt="Home page image-3"
-  className="rounded-[0.7rem] sm:rounded-[1.125rem] w-[100%] sm:w-[30rem] md:w-[45.063rem] sm:h-[20rem] md:h-[24.438rem] sm:justify-self-end object-cover"
-/>
+                <MotionImage
+                  initial={{ x: "100vw" }}
+                  animate={{ x: 0 }}
+                  transition={{ type: "spring", duration: 5, delay: 0 }}
+                  src={home3}
+                  alt="Home page image-3"
+                  className="rounded-[0.7rem] sm:rounded-[1.125rem] w-[100%] sm:w-[30rem] md:w-[45.063rem] sm:h-[20rem] md:h-[24.438rem] sm:justify-self-end object-cover"
+                />
               </div>
             </div>
-
-
-
           </section>
 
           <div className=" bg-white flex flex-col sm:flex-row items-center sm:justify-center gap-[0.6rem] sm:gap-[1.8rem] md:gap-[2.625rem] py-[1rem] sm:py-[1.75rem] md:py-[2.75rem]">
-        <p className="text-center font-medium text-[0.8rem] sm:text-[1.15rem] md:text-[1.625rem]">
-          For further enquires and more informations
-        </p>
-        <Link href="/faq">
-          <button className="bg-[#000] text-[#FFF] font-medium text-[0.8rem] sm:text-[0.9rem] md:text-[1.063rem] w-[5rem] sm:w-[6rem] md:w-[7.875rem] h-[1.75rem] sm:h-[2.35rem] md:h-[2.5rem] border-none rounded-[0.7rem] sm:rounded-[0.9rem] md:rounded-[1rem]">
-            FAQ
-          </button>
-        </Link>
-      </div>
+            <p className="text-center font-medium text-[0.8rem] sm:text-[1.15rem] md:text-[1.625rem]">
+              For further enquires and more informations
+            </p>
+            <Link href="/faq">
+              <button className="bg-[#000] text-[#FFF] font-medium text-[0.8rem] sm:text-[0.9rem] md:text-[1.063rem] w-[5rem] sm:w-[6rem] md:w-[7.875rem] h-[1.75rem] sm:h-[2.35rem] md:h-[2.5rem] border-none rounded-[0.7rem] sm:rounded-[0.9rem] md:rounded-[1rem]">
+                FAQ
+              </button>
+            </Link>
+          </div>
 
           {/* ====== Footer ====== */}
-         
         </div>
       </div>
       <Footer />

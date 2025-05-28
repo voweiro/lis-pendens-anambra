@@ -12,12 +12,15 @@ export const Footer = () => {
   const currentYear = today.getFullYear();
 
   return (
-    <div className="bg-[#00AD20] text-black w-full">
+    <div className="bg-[#FFBB10] text-black w-full">
       <div className="px-6 md:px-2 py-10 lg:px-10 w-full ">
         {/* Top Section */}
         <section className="mb-2 md:flex justify-between pb-10 md:mb-20">
           <div className="h-[100px] md:mx-10">
-            <Link href="/" className="my-auto cursor-pointer text-[20px] font-bold">
+            <Link
+              href="/"
+              className="my-auto cursor-pointer text-[20px] font-bold"
+            >
               {/* <Image
                 src={logo}
                 alt="LisPendens brand logo"
@@ -25,8 +28,13 @@ export const Footer = () => {
                 priority
               /> */}
 
-            <span className="text-white  text-[35px] font-extrabold">Lis Pendens  </span>
-            <span className="text-white font-extrabold text-[35px]"> Enugu</span>
+              <span className="text-white  text-[35px] font-extrabold">
+                Lis Pendens{" "}
+              </span>
+              <span className="text-white font-extrabold text-[35px]">
+                {" "}
+                Anambra
+              </span>
             </Link>
           </div>
 
@@ -39,14 +47,13 @@ export const Footer = () => {
                 <li>FAQs</li>
               </ul>
             </div>
-            
+
             <div>
               <p className="font-bold mb-4 text-[18px]">Address</p>
               <ul className="cursor-pointer font-light text-md">
                 <li>Aguleri Street, Independence Layout, Enugu </li>
                 <li>08032453748, 08023243984</li>
                 <li>info@judiciary.en.gov.ng</li>
-                
               </ul>
             </div>
           </div>
@@ -56,7 +63,13 @@ export const Footer = () => {
         <section>
           <div className="cursor-pointer lg:flex justify-between items-center border-t border-white pt-8">
             <div className="flex px-6">
-              {[FaTwitter, FaLinkedinIn, RiFacebookCircleFill, BsInstagram, BsYoutube].map((Icon, i) => (
+              {[
+                FaTwitter,
+                FaLinkedinIn,
+                RiFacebookCircleFill,
+                BsInstagram,
+                BsYoutube,
+              ].map((Icon, i) => (
                 <span
                   key={i}
                   className="w-[40px] h-[40px] rounded-full border-2 border-white flex items-center justify-center mx-2"

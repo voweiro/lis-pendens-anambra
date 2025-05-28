@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, MouseEvent } from "react";
-import Link from "next/link";  // Use Next.js Link instead of react-router-dom's Link
+import Link from "next/link"; // Use Next.js Link instead of react-router-dom's Link
 import Image from "next/image"; // Import Next.js Image component
 import { HiMenu, HiX } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
@@ -73,9 +73,15 @@ const NavBar = ({ bgColor, backdropBlur }: NavBarProps) => {
         setShowActions(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside as unknown as EventListener);
+    document.addEventListener(
+      "mousedown",
+      handleClickOutside as unknown as EventListener
+    );
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside as unknown as EventListener);
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside as unknown as EventListener
+      );
     };
   }, []);
 
@@ -87,12 +93,12 @@ const NavBar = ({ bgColor, backdropBlur }: NavBarProps) => {
       <div className="max-w-[1100px] xl:max-w-[1300px] mx-auto p-2 flex justify-between px-6">
         {/* LOGO */}
         <Link href="/" className="flex items-center space-x-4">
-  {/* <Image src={logo} alt="LisPendens brand logo" priority /> */}
-  <span className="text-[#00AD20]  lg:text-[35px]  text-[15px] font-extrabold">Lis Pendens  Enugu </span>
-  {/* <span className="text-[#00AD20] font-extrabold text-[35px]"> Enugu</span> */}
-
-</Link>
-        
+          {/* <Image src={logo} alt="LisPendens brand logo" priority /> */}
+          <span className="text-[#FFBB10]  lg:text-[35px]  text-[15px] font-extrabold">
+            Lis Pendens Anambra{" "}
+          </span>
+          {/* <span className="text-[#00AD20] font-extrabold text-[35px]"> Enugu</span> */}
+        </Link>
 
         {/* LINKS (about, FAQs, Contact-US) */}
         <div
@@ -102,7 +108,9 @@ const NavBar = ({ bgColor, backdropBlur }: NavBarProps) => {
           <ul className="p-2 md:p-0 mt-2 font-medium rounded-lg md:space-x-4 md:mt-0 md:border-0 hidden md:flex flex-row">
             {routes.map((route, index) => (
               <li key={index} className="block py-1 pl-2 pr-3">
-                <Link href={typeof route.href === 'string' ? route.href : '#'}>{route.name}</Link>
+                <Link href={typeof route.href === "string" ? route.href : "#"}>
+                  {route.name}
+                </Link>
               </li>
             ))}
           </ul>
@@ -202,7 +210,11 @@ const NavBar = ({ bgColor, backdropBlur }: NavBarProps) => {
               <ul className="flex flex-col p-2 font-medium rounded-lg space-y-2">
                 {mobileRoutes.map((route, index) => (
                   <li key={index} className="block py-1 pl-2 pr-3">
-                    <Link href={typeof route.href === 'string' ? route.href : '#'}>{route.name}</Link>
+                    <Link
+                      href={typeof route.href === "string" ? route.href : "#"}
+                    >
+                      {route.name}
+                    </Link>
                   </li>
                 ))}
               </ul>
